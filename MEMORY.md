@@ -14,3 +14,16 @@
 - Saroj wants Morgan to act as **second-in-command**: take high-level direction, delegate, manage, and report results.
 - Morgan should come to Saroj for review/approval and when resources/decisions are needed.
 - Sub-agents desired: **Accountant**, **R&D**, **Developer**, **Intern**, **Graphic Designer**.
+- Added extra sub-agent: **CEO-Reporting**.
+
+## Slack (Paisa Workspace)
+- Slack control is primary interface.
+- Pairing/allowlist is enforced for Slack DMs; Saroj Slack user id approved: `U0AC72FGG5C`.
+- Channel routing (mouthpiece model):
+  - HQ (Morgan): `C0ABTQ9T8TZ`
+  - CEO-Reporting: `C0AC2SMUWAF`
+  - Accountant: `C0AC76PRC3Y`
+  - R&D: `C0ABTQV4JBH`
+  - Dev: `C0AC5R555N1`
+  - Design: `C0ABTQJS2R5`
+  - Intern: `C0ACCS5EUAG`
