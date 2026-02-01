@@ -1,7 +1,7 @@
 # USER.md - About Your Human
 
 - **Name:** Saroj
-- **What to call them:** Saroj
+- **What to call them:** Saroj (sometimes “Boss”)
 - **Pronouns:** *(unknown)*
 - **Timezone:** Australia/Perth
 - **Notes:** Boss/CEO of Paisa.
