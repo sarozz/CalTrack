@@ -28,6 +28,22 @@ export function LogScreen() {
   const [protein, setProtein] = React.useState<string>('');
   const [caption, setCaption] = React.useState<string>('');
   const [barcodeLoading, setBarcodeLoading] = React.useState(false);
+  const [scanPreview, setScanPreview] = React.useState<
+    | null
+    | {
+        name?: string;
+        barcode: string;
+        calories?: number;
+        protein?: number;
+        fat?: number;
+        carbs?: number;
+        fiber?: number;
+        sugar?: number;
+        cholesterol?: number;
+        sodium?: number;
+        source?: string;
+      }
+  >(null);
 
   const [fat, setFat] = React.useState<number | undefined>(undefined);
   const [carbs, setCarbs] = React.useState<number | undefined>(undefined);
@@ -152,6 +168,44 @@ export function LogScreen() {
     return () => clearTimeout(t);
   }, [rawText, showSuggestions]);
 
+  async function savePreview() {
+    if (!scanPreview) return;
+
+    const c = scanPreview.calories;
+    if (c == null || !Number.isFinite(c) || c <= 0) {
+      Alert.alert('Calories required', 'This item has no calories. Enter manually before saving.');
+      return;
+    }
+
+    const createdAt = Date.now();
+    const mealAuto = autoMealFromTime(new Date(createdAt));
+    const raw = `${scanPreview.name ? `name: ${scanPreview.name}\n` : ''}barcode: ${scanPreview.barcode}`;
+    const emoji = recommendEmoji({ meal: mealAuto, text: `${scanPreview.name || ''} ${raw}`, hasBarcode: true });
+
+    const entry: Entry = {
+      id: makeId(),
+      createdAt,
+      dateKey: toDateKey(new Date(createdAt)),
+      meal: mealAuto,
+      emoji,
+      caption: scanPreview.name || undefined,
+      rawText: raw,
+      calories: Math.round(c),
+      protein: Math.round(scanPreview.protein || 0),
+      fat: scanPreview.fat,
+      carbs: scanPreview.carbs,
+      fiber: scanPreview.fiber,
+      sugar: scanPreview.sugar,
+      cholesterol: scanPreview.cholesterol,
+      sodium: scanPreview.sodium,
+    };
+
+    await addEntry(entry);
+    setScanPreview(null);
+    Alert.alert('Saved', 'Logged from barcode');
+    navigation.navigate('HomeTab', { screen: 'Home' });
+  }
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ padding: 14, gap: 12 }}>
       <Pressable
@@ -170,12 +224,12 @@ export function LogScreen() {
                   return `${base}${title}barcode: ${data}`;
                 });
 
-                // Fill form fields (so user can edit) AND auto-log if we have enough data.
+                // Fill form fields (so user can edit)
                 const c = facts?.calories != null ? Math.round(facts.calories) : undefined;
                 const p = facts?.protein != null ? Math.round(facts.protein) : undefined;
 
-                if (c != null && !calories) setCalories(String(c));
-                if (p != null && !protein) setProtein(String(p));
+                if (c != null) setCalories(String(c));
+                if (p != null) setProtein(String(p));
 
                 if (facts?.fat != null) setFat(facts.fat);
                 if (facts?.carbs != null) setCarbs(facts.carbs);
@@ -184,51 +238,24 @@ export function LogScreen() {
                 if (facts?.cholesterol != null) setCholesterol(facts.cholesterol);
                 if (facts?.sodium != null) setSodium(facts.sodium);
 
+                // Show preview card instead of auto-logging
                 if (!facts) {
+                  setScanPreview(null);
                   Alert.alert('Not found', 'No product found for this barcode. You can still type it manually.');
-                } else if (c == null) {
-                  Alert.alert('No calories found', 'Found product but calories missing. You can enter manually.');
                 } else {
-                  // Auto-log on scan (fast path)
-                  const createdAt = Date.now();
-                  const mealAuto = autoMealFromTime(new Date(createdAt));
-                  const raw = `${name ? `name: ${name}\n` : ''}barcode: ${data}`;
-                  const emoji = recommendEmoji({ meal: mealAuto, text: `${name} ${raw}`, hasBarcode: true });
-
-                  const entry: Entry = {
-                    id: makeId(),
-                    createdAt,
-                    dateKey: toDateKey(new Date(createdAt)),
-                    meal: mealAuto,
-                    emoji,
-                    caption: name || undefined,
-                    rawText: raw,
+                  setScanPreview({
+                    name: name || undefined,
+                    barcode: data,
                     calories: c,
-                    protein: p ?? 0,
+                    protein: p,
                     fat: facts.fat,
                     carbs: facts.carbs,
                     fiber: facts.fiber,
                     sugar: facts.sugar,
                     cholesterol: facts.cholesterol,
                     sodium: facts.sodium,
-                  };
-
-                  await addEntry(entry);
-
-                  // Reset form
-                  setRawText('');
-                  setCalories('');
-                  setProtein('');
-                  setCaption('');
-                  setFat(undefined);
-                  setCarbs(undefined);
-                  setFiber(undefined);
-                  setSugar(undefined);
-                  setCholesterol(undefined);
-                  setSodium(undefined);
-
-                  Alert.alert('Logged', 'Saved from barcode scan');
-                  navigation.navigate('HomeTab', { screen: 'Home' });
+                    source: facts.source,
+                  });
                 }
               } catch {
                 Alert.alert('Lookup failed', 'Could not fetch nutrition details. Try again.');
@@ -243,6 +270,34 @@ export function LogScreen() {
       >
         <Text style={styles.longBtnTxt}>{barcodeLoading ? 'Scanning…' : 'Scan barcode  🏷️'}</Text>
       </Pressable>
+
+      {scanPreview ? (
+        <View style={styles.card}>
+          <Text style={styles.title}>Scan result</Text>
+          {!!scanPreview.name && <Text style={styles.scanName}>{scanPreview.name}</Text>}
+          <Text style={styles.scanSub}>Barcode: {scanPreview.barcode}{scanPreview.source ? ` · ${scanPreview.source}` : ''}</Text>
+
+          <View style={styles.scanGrid}>
+            <Text style={styles.scanCell}>Calories: {scanPreview.calories ?? '—'} kcal</Text>
+            <Text style={styles.scanCell}>Protein: {scanPreview.protein ?? '—'} g</Text>
+            <Text style={styles.scanCell}>Fat: {scanPreview.fat ?? '—'} g</Text>
+            <Text style={styles.scanCell}>Carbs: {scanPreview.carbs ?? '—'} g</Text>
+            <Text style={styles.scanCell}>Fiber: {scanPreview.fiber ?? '—'} g</Text>
+            <Text style={styles.scanCell}>Sugar: {scanPreview.sugar ?? '—'} g</Text>
+            <Text style={styles.scanCell}>Chol: {scanPreview.cholesterol ?? '—'} mg</Text>
+            <Text style={styles.scanCell}>Sodium: {scanPreview.sodium ?? '—'} mg</Text>
+          </View>
+
+          <View style={{ flexDirection: 'row', gap: 10, marginTop: 12 }}>
+            <Pressable onPress={() => setScanPreview(null)} style={[styles.longBtn, { flex: 1 }]}>
+              <Text style={styles.longBtnTxt}>Dismiss</Text>
+            </Pressable>
+            <Pressable onPress={savePreview} style={[styles.longBtn, { flex: 1 }]}>
+              <Text style={styles.longBtnTxt}>Save</Text>
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
 
       <View style={styles.card}>
         <Text style={styles.title}>Quick log</Text>
@@ -411,4 +466,16 @@ const styles = StyleSheet.create({
   },
   suggestTxt: { color: '#111', fontWeight: '800', flex: 1 },
   suggestMeta: { color: 'rgba(17,17,17,0.55)', fontWeight: '800', fontSize: 12 },
+
+  scanName: { fontWeight: '900', fontSize: 16, color: '#111' },
+  scanSub: { color: 'rgba(17,17,17,0.55)', fontWeight: '800', marginTop: 4 },
+  scanGrid: { marginTop: 10, gap: 6 },
+  scanCell: {
+    backgroundColor: 'rgba(0,0,0,0.04)',
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    color: '#111',
+    fontWeight: '800',
+  },
 });
