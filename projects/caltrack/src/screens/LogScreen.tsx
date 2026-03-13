@@ -21,7 +21,7 @@ export function LogScreen() {
 
   const now = React.useMemo(() => new Date(), []);
   const [rawText, setRawText] = React.useState('');
-  const [meal, setMeal] = React.useState<Meal>(autoMealFromTime(now));
+  const [meal, setMeal] = React.useState<Meal>('Lunch');
   const [suggestions, setSuggestions] = React.useState<string[]>([]); // local history
   const [usdaSuggestions, setUsdaSuggestions] = React.useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = React.useState(false);
@@ -342,8 +342,8 @@ export function LogScreen() {
       ) : null}
 
       <View style={styles.card}>
-        <Text style={styles.title}>Quick log</Text>
-        <Text style={styles.subtle}>Start typing and pick from suggestions. Add numbers like "650c 30p".</Text>
+        <Text style={styles.title}>What did you eat?</Text>
+        <Text style={styles.subtle}>Start typing and pick a match (USDA + your history). You can still add "650c 30p".</Text>
         <TextInput
           style={styles.input}
           placeholder="e.g. Chicken rice bowl 650c 35p"
@@ -433,7 +433,6 @@ export function LogScreen() {
       <View style={styles.card}>
         <Text style={styles.title}>Meal</Text>
         <MealPicker value={meal} onChange={setMeal} />
-        <Text style={styles.subtle}>Auto-detected from time; override if needed.</Text>
       </View>
 
       <View style={styles.card}>

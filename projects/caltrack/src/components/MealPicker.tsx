@@ -29,7 +29,10 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     backgroundColor: '#fff',
   },
-  selected: { borderColor: '#111', backgroundColor: '#111' },
-  txt: { color: '#222', fontWeight: '600', fontSize: 13 },
-  txtSelected: { color: '#fff' },
+  selected: {
+    borderColor: 'rgba(236, 72, 153, 0.35)',
+    backgroundColor: 'rgba(236, 72, 153, 0.18)',
+  },
+  txt: { color: '#222', fontWeight: '700', fontSize: 13 },
+  txtSelected: { color: '#9D174D' },
 });
