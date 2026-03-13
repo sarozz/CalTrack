@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   modeCheck: { width: 20, textAlign: 'right', color: '#111', fontWeight: '900' },
   modeCheckSelected: { color: '#fff' },
   saveBtn: {
-    backgroundColor: '#0a66ff',
+    backgroundColor: '#6D28D9',
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: 'center',

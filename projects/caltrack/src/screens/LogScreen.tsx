@@ -7,6 +7,7 @@ import { EmojiPicker } from '../components/EmojiPicker';
 import { MealPicker } from '../components/MealPicker';
 import { toDateKey } from '../utils/date';
 import { autoMealFromTime, parseNutritionFromText } from '../utils/nutrition';
+import { lookupOpenFoodFacts } from '../utils/openfoodfacts';
 
 function makeId() {
   return `${Date.now()}_${Math.random().toString(16).slice(2)}`;
@@ -22,6 +23,7 @@ export function LogScreen() {
   const [calories, setCalories] = React.useState<string>('');
   const [protein, setProtein] = React.useState<string>('');
   const [caption, setCaption] = React.useState<string>('');
+  const [barcodeLoading, setBarcodeLoading] = React.useState(false);
 
   React.useEffect(() => {
     const parsed = parseNutritionFromText(rawText);
@@ -139,18 +141,46 @@ export function LogScreen() {
         <Pressable
           onPress={() =>
             navigation.navigate('BarcodeScan', {
-              onScanned: (data: string) => {
-                // For now, just store the barcode in raw text so we can wire up nutrition lookup later.
-                setRawText((prev) => (prev ? `${prev}\nbarcode: ${data}` : `barcode: ${data}`));
+              onScanned: async (data: string) => {
+                setBarcodeLoading(true);
+                try {
+                  const facts = await lookupOpenFoodFacts(data);
+                  const name = facts?.name ? String(facts.name).trim() : '';
+
+                  // Always record the barcode in raw text for traceability.
+                  setRawText((prev) => {
+                    const base = prev?.trim() ? prev.trim() + '\n' : '';
+                    const title = name ? `name: ${name}\n` : '';
+                    return `${base}${title}barcode: ${data}`;
+                  });
+
+                  if (facts?.calories != null && !calories) setCalories(String(Math.round(facts.calories)));
+                  if (facts?.protein != null && !protein) setProtein(String(Math.round(facts.protein)));
+
+                  if (!facts) {
+                    Alert.alert('Not found', 'No product found for this barcode.');
+                  } else if (facts.calories == null && facts.protein == null) {
+                    Alert.alert('No nutrition data', 'Found product but no calories/protein in OpenFoodFacts.');
+                  } else if (facts.source === '100g') {
+                    Alert.alert('Loaded (per 100g)', 'Calories/protein filled from OpenFoodFacts per 100g.');
+                  } else {
+                    Alert.alert('Loaded', 'Calories/protein filled from OpenFoodFacts per serving.');
+                  }
+                } catch {
+                  Alert.alert('Lookup failed', 'Could not fetch nutrition details. Try again.');
+                } finally {
+                  setBarcodeLoading(false);
+                }
               },
             })
           }
-          style={[styles.actionBtn, { backgroundColor: '#111' }]}
+          style={[styles.actionBtn, { backgroundColor: '#6D28D9', opacity: barcodeLoading ? 0.6 : 1 }]}
+          disabled={barcodeLoading}
         >
-          <Text style={styles.actionTxt}>Scan barcode</Text>
+          <Text style={styles.actionTxt}>{barcodeLoading ? 'Loading…' : 'Scan barcode'}</Text>
         </Pressable>
 
-        <Pressable onPress={onSave} style={[styles.actionBtn, { backgroundColor: '#0a66ff' }]}>
+        <Pressable onPress={onSave} style={[styles.actionBtn, { backgroundColor: '#6D28D9' }]}>
           <Text style={styles.actionTxt}>Save entry</Text>
         </Pressable>
       </View>

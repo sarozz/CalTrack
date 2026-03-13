@@ -1,5 +1,6 @@
 import React from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Ring } from '../components/Ring';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { loadEntries, loadSettings } from '../storage/store';
@@ -56,12 +57,31 @@ export function HomeScreen({ navigation }: Props) {
   const calGoal = settings?.caloriesGoal ?? 0;
   const proGoal = settings?.proteinGoal ?? 0;
 
+  const calProgress = calGoal > 0 ? totals.calories / calGoal : 0;
+  const proProgress = proGoal > 0 ? totals.protein / proGoal : 0;
+
   return (
     <View style={styles.container}>
       <View style={styles.card}>
         <Text style={styles.title}>Today</Text>
-        <Text style={styles.big}>{totals.calories} / {calGoal || '—'} kcal</Text>
-        <Text style={styles.big}>{totals.protein} / {proGoal || '—'} g protein</Text>
+
+        <View style={styles.ringsRow}>
+          <Ring
+            label="Calories"
+            valueText={`${totals.calories}`}
+            subText={calGoal ? `/ ${calGoal} kcal` : 'set goal'}
+            progress={calProgress}
+            color={'#6D28D9'}
+          />
+          <Ring
+            label="Protein"
+            valueText={`${totals.protein}g`}
+            subText={proGoal ? `/ ${proGoal}g` : 'set goal'}
+            progress={proProgress}
+            color={'#7C3AED'}
+          />
+        </View>
+
         <Text style={styles.subtle}>Tap Log (+) to add an entry.</Text>
       </View>
 
@@ -99,7 +119,8 @@ const styles = StyleSheet.create({
   },
   title: { fontSize: 16, fontWeight: '800', marginBottom: 6 },
   big: { fontSize: 18, fontWeight: '800', marginTop: 4 },
-  subtle: { marginTop: 6, color: '#666' },
+  subtle: { marginTop: 10, color: '#666' },
+  ringsRow: { flexDirection: 'row', gap: 14, marginTop: 8, marginBottom: 2 },
   section: { fontWeight: '800', fontSize: 14, marginTop: 4 },
   empty: { color: '#666', paddingVertical: 10 },
   row: {
@@ -119,5 +140,5 @@ const styles = StyleSheet.create({
   raw: { color: '#666', marginTop: 2, fontSize: 12 },
   time: { color: '#666', fontSize: 12, marginTop: 2 },
   headerBtn: { paddingHorizontal: 10, paddingVertical: 6 },
-  headerBtnText: { color: '#0a66ff', fontWeight: '700' },
+  headerBtnText: { color: '#6D28D9', fontWeight: '800' },
 });
