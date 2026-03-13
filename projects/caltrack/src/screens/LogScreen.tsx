@@ -338,15 +338,15 @@ const styles = StyleSheet.create({
   },
   row: { flexDirection: 'row', gap: 10 },
   longBtn: {
-    backgroundColor: COLORS.pinkBg,
-    borderColor: COLORS.pinkBorder,
+    backgroundColor: COLORS.btnBg,
+    borderColor: COLORS.btnBorder,
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: 'center',
     marginBottom: 20,
   },
-  longBtnTxt: { color: COLORS.pinkText, fontWeight: '900', fontSize: 16 },
+  longBtnTxt: { color: COLORS.btnText, fontWeight: '900', fontSize: 16 },
   suggestBox: {
     marginTop: 10,
     borderRadius: 12,

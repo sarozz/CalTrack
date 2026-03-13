@@ -228,13 +228,13 @@ const styles = StyleSheet.create({
   modeCheck: { width: 20, textAlign: 'right', color: '#111', fontWeight: '900' },
   modeCheckSelected: { color: '#fff' },
   saveBtn: {
-    backgroundColor: COLORS.pinkBg,
-    borderColor: COLORS.pinkBorder,
+    backgroundColor: COLORS.btnBg,
+    borderColor: COLORS.btnBorder,
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: 'center',
     marginBottom: 30,
   },
-  saveTxt: { color: COLORS.pinkText, fontWeight: '900', fontSize: 16 },
+  saveTxt: { color: COLORS.btnText, fontWeight: '900', fontSize: 16 },
 });
