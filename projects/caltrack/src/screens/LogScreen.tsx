@@ -14,7 +14,7 @@ import {
   View,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { addEntry, loadEntries } from '../storage/store';
+import { addEntry, loadEntries, loadFavorites, toggleFavorite, type Favorite } from '../storage/store';
 import { formatTime } from '../utils/date';
 import type { Entry, Meal } from '../types/models';
 import { COLORS } from '../styles/theme';
@@ -38,6 +38,7 @@ export function LogScreen() {
   const [meal, setMeal] = React.useState<Meal>('Lunch');
   const [suggestions, setSuggestions] = React.useState<string[]>([]); // local history (strings)
   const [recent, setRecent] = React.useState<Entry[]>([]);
+  const [favorites, setFavorites] = React.useState<Favorite[]>([]);
   const [usdaSuggestions, setUsdaSuggestions] = React.useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [calories, setCalories] = React.useState<string>('');
@@ -119,6 +120,9 @@ export function LogScreen() {
         if (rec.length >= 12) break;
       }
       setRecent(rec);
+
+      const favs = await loadFavorites();
+      setFavorites(favs);
     })();
     return () => {
       alive = false;
@@ -297,25 +301,67 @@ export function LogScreen() {
             <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingBottom: 6 }}>
               <View style={styles.overlayHeader}>
                 <Text style={styles.overlayTitle}>Scanned item</Text>
-                <Pressable onPress={() => setScanPreview(null)} style={styles.xBtn}>
-                  <Text style={styles.xTxt}>✕</Text>
-                </Pressable>
+                <View style={{ flexDirection: 'row', gap: 10 }}>
+                  <Pressable
+                    onPress={async () => {
+                      const name = (scanPreview.name || 'Scanned food').trim();
+                      setFavorites(
+                        await toggleFavorite({
+                          name,
+                          calories: scanPreview.calories,
+                          protein: scanPreview.protein,
+                          fat: scanPreview.fat,
+                          carbs: scanPreview.carbs,
+                          fiber: scanPreview.fiber,
+                          sugar: scanPreview.sugar,
+                          cholesterol: scanPreview.cholesterol,
+                          sodium: scanPreview.sodium,
+                        })
+                      );
+                    }}
+                    style={styles.xBtn}
+                  >
+                    <Text style={styles.xTxt}>⭐</Text>
+                  </Pressable>
+                  <Pressable onPress={() => setScanPreview(null)} style={styles.xBtn}>
+                    <Text style={styles.xTxt}>✕</Text>
+                  </Pressable>
+                </View>
               </View>
 
               {!!scanPreview.name && <Text style={styles.scanName}>{scanPreview.name}</Text>}
 
-              <View style={styles.cardInlineRow}>
-                <Text style={styles.scanSub}>Servings</Text>
+              <Text style={styles.scanSub}>Servings</Text>
+              <View style={styles.stepRow}>
+                <Pressable
+                  style={styles.stepBtn}
+                  onPress={() => setServings(String(Math.max(0.25, (Number(servings || '1') || 1) - 0.5)))}
+                >
+                  <Text style={styles.stepTxt}>−</Text>
+                </Pressable>
                 <TextInput
                   value={servings}
                   onChangeText={(t) => setServings(t.replace(/[^0-9.]/g, ''))}
                   keyboardType="decimal-pad"
-                  style={styles.servingInput}
+                  style={styles.stepInput}
                   placeholder="1"
                   returnKeyType="done"
                   blurOnSubmit
                   onSubmitEditing={() => Keyboard.dismiss()}
                 />
+                <Pressable
+                  style={styles.stepBtn}
+                  onPress={() => setServings(String(Math.min(20, (Number(servings || '1') || 1) + 0.5)))}
+                >
+                  <Text style={styles.stepTxt}>+</Text>
+                </Pressable>
+              </View>
+              <View style={styles.presetRow}>
+                {['0.5', '1', '1.5', '2'].map((v) => (
+                  <Pressable key={v} style={styles.presetChip} onPress={() => setServings(v)}>
+                    <Text style={styles.presetTxt}>{v}</Text>
+                  </Pressable>
+                ))}
               </View>
 
               <View style={styles.scanGrid}>
@@ -406,6 +452,50 @@ export function LogScreen() {
         <Text style={styles.longBtnTxt}>{barcodeLoading ? 'Scanning…' : 'Scan barcode  🏷️'}</Text>
       </Pressable>
 
+      {favorites.length ? (
+        <View style={styles.card}>
+          <Text style={styles.title}>Favorites</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10 }}>
+            {favorites.map((f) => (
+              <Pressable
+                key={f.name}
+                style={styles.recentChip}
+                onPress={async () => {
+                  const createdAt = Date.now();
+                  const name = f.name;
+                  const emoji = recommendEmoji({ meal, text: name, hasBarcode: false });
+                  await addEntry({
+                    id: makeId(),
+                    createdAt,
+                    dateKey: toDateKey(new Date(createdAt)),
+                    meal,
+                    emoji,
+                    caption: name,
+                    rawText: undefined,
+                    calories: Math.round(f.calories || 0),
+                    protein: Math.round(f.protein || 0),
+                    fat: f.fat,
+                    carbs: f.carbs,
+                    fiber: f.fiber,
+                    sugar: f.sugar,
+                    cholesterol: f.cholesterol,
+                    sodium: f.sodium,
+                  });
+                  Alert.alert('Logged', `${name} · ${formatTime(new Date(createdAt))}`);
+                }}
+                onLongPress={async () => setFavorites(await toggleFavorite(f))}
+              >
+                <Text style={styles.recentEmoji}>⭐</Text>
+                <Text style={styles.recentTxt} numberOfLines={1}>
+                  {f.name}
+                </Text>
+              </Pressable>
+            ))}
+          </ScrollView>
+          <Text style={styles.hint}>Long‑press to remove</Text>
+        </View>
+      ) : null}
+
       {recent.length ? (
         <View style={styles.card}>
           <Text style={styles.title}>Recent</Text>
@@ -432,6 +522,21 @@ export function LogScreen() {
                     });
                     Alert.alert('Logged', `${name} · ${formatTime(new Date(createdAt))}`);
                   }}
+                  onLongPress={async () =>
+                    setFavorites(
+                      await toggleFavorite({
+                        name: label,
+                        calories: e.calories,
+                        protein: e.protein,
+                        fat: e.fat,
+                        carbs: e.carbs,
+                        fiber: e.fiber,
+                        sugar: e.sugar,
+                        cholesterol: e.cholesterol,
+                        sodium: e.sodium,
+                      })
+                    )
+                  }
                 >
                   <Text style={styles.recentEmoji}>{e.emoji || '🍽️'}</Text>
                   <Text style={styles.recentTxt} numberOfLines={1}>
@@ -441,6 +546,7 @@ export function LogScreen() {
               );
             })}
           </ScrollView>
+          <Text style={styles.hint}>Long‑press to add to Favorites</Text>
         </View>
       ) : null}
 
@@ -511,7 +617,29 @@ export function LogScreen() {
                   style={styles.suggestRow}
                 >
                   <Text style={styles.suggestTxt}>{facts.name}</Text>
-                  {!!right && <Text style={styles.suggestMeta}>{right}</Text>}
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                    {!!right && <Text style={styles.suggestMeta}>{right}</Text>}
+                    <Pressable
+                      onPress={async () =>
+                        setFavorites(
+                          await toggleFavorite({
+                            name: facts.name,
+                            calories: facts.calories,
+                            protein: facts.protein,
+                            fat: facts.fat,
+                            carbs: facts.carbs,
+                            fiber: facts.fiber,
+                            sugar: facts.sugar,
+                            cholesterol: facts.cholesterol,
+                            sodium: facts.sodium,
+                          })
+                        )
+                      }
+                      hitSlop={10}
+                    >
+                      <Text style={styles.suggestMeta}>⭐</Text>
+                    </Pressable>
+                  </View>
                 </Pressable>
               );
             })}
@@ -566,15 +694,35 @@ export function LogScreen() {
 
         <View style={{ marginTop: 10 }}>
           <Text style={styles.label}>Servings</Text>
-          <TextInput
-            style={styles.input}
-            keyboardType="decimal-pad"
-            value={manualServings}
-            onChangeText={(t) => setManualServings(t.replace(/[^0-9.]/g, ''))}
-            placeholder="1"
-            returnKeyType="done"
-          />
-          <Text style={styles.subtle}>Totals will be multiplied by servings.</Text>
+          <View style={styles.stepRow}>
+            <Pressable
+              style={styles.stepBtn}
+              onPress={() => setManualServings(String(Math.max(0.25, (Number(manualServings || '1') || 1) - 0.5)))}
+            >
+              <Text style={styles.stepTxt}>−</Text>
+            </Pressable>
+            <TextInput
+              value={manualServings}
+              onChangeText={(t) => setManualServings(t.replace(/[^0-9.]/g, ''))}
+              keyboardType="decimal-pad"
+              style={styles.stepInput}
+              placeholder="1"
+              returnKeyType="done"
+            />
+            <Pressable
+              style={styles.stepBtn}
+              onPress={() => setManualServings(String(Math.min(20, (Number(manualServings || '1') || 1) + 0.5)))}
+            >
+              <Text style={styles.stepTxt}>+</Text>
+            </Pressable>
+          </View>
+          <View style={styles.presetRow}>
+            {['0.5', '1', '1.5', '2'].map((v) => (
+              <Pressable key={v} style={styles.presetChip} onPress={() => setManualServings(v)}>
+                <Text style={styles.presetTxt}>{v}</Text>
+              </Pressable>
+            ))}
+          </View>
         </View>
       </View>
 
@@ -650,6 +798,39 @@ const styles = StyleSheet.create({
   },
   recentEmoji: { fontSize: 16 },
   recentTxt: { color: '#111', fontWeight: '600', maxWidth: 170 },
+  hint: { marginTop: 10, color: 'rgba(17,17,17,0.55)' },
+
+  stepRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  stepBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: 'rgba(0,0,0,0.06)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepTxt: { fontSize: 20, color: 'rgba(17,17,17,0.75)', fontWeight: '600' },
+  stepInput: {
+    flex: 1,
+    textAlign: 'center',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#ddd',
+    borderRadius: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: '#fafafa',
+    fontSize: 16,
+  },
+  presetRow: { flexDirection: 'row', gap: 8, marginTop: 10 },
+  presetChip: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    backgroundColor: 'rgba(0,0,0,0.04)',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(0,0,0,0.06)',
+  },
+  presetTxt: { color: 'rgba(17,17,17,0.65)', fontWeight: '600' },
   suggestRow: {
     paddingVertical: 10,
     paddingHorizontal: 12,

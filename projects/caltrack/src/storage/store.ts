@@ -1,8 +1,21 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DEFAULT_SETTINGS, type Entry, type Settings } from '../types/models';
 
+export type Favorite = {
+  name: string;
+  calories?: number;
+  protein?: number;
+  fat?: number;
+  carbs?: number;
+  fiber?: number;
+  sugar?: number;
+  cholesterol?: number;
+  sodium?: number;
+};
+
 const ENTRIES_KEY = 'caltrack_entries_v1';
 const SETTINGS_KEY = 'caltrack_settings_v1';
+const FAVORITES_KEY = 'caltrack_favorites_v1';
 
 export async function loadEntries(): Promise<Entry[]> {
   const raw = await AsyncStorage.getItem(ENTRIES_KEY);
@@ -57,6 +70,37 @@ export async function saveSettings(settings: Settings) {
   await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
 }
 
+export async function loadFavorites(): Promise<Favorite[]> {
+  const raw = await AsyncStorage.getItem(FAVORITES_KEY);
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw) as Favorite[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function saveFavorites(favs: Favorite[]) {
+  await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(favs));
+}
+
+export async function toggleFavorite(fav: Favorite) {
+  const name = String(fav.name || '').trim();
+  if (!name) return await loadFavorites();
+
+  const cur = await loadFavorites();
+  const key = name.toLowerCase();
+  const exists = cur.find((f) => (f.name || '').toLowerCase() === key);
+
+  const next = exists
+    ? cur.filter((f) => (f.name || '').toLowerCase() !== key)
+    : [{ ...fav, name }, ...cur].slice(0, 30);
+
+  await saveFavorites(next);
+  return next;
+}
+
 export async function clearAll() {
-  await AsyncStorage.multiRemove([ENTRIES_KEY, SETTINGS_KEY]);
+  await AsyncStorage.multiRemove([ENTRIES_KEY, SETTINGS_KEY, FAVORITES_KEY]);
 }
