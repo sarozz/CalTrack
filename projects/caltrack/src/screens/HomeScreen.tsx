@@ -70,7 +70,7 @@ export function HomeScreen({ navigation }: Props) {
             outerProgress={calProgress}
             innerProgress={proProgress}
             outerColor={'#6D28D9'}
-            innerColor={'#A78BFA'}
+            innerColor={'#22C55E'}
             centerTitle={`${totals.calories} kcal`}
             centerSub={calGoal ? `Goal ${calGoal} kcal\nProtein ${totals.protein}/${proGoal || '—'}g` : `Protein ${totals.protein}/${proGoal || '—'}g`}
           />
