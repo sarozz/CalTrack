@@ -1,5 +1,18 @@
 import React from 'react';
-import { Alert, Animated, Easing, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  Alert,
+  Animated,
+  Easing,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { addEntry, loadEntries } from '../storage/store';
 import type { Entry, Meal } from '../types/models';
@@ -246,54 +259,67 @@ export function LogScreen() {
 
     return (
       <View style={styles.overlayWrap}>
-        <Animated.View style={[styles.backdrop, { opacity: previewAnim }]} />
+        <Pressable style={styles.backdrop} onPress={Keyboard.dismiss} />
 
-        <Animated.View
-          style={[
-            styles.overlayCard,
-            {
-              opacity: previewAnim,
-              transform: [
-                { translateY: previewAnim.interpolate({ inputRange: [0, 1], outputRange: [16, 0] }) },
-                { scale: previewAnim.interpolate({ inputRange: [0, 1], outputRange: [0.98, 1] }) },
-              ],
-            },
-          ]}
-        >
-          <Text style={styles.title}>Scanned item</Text>
-          {!!scanPreview.name && <Text style={styles.scanName}>{scanPreview.name}</Text>}
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          <Animated.View
+            style={[
+              styles.overlayCard,
+              {
+                opacity: previewAnim,
+                transform: [
+                  { translateY: previewAnim.interpolate({ inputRange: [0, 1], outputRange: [16, 0] }) },
+                  { scale: previewAnim.interpolate({ inputRange: [0, 1], outputRange: [0.98, 1] }) },
+                ],
+              },
+            ]}
+          >
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingBottom: 6 }}>
+              <View style={styles.overlayHeader}>
+                <Text style={styles.overlayTitle}>Scanned item</Text>
+                <Pressable onPress={() => setScanPreview(null)} style={styles.xBtn}>
+                  <Text style={styles.xTxt}>✕</Text>
+                </Pressable>
+              </View>
 
-          <View style={styles.cardInlineRow}>
-            <Text style={styles.scanSub}>Servings</Text>
-            <TextInput
-              value={servings}
-              onChangeText={(t) => setServings(t.replace(/[^0-9.]/g, ''))}
-              keyboardType="decimal-pad"
-              style={styles.servingInput}
-              placeholder="1"
-            />
-          </View>
+              {!!scanPreview.name && <Text style={styles.scanName}>{scanPreview.name}</Text>}
 
-          <View style={styles.scanGrid}>
-            <Text style={styles.scanCell}>Calories: {show(scanPreview.calories, ' kcal')}</Text>
-            <Text style={styles.scanCell}>Protein: {show(scanPreview.protein, ' g')}</Text>
-            <Text style={styles.scanCell}>Fat: {show(scanPreview.fat, ' g')}</Text>
-            <Text style={styles.scanCell}>Carbs: {show(scanPreview.carbs, ' g')}</Text>
-            <Text style={styles.scanCell}>Fiber: {show(scanPreview.fiber, ' g')}</Text>
-            <Text style={styles.scanCell}>Sugar: {show(scanPreview.sugar, ' g')}</Text>
-            <Text style={styles.scanCell}>Cholesterol: {show(scanPreview.cholesterol, ' mg')}</Text>
-            <Text style={styles.scanCell}>Sodium: {show(scanPreview.sodium, ' mg')}</Text>
-          </View>
+              <View style={styles.cardInlineRow}>
+                <Text style={styles.scanSub}>Servings</Text>
+                <TextInput
+                  value={servings}
+                  onChangeText={(t) => setServings(t.replace(/[^0-9.]/g, ''))}
+                  keyboardType="decimal-pad"
+                  style={styles.servingInput}
+                  placeholder="1"
+                  returnKeyType="done"
+                  blurOnSubmit
+                  onSubmitEditing={() => Keyboard.dismiss()}
+                />
+              </View>
 
-          <View style={{ flexDirection: 'row', gap: 10, marginTop: 14 }}>
-            <Pressable onPress={() => setScanPreview(null)} style={[styles.longBtn, { flex: 1 }]}>
-              <Text style={styles.longBtnTxt}>Cancel</Text>
-            </Pressable>
-            <Pressable onPress={savePreview} style={[styles.longBtn, { flex: 1 }]}>
-              <Text style={styles.longBtnTxt}>Save</Text>
-            </Pressable>
-          </View>
-        </Animated.View>
+              <View style={styles.scanGrid}>
+                <Text style={styles.scanCell}>Calories: {show(scanPreview.calories, ' kcal')}</Text>
+                <Text style={styles.scanCell}>Protein: {show(scanPreview.protein, ' g')}</Text>
+                <Text style={styles.scanCell}>Fat: {show(scanPreview.fat, ' g')}</Text>
+                <Text style={styles.scanCell}>Carbs: {show(scanPreview.carbs, ' g')}</Text>
+                <Text style={styles.scanCell}>Fiber: {show(scanPreview.fiber, ' g')}</Text>
+                <Text style={styles.scanCell}>Sugar: {show(scanPreview.sugar, ' g')}</Text>
+                <Text style={styles.scanCell}>Cholesterol: {show(scanPreview.cholesterol, ' mg')}</Text>
+                <Text style={styles.scanCell}>Sodium: {show(scanPreview.sodium, ' mg')}</Text>
+              </View>
+
+              <View style={{ flexDirection: 'row', gap: 10, marginTop: 14 }}>
+                <Pressable onPress={() => setScanPreview(null)} style={[styles.longBtn, { flex: 1 }]}>
+                  <Text style={styles.longBtnTxt}>Cancel</Text>
+                </Pressable>
+                <Pressable onPress={savePreview} style={[styles.longBtn, { flex: 1 }]}>
+                  <Text style={styles.longBtnTxt}>Save</Text>
+                </Pressable>
+              </View>
+            </ScrollView>
+          </Animated.View>
+        </KeyboardAvoidingView>
       </View>
     );
   }
@@ -333,7 +359,6 @@ export function LogScreen() {
                 // Show preview card instead of auto-logging
                 if (!facts) {
                   setScanPreview(null);
-                  Alert.alert('Not found', 'No product found for this barcode. You can still type it manually.');
                 } else {
                   setServings('1');
                   setScanPreview({
@@ -351,7 +376,7 @@ export function LogScreen() {
                   });
                 }
               } catch {
-                Alert.alert('Lookup failed', 'Could not fetch nutrition details. Try again.');
+                // Silent failure; user can still type manually.
               } finally {
                 setBarcodeLoading(false);
               }
@@ -556,13 +581,30 @@ const styles = StyleSheet.create({
 
   // Overlay (scan preview)
   overlayWrap: { flex: 1, backgroundColor: '#f6f6f6', justifyContent: 'center', padding: 14 },
-  backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.25)' },
+  backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.30)' },
+  overlayHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  overlayTitle: { fontSize: 16, fontWeight: '900', color: '#111' },
+  xBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.06)',
+  },
+  xTxt: { fontSize: 16, fontWeight: '900', color: 'rgba(17,17,17,0.7)' },
   overlayCard: {
     backgroundColor: '#fff',
-    borderRadius: 18,
+    borderRadius: 22,
     padding: 14,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#ddd',
+    borderColor: 'rgba(0,0,0,0.10)',
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 10,
+    maxHeight: 520,
   },
   cardInlineRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 },
   servingInput: {

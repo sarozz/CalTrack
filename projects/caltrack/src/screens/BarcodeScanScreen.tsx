@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { CameraView, useCameraPermissions, type BarcodeScanningResult } from 'expo-camera';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
@@ -28,7 +28,6 @@ export function BarcodeScanScreen() {
 
     const data = String(result.data ?? '').trim();
     if (!data) {
-      Alert.alert('Scan failed', 'No barcode data detected.');
       setScanned(false);
       return;
     }
@@ -39,7 +38,8 @@ export function BarcodeScanScreen() {
       // ignore callback errors
     }
 
-    Alert.alert('Scanned', data, [{ text: 'OK', onPress: () => navigation.goBack() }]);
+    // Immediately return to Log screen; Log will present the info card.
+    navigation.goBack();
   }
 
   if (!permission) {
