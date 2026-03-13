@@ -52,4 +52,4 @@ We may update this Privacy Policy. The effective date will be updated.
 
 ## 11) Contact
 Questions:
-- Email: **support@caltrack.app** (replace with your preferred support email)
+- Email: **support@caltrack.app**

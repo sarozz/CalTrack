@@ -67,8 +67,8 @@ We may update these Terms from time to time. If we make material changes, we may
 Your continued use of the App after the effective date of updated Terms means you accept the updated Terms.
 
 ## 13) Governing law
-These Terms are governed by the laws of **Western Australia, Australia**, without regard to conflict-of-law rules.
+These Terms are governed by the laws of **Australia**, without regard to conflict-of-law rules.
 
 ## 14) Contact
 Questions about these Terms:
-- Email: **support@caltrack.app** (replace with your preferred support email)
+- Email: **support@caltrack.app**
