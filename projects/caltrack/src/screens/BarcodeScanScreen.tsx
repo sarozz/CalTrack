@@ -38,8 +38,9 @@ export function BarcodeScanScreen() {
       // ignore callback errors
     }
 
-    // Immediately return to Log screen; Log will present the info card.
-    navigation.goBack();
+    // Immediately return to the Log screen; Log will present the info card.
+    // popToTop is more reliable than goBack (avoids jumping to a different tab).
+    navigation.popToTop();
   }
 
   if (!permission) {

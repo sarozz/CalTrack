@@ -160,8 +160,8 @@ export function LogScreen() {
     setCholesterol(undefined);
     setSodium(undefined);
 
-    // Jump back to Home so dashboard/feed updates on focus
-    navigation.navigate('HomeTab', { screen: 'Home' });
+    // Stay on Log screen (user can jump to Home when they want)
+    // navigation.navigate('HomeTab', { screen: 'Home' });
   }
 
   const filtered = rawText.trim()
@@ -250,7 +250,8 @@ export function LogScreen() {
     await addEntry(entry);
     setScanPreview(null);
     Alert.alert('Saved', 'Logged');
-    navigation.navigate('HomeTab', { screen: 'Home' });
+    // Stay on Log screen
+    // navigation.navigate('HomeTab', { screen: 'Home' });
   }
 
   if (scanPreview) {
