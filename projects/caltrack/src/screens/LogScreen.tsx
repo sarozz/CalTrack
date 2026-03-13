@@ -534,9 +534,9 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#ddd',
   },
-  title: { fontSize: 16, fontWeight: '800', marginBottom: 10 },
+  title: { fontSize: 16, fontWeight: '600', marginBottom: 10 },
   subtle: { color: '#666', marginTop: -6, marginBottom: 10 },
-  label: { fontWeight: '700', color: '#222', marginBottom: 6 },
+  label: { fontWeight: '600', color: '#222', marginBottom: 6 },
   input: {
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#ddd',
@@ -556,7 +556,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
-  longBtnTxt: { color: COLORS.btnText, fontWeight: '900', fontSize: 16 },
+  longBtnTxt: { color: COLORS.btnText, fontWeight: '600', fontSize: 16 },
   suggestBox: {
     marginTop: 10,
     borderRadius: 12,
@@ -574,14 +574,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
-  suggestTxt: { color: '#111', fontWeight: '800', flex: 1 },
-  suggestMeta: { color: 'rgba(17,17,17,0.55)', fontWeight: '800', fontSize: 12 },
+  suggestTxt: { color: '#111', fontWeight: '600', flex: 1 },
+  suggestMeta: { color: 'rgba(17,17,17,0.55)', fontWeight: '600', fontSize: 12 },
 
   // Overlay (scan preview)
   overlayWrap: { flex: 1, backgroundColor: '#f6f6f6', justifyContent: 'center', padding: 14 },
   backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.30)' },
   overlayHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  overlayTitle: { fontSize: 16, fontWeight: '900', color: '#111' },
+  overlayTitle: { fontSize: 16, fontWeight: '600', color: '#111' },
   xBtn: {
     width: 34,
     height: 34,
@@ -590,7 +590,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'rgba(0,0,0,0.06)',
   },
-  xTxt: { fontSize: 16, fontWeight: '900', color: 'rgba(17,17,17,0.7)' },
+  xTxt: { fontSize: 16, fontWeight: '600', color: 'rgba(17,17,17,0.7)' },
   overlayCard: {
     backgroundColor: '#fff',
     borderRadius: 22,
@@ -615,10 +615,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: '#fafafa',
     fontSize: 16,
-    fontWeight: '800',
+    fontWeight: '600',
   },
-  scanName: { fontWeight: '900', fontSize: 16, color: '#111', marginTop: 6 },
-  scanSub: { color: 'rgba(17,17,17,0.55)', fontWeight: '800' },
+  scanName: { fontWeight: '600', fontSize: 16, color: '#111', marginTop: 6 },
+  scanSub: { color: 'rgba(17,17,17,0.55)', fontWeight: '600' },
   scanGrid: { marginTop: 12, gap: 8 },
   scanCell: {
     backgroundColor: 'rgba(0,0,0,0.04)',
@@ -626,6 +626,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 12,
     color: '#111',
-    fontWeight: '800',
+    fontWeight: '600',
   },
 });

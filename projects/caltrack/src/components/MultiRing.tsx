@@ -161,12 +161,12 @@ export function MultiRing({
 const styles = StyleSheet.create({
   wrap: { alignItems: 'center', justifyContent: 'center' },
   center: { position: 'absolute', alignItems: 'center', paddingHorizontal: 10 },
-  centerTitle: { fontSize: 32, fontWeight: '900', color: '#111', letterSpacing: -0.5 },
-  centerUnit: { fontSize: 14, fontWeight: '900', color: 'rgba(17,17,17,0.55)' },
-  centerSub: { marginTop: 6, fontSize: 12, fontWeight: '700', color: 'rgba(17,17,17,0.55)', textAlign: 'center', lineHeight: 16 },
+  centerTitle: { fontSize: 32, fontWeight: '600', color: '#111', letterSpacing: -0.5 },
+  centerUnit: { fontSize: 14, fontWeight: '600', color: 'rgba(17,17,17,0.55)' },
+  centerSub: { marginTop: 6, fontSize: 12, fontWeight: '600', color: 'rgba(17,17,17,0.55)', textAlign: 'center', lineHeight: 16 },
   // Legend should stay inside the card.
   legend: { position: 'absolute', top: 10, right: 12, gap: 6 },
   legendRow: { flexDirection: 'row', gap: 6, alignItems: 'center' },
   dot: { width: 9, height: 9, borderRadius: 9 },
-  legendTxt: { color: 'rgba(17,17,17,0.55)', fontWeight: '900', fontSize: 11 },
+  legendTxt: { color: 'rgba(17,17,17,0.55)', fontWeight: '600', fontSize: 11 },
 });

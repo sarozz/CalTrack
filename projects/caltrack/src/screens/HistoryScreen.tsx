@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
-  rowTitle: { fontWeight: '900', fontSize: 15, color: '#111' },
+  rowTitle: { fontWeight: '600', fontSize: 15, color: '#111' },
   rowSubtle: { color: '#666', marginTop: 2 },
-  metric: { fontWeight: '800', color: '#111' },
+  metric: { fontWeight: '600', color: '#111' },
 });

@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 10,
   },
-  groupTitle: { fontWeight: '700', marginBottom: 8, color: '#222' },
+  groupTitle: { fontWeight: '600', marginBottom: 8, color: '#222' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   emojiBtn: {
     width: 56,

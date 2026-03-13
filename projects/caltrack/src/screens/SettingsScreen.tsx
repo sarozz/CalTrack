@@ -198,9 +198,9 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#ddd',
   },
-  title: { fontSize: 16, fontWeight: '800', marginBottom: 10 },
+  title: { fontSize: 16, fontWeight: '600', marginBottom: 10 },
   field: { gap: 6, marginBottom: 12 },
-  label: { fontWeight: '700', color: '#222' },
+  label: { fontWeight: '600', color: '#222' },
   input: {
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#ddd',
@@ -221,11 +221,11 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
   },
   modeRowSelected: { borderColor: '#6D28D9', backgroundColor: '#6D28D9' },
-  modeTitle: { fontWeight: '800', color: '#111' },
+  modeTitle: { fontWeight: '600', color: '#111' },
   modeTitleSelected: { color: '#fff' },
   modeDesc: { color: '#666', marginTop: 2, fontSize: 12 },
   modeDescSelected: { color: 'rgba(255,255,255,0.85)' },
-  modeCheck: { width: 20, textAlign: 'right', color: '#111', fontWeight: '900' },
+  modeCheck: { width: 20, textAlign: 'right', color: '#111', fontWeight: '600' },
   modeCheckSelected: { color: '#fff' },
   saveBtn: {
     backgroundColor: COLORS.btnBg,
@@ -236,5 +236,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 30,
   },
-  saveTxt: { color: COLORS.btnText, fontWeight: '900', fontSize: 16 },
+  saveTxt: { color: COLORS.btnText, fontWeight: '600', fontSize: 16 },
 });

@@ -53,7 +53,7 @@ export function Ring({ size = 110, stroke = 12, progress, color, label, valueTex
 const styles = StyleSheet.create({
   wrap: { alignItems: 'center', justifyContent: 'center' },
   center: { position: 'absolute', alignItems: 'center', paddingHorizontal: 6 },
-  label: { fontSize: 12, color: '#666', fontWeight: '700' },
-  value: { fontSize: 16, color: '#111', fontWeight: '900', marginTop: 2 },
+  label: { fontSize: 12, color: '#666', fontWeight: '600' },
+  value: { fontSize: 16, color: '#111', fontWeight: '600', marginTop: 2 },
   sub: { fontSize: 11, color: '#666', marginTop: 2 },
 });

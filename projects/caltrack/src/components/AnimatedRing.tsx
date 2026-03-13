@@ -78,7 +78,7 @@ export function AnimatedRing({
 const styles = StyleSheet.create({
   wrap: { alignItems: 'center', justifyContent: 'center' },
   center: { position: 'absolute', alignItems: 'center', paddingHorizontal: 6 },
-  label: { fontSize: 12, color: 'rgba(17,17,17,0.55)', fontWeight: '800' },
-  value: { fontSize: 16, color: '#111', fontWeight: '900', marginTop: 2, letterSpacing: -0.2 },
-  sub: { fontSize: 11, color: 'rgba(17,17,17,0.55)', marginTop: 2, fontWeight: '800' },
+  label: { fontSize: 12, color: 'rgba(17,17,17,0.55)', fontWeight: '600' },
+  value: { fontSize: 16, color: '#111', fontWeight: '600', marginTop: 2, letterSpacing: -0.2 },
+  sub: { fontSize: 11, color: 'rgba(17,17,17,0.55)', marginTop: 2, fontWeight: '600' },
 });

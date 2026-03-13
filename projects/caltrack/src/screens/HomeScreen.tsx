@@ -274,8 +274,8 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#ddd',
   },
-  title: { fontSize: 16, fontWeight: '800', marginBottom: 6 },
-  big: { fontSize: 18, fontWeight: '800', marginTop: 4 },
+  title: { fontSize: 16, fontWeight: '600', marginBottom: 6 },
+  big: { fontSize: 18, fontWeight: '600', marginTop: 4 },
   subtle: { marginTop: 10, color: '#666' },
   microGrid: {
     marginTop: 14,
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
     gap: 12,
     justifyContent: 'center',
   },
-  section: { fontWeight: '800', fontSize: 14, marginTop: 4 },
+  section: { fontWeight: '600', fontSize: 14, marginTop: 4 },
   empty: { color: '#666', paddingVertical: 10 },
   row: {
     backgroundColor: '#fff',
@@ -298,18 +298,18 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   emoji: { fontSize: 22, marginTop: 2 },
-  rowTitle: { fontWeight: '800', color: '#111' },
+  rowTitle: { fontWeight: '600', color: '#111' },
   caption: { color: '#222', marginTop: 2 },
   raw: { color: '#666', marginTop: 2, fontSize: 12 },
   time: { color: '#666', fontSize: 12, marginTop: 2 },
   headerBtn: { paddingHorizontal: 10, paddingVertical: 6 },
-  headerBtnText: { color: 'rgba(236, 72, 153, 0.9)', fontWeight: '900' },
+  headerBtnText: { color: 'rgba(236, 72, 153, 0.9)', fontWeight: '600' },
 
   // Modal
   modalWrap: { ...StyleSheet.absoluteFillObject, justifyContent: 'center', padding: 14, zIndex: 50 },
   backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.25)' },
-  modalTitle: { fontSize: 16, fontWeight: '900', color: '#111' },
-  modalSub: { marginTop: 4, color: 'rgba(17,17,17,0.55)', fontWeight: '800' },
+  modalTitle: { fontSize: 16, fontWeight: '600', color: '#111' },
+  modalSub: { marginTop: 4, color: 'rgba(17,17,17,0.55)', fontWeight: '600' },
   modalEmpty: { marginTop: 10, color: 'rgba(17,17,17,0.55)' },
 
   modalCardModern: {
@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'rgba(0,0,0,0.06)',
   },
-  modalXTxt: { fontSize: 16, fontWeight: '900', color: 'rgba(17,17,17,0.7)' },
+  modalXTxt: { fontSize: 16, fontWeight: '600', color: 'rgba(17,17,17,0.7)' },
 
   modalRowModern: {
     flexDirection: 'row',
@@ -344,8 +344,8 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     backgroundColor: 'rgba(0,0,0,0.04)',
   },
-  modalRowLabel: { flex: 1, fontWeight: '900', color: '#111' },
-  modalRowVal: { fontWeight: '900', color: 'rgba(17,17,17,0.65)' },
+  modalRowLabel: { flex: 1, fontWeight: '600', color: '#111' },
+  modalRowVal: { fontWeight: '600', color: 'rgba(17,17,17,0.65)' },
   modalBtn: {
     backgroundColor: COLORS.btnBg,
     borderColor: COLORS.btnBorder,
@@ -354,5 +354,5 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     alignItems: 'center',
   },
-  modalBtnTxt: { color: COLORS.btnText, fontWeight: '900', fontSize: 16 },
+  modalBtnTxt: { color: COLORS.btnText, fontWeight: '600', fontSize: 16 },
 });

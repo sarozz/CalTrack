@@ -100,7 +100,7 @@ export function BarcodeScanScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000' },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 18, backgroundColor: '#f6f6f6' },
-  title: { fontSize: 18, fontWeight: '900', marginBottom: 8 },
+  title: { fontSize: 18, fontWeight: '600', marginBottom: 8 },
   subtle: { color: '#666', textAlign: 'center', marginBottom: 16 },
   btn: {
     backgroundColor: '#6D28D9',
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   btnSecondary: { backgroundColor: '#eaeaea' },
-  btnTxt: { color: '#fff', fontWeight: '900' },
+  btnTxt: { color: '#fff', fontWeight: '600' },
   overlay: {
     position: 'absolute',
     left: 12,
@@ -122,10 +122,10 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 14,
   },
-  overlayTitle: { color: '#fff', fontSize: 18, fontWeight: '900' },
+  overlayTitle: { color: '#fff', fontSize: 18, fontWeight: '600' },
   overlaySub: { color: 'rgba(255,255,255,0.85)', marginTop: 4 },
   smallBtn: { paddingVertical: 10, paddingHorizontal: 14, borderRadius: 12 },
   smallBtnDark: { backgroundColor: '#6D28D9' },
   smallBtnLight: { backgroundColor: '#fff' },
-  smallBtnTxt: { color: '#fff', fontWeight: '900' },
+  smallBtnTxt: { color: '#fff', fontWeight: '600' },
 });

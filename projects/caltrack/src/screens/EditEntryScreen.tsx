@@ -176,8 +176,8 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#ddd',
   },
-  title: { fontSize: 16, fontWeight: '900', marginBottom: 10, color: '#111' },
-  label: { fontWeight: '800', color: '#222', marginBottom: 6 },
+  title: { fontSize: 16, fontWeight: '600', marginBottom: 10, color: '#111' },
+  label: { fontWeight: '600', color: '#222', marginBottom: 6 },
   input: {
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#ddd',
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     alignItems: 'center',
   },
-  primaryTxt: { color: COLORS.btnText, fontWeight: '900', fontSize: 16 },
+  primaryTxt: { color: COLORS.btnText, fontWeight: '600', fontSize: 16 },
   dangerBtn: {
     backgroundColor: 'rgba(239, 68, 68, 0.12)',
     borderRadius: 14,
@@ -206,5 +206,5 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(239, 68, 68, 0.35)',
     marginBottom: 30,
   },
-  dangerTxt: { color: '#b91c1c', fontWeight: '900', fontSize: 16 },
+  dangerTxt: { color: '#b91c1c', fontWeight: '600', fontSize: 16 },
 });

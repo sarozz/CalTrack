@@ -33,6 +33,6 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(236, 72, 153, 0.35)',
     backgroundColor: 'rgba(236, 72, 153, 0.18)',
   },
-  txt: { color: '#222', fontWeight: '700', fontSize: 13 },
+  txt: { color: '#222', fontWeight: '600', fontSize: 13 },
   txtSelected: { color: '#9D174D' },
 });
