@@ -10,6 +10,7 @@ import { toDateKey } from '../utils/date';
 import { autoMealFromTime, parseNutritionFromText } from '../utils/nutrition';
 import { lookupOpenFoodFacts } from '../utils/openfoodfacts';
 import { usdaFactsFromItem, usdaSearch } from '../utils/usda';
+import { guessCaloriesProtein } from '../utils/quickFacts';
 
 function makeId() {
   return `${Date.now()}_${Math.random().toString(16).slice(2)}`;
@@ -350,6 +351,14 @@ export function LogScreen() {
           onChangeText={(t) => {
             setRawText(t);
             setShowSuggestions(true);
+
+            // If user is typing free-form and hasn't chosen a USDA suggestion,
+            // guess basic calories/protein for common foods.
+            const guess = guessCaloriesProtein(t);
+            if (guess) {
+              if (!calories) setCalories(String(guess.calories));
+              if (!protein) setProtein(String(guess.protein));
+            }
           }}
           onFocus={() => setShowSuggestions(true)}
         />
