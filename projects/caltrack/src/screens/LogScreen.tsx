@@ -8,6 +8,7 @@ import { MealPicker } from '../components/MealPicker';
 import { toDateKey } from '../utils/date';
 import { autoMealFromTime, parseNutritionFromText } from '../utils/nutrition';
 import { lookupOpenFoodFacts } from '../utils/openfoodfacts';
+import { usdaFactsFromItem, usdaSearch } from '../utils/usda';
 
 function makeId() {
   return `${Date.now()}_${Math.random().toString(16).slice(2)}`;
@@ -19,7 +20,8 @@ export function LogScreen() {
   const now = React.useMemo(() => new Date(), []);
   const [rawText, setRawText] = React.useState('');
   const [meal, setMeal] = React.useState<Meal>(autoMealFromTime(now));
-  const [suggestions, setSuggestions] = React.useState<string[]>([]);
+  const [suggestions, setSuggestions] = React.useState<string[]>([]); // local history
+  const [usdaSuggestions, setUsdaSuggestions] = React.useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [calories, setCalories] = React.useState<string>('');
   const [protein, setProtein] = React.useState<string>('');
@@ -112,6 +114,24 @@ export function LogScreen() {
         .slice(0, 6)
     : [];
 
+  // USDA search suggestions (if key is configured)
+  React.useEffect(() => {
+    if (!showSuggestions) return;
+    const q = rawText.trim();
+    if (q.length < 3) {
+      setUsdaSuggestions([]);
+      return;
+    }
+
+    const t = setTimeout(() => {
+      usdaSearch(q)
+        .then((foods) => setUsdaSuggestions(foods))
+        .catch(() => setUsdaSuggestions([]));
+    }, 450);
+
+    return () => clearTimeout(t);
+  }, [rawText, showSuggestions]);
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ padding: 14, gap: 12 }}>
       <Pressable
@@ -166,11 +186,36 @@ export function LogScreen() {
           onFocus={() => setShowSuggestions(true)}
         />
 
-        {showSuggestions && filtered.length > 0 ? (
+        {showSuggestions && (filtered.length > 0 || usdaSuggestions.length > 0) ? (
           <View style={styles.suggestBox}>
+            {usdaSuggestions.slice(0, 5).map((it: any) => {
+              const facts = usdaFactsFromItem(it);
+              const right =
+                facts.calories != null || facts.protein != null
+                  ? `${facts.calories != null ? Math.round(facts.calories) + ' kcal' : ''}${
+                      facts.calories != null && facts.protein != null ? ' · ' : ''
+                    }${facts.protein != null ? Math.round(facts.protein) + 'p' : ''}`
+                  : '';
+              return (
+                <Pressable
+                  key={`usda_${it.fdcId}`}
+                  onPress={() => {
+                    setRawText(facts.name);
+                    if (facts.calories != null && !calories) setCalories(String(Math.round(facts.calories)));
+                    if (facts.protein != null && !protein) setProtein(String(Math.round(facts.protein)));
+                    setShowSuggestions(false);
+                  }}
+                  style={styles.suggestRow}
+                >
+                  <Text style={styles.suggestTxt}>{facts.name}</Text>
+                  {!!right && <Text style={styles.suggestMeta}>{right}</Text>}
+                </Pressable>
+              );
+            })}
+
             {filtered.map((s) => (
               <Pressable
-                key={s}
+                key={`local_${s}`}
                 onPress={() => {
                   setRawText(s);
                   setShowSuggestions(false);
@@ -178,6 +223,7 @@ export function LogScreen() {
                 style={styles.suggestRow}
               >
                 <Text style={styles.suggestTxt}>{s}</Text>
+                <Text style={styles.suggestMeta}>history</Text>
               </Pressable>
             ))}
           </View>
@@ -277,6 +323,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#eee',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
-  suggestTxt: { color: '#111', fontWeight: '700' },
+  suggestTxt: { color: '#111', fontWeight: '800', flex: 1 },
+  suggestMeta: { color: 'rgba(17,17,17,0.55)', fontWeight: '800', fontSize: 12 },
 });
