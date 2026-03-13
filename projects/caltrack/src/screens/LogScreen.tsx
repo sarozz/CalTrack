@@ -343,7 +343,7 @@ export function LogScreen() {
 
       <View style={styles.card}>
         <Text style={styles.title}>What did you eat?</Text>
-        <Text style={styles.subtle}>Start typing and pick a match (USDA + your history). You can still add "650c 30p".</Text>
+        <Text style={styles.subtle}>Start typing and pick a match. You can still add "650c 30p".</Text>
         <TextInput
           style={styles.input}
           placeholder="e.g. Chicken rice bowl 650c 35p"
