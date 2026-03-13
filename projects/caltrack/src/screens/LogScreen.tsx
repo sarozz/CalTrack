@@ -40,6 +40,7 @@ export function LogScreen() {
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [calories, setCalories] = React.useState<string>('');
   const [protein, setProtein] = React.useState<string>('');
+  const [manualServings, setManualServings] = React.useState<string>('1');
   const [caption, setCaption] = React.useState<string>('');
   const [barcodeLoading, setBarcodeLoading] = React.useState(false);
 
@@ -111,6 +112,8 @@ export function LogScreen() {
   async function onSave() {
     const c = Number(calories);
     const p = Number(protein);
+    const s = Math.max(0.25, Math.min(20, Number(manualServings || '1') || 1));
+
     if (!Number.isFinite(c) || c <= 0) {
       Alert.alert('Calories required', 'Enter calories (number).');
       return;
@@ -135,14 +138,14 @@ export function LogScreen() {
       emoji,
       caption: cleanedCaption,
       rawText: cleanedRaw,
-      calories: Math.round(c),
-      protein: Math.round(p),
-      fat,
-      carbs,
-      fiber,
-      sugar,
-      cholesterol,
-      sodium,
+      calories: Math.round(c * s),
+      protein: Math.round(p * s),
+      fat: fat != null ? Math.round(fat * s) : undefined,
+      carbs: carbs != null ? Math.round(carbs * s) : undefined,
+      fiber: fiber != null ? Math.round(fiber * s) : undefined,
+      sugar: sugar != null ? Math.round(sugar * s) : undefined,
+      cholesterol: cholesterol != null ? Math.round(cholesterol * s) : undefined,
+      sodium: sodium != null ? Math.round(sodium * s) : undefined,
     };
 
     await addEntry(entry);
@@ -153,6 +156,7 @@ export function LogScreen() {
     setCalories('');
     setProtein('');
     setCaption('');
+    setManualServings('1');
     setFat(undefined);
     setCarbs(undefined);
     setFiber(undefined);
@@ -483,6 +487,7 @@ export function LogScreen() {
 
       <View style={styles.card}>
         <Text style={styles.title}>Nutrition</Text>
+
         <View style={styles.row}>
           <View style={{ flex: 1 }}>
             <Text style={styles.label}>Calories (kcal)</Text>
@@ -504,6 +509,19 @@ export function LogScreen() {
               placeholder="35"
             />
           </View>
+        </View>
+
+        <View style={{ marginTop: 10 }}>
+          <Text style={styles.label}>Servings</Text>
+          <TextInput
+            style={styles.input}
+            keyboardType="decimal-pad"
+            value={manualServings}
+            onChangeText={(t) => setManualServings(t.replace(/[^0-9.]/g, ''))}
+            placeholder="1"
+            returnKeyType="done"
+          />
+          <Text style={styles.subtle}>Totals will be multiplied by servings.</Text>
         </View>
       </View>
 

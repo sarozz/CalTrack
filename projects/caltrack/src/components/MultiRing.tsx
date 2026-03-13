@@ -144,16 +144,6 @@ export function MultiRing({
         <Text style={styles.centerSub}>{centerSub}</Text>
       </View>
 
-      <View style={styles.legend}>
-        <View style={styles.legendRow}>
-          <View style={[styles.dot, { backgroundColor: outerColor }]} />
-          <Text style={styles.legendTxt}>Cal</Text>
-        </View>
-        <View style={styles.legendRow}>
-          <View style={[styles.dot, { backgroundColor: innerColor }]} />
-          <Text style={styles.legendTxt}>Pro</Text>
-        </View>
-      </View>
     </Animated.View>
   );
 }
@@ -164,9 +154,5 @@ const styles = StyleSheet.create({
   centerTitle: { fontSize: 32, fontWeight: '600', color: '#111', letterSpacing: -0.5 },
   centerUnit: { fontSize: 14, fontWeight: '600', color: 'rgba(17,17,17,0.55)' },
   centerSub: { marginTop: 6, fontSize: 12, fontWeight: '600', color: 'rgba(17,17,17,0.55)', textAlign: 'center', lineHeight: 16 },
-  // Legend should stay inside the card.
-  legend: { position: 'absolute', top: 10, right: 12, gap: 6 },
-  legendRow: { flexDirection: 'row', gap: 6, alignItems: 'center' },
-  dot: { width: 9, height: 9, borderRadius: 9 },
-  legendTxt: { color: 'rgba(17,17,17,0.55)', fontWeight: '600', fontSize: 11 },
+
 });

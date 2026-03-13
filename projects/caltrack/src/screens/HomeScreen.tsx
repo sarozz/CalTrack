@@ -148,13 +148,13 @@ export function HomeScreen({ navigation }: Props) {
         <Text style={styles.title}>Today</Text>
 
         <Pressable
-          style={{ alignItems: 'center', marginTop: 8, marginBottom: 12 }}
+          style={{ alignItems: 'center', marginTop: 8, marginBottom: 8 }}
           onPress={() => setBreakdown({ key: 'calories', title: 'Calories (kcal)', unit: ' kcal' })}
         >
           <MultiRing
-            size={280}
-            outerStroke={24}
-            innerStroke={18}
+            size={310}
+            outerStroke={34}
+            innerStroke={24}
             outerProgress={calProgress}
             innerProgress={proProgress}
             outerColor={'rgba(236, 72, 153, 0.55)'}
@@ -163,6 +163,17 @@ export function HomeScreen({ navigation }: Props) {
             centerSub={calGoal ? `Goal ${calGoal} kcal\nProtein ${totals.protein}/${proGoal || '—'}g` : `Protein ${totals.protein}/${proGoal || '—'}g`}
           />
         </Pressable>
+
+        <View style={styles.bigLegendRow}>
+          <View style={styles.bigLegendItem}>
+            <View style={[styles.bigDot, { backgroundColor: 'rgba(236, 72, 153, 0.55)' }]} />
+            <Text style={styles.bigLegendTxt}>Calories</Text>
+          </View>
+          <View style={styles.bigLegendItem}>
+            <View style={[styles.bigDot, { backgroundColor: COLORS.green }]} />
+            <Text style={styles.bigLegendTxt}>Protein</Text>
+          </View>
+        </View>
 
 
         <View style={styles.microGrid}>
@@ -277,8 +288,13 @@ const styles = StyleSheet.create({
   title: { fontSize: 16, fontWeight: '600', marginBottom: 6 },
   big: { fontSize: 18, fontWeight: '600', marginTop: 4 },
   subtle: { marginTop: 10, color: '#666' },
+  bigLegendRow: { flexDirection: 'row', justifyContent: 'center', gap: 14, marginBottom: 8 },
+  bigLegendItem: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  bigDot: { width: 10, height: 10, borderRadius: 10 },
+  bigLegendTxt: { color: 'rgba(17,17,17,0.55)', fontWeight: '600' },
+
   microGrid: {
-    marginTop: 14,
+    marginTop: 10,
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 12,
