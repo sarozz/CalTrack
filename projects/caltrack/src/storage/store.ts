@@ -26,6 +26,22 @@ export async function addEntry(entry: Entry) {
   return next;
 }
 
+export async function updateEntry(id: string, patch: Partial<Entry>) {
+  const entries = await loadEntries();
+  const next = entries
+    .map((e) => (e.id === id ? { ...e, ...patch } : e))
+    .sort((a, b) => b.createdAt - a.createdAt);
+  await saveEntries(next);
+  return next;
+}
+
+export async function deleteEntry(id: string) {
+  const entries = await loadEntries();
+  const next = entries.filter((e) => e.id !== id);
+  await saveEntries(next);
+  return next;
+}
+
 export async function loadSettings(): Promise<Settings> {
   const raw = await AsyncStorage.getItem(SETTINGS_KEY);
   if (!raw) return DEFAULT_SETTINGS;

@@ -140,9 +140,9 @@ export function MultiRing({
 const styles = StyleSheet.create({
   wrap: { alignItems: 'center', justifyContent: 'center' },
   center: { position: 'absolute', alignItems: 'center', paddingHorizontal: 10 },
-  centerTitle: { fontSize: 24, fontWeight: '900', color: '#111' },
-  centerSub: { marginTop: 4, fontSize: 12, fontWeight: '800', color: '#666', textAlign: 'center' },
-  legend: { position: 'absolute', bottom: -2, gap: 6 },
+  centerTitle: { fontSize: 28, fontWeight: '900', color: '#111', letterSpacing: -0.3 },
+  centerSub: { marginTop: 6, fontSize: 12, fontWeight: '700', color: 'rgba(17,17,17,0.55)', textAlign: 'center', lineHeight: 16 },
+  legend: { position: 'absolute', top: 8, right: 10, gap: 6 },
   legendRow: { flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'center' },
   dot: { width: 10, height: 10, borderRadius: 10 },
   legendTxt: { color: '#666', fontWeight: '800', fontSize: 12 },

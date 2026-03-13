@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { loadEntries } from '../storage/store';
@@ -54,7 +54,7 @@ export function DayDetailScreen({ route, navigation }: Props) {
         keyExtractor={(item) => item.id}
         ListEmptyComponent={<Text style={styles.empty}>No entries.</Text>}
         renderItem={({ item }) => (
-          <View style={styles.row}>
+          <Pressable style={styles.row} onPress={() => navigation.navigate('EditEntry', { id: item.id })}>
             <Text style={styles.emoji}>{item.emoji || '🍽️'}</Text>
             <View style={{ flex: 1 }}>
               <Text style={styles.rowTitle}>
@@ -64,7 +64,7 @@ export function DayDetailScreen({ route, navigation }: Props) {
               {!!item.rawText && <Text style={styles.raw}>{item.rawText}</Text>}
             </View>
             <Text style={styles.time}>{formatTime(new Date(item.createdAt))}</Text>
-          </View>
+          </Pressable>
         )}
       />
     </View>

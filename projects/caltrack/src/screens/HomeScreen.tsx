@@ -10,6 +10,7 @@ import { formatTime, toDateKey } from '../utils/date';
 export type HomeStackParamList = {
   Home: undefined;
   Settings: undefined;
+  EditEntry: { id: string };
 };
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'Home'>;
@@ -67,10 +68,13 @@ export function HomeScreen({ navigation }: Props) {
 
         <View style={{ alignItems: 'center', marginTop: 8, marginBottom: 12 }}>
           <MultiRing
+            size={260}
+            outerStroke={22}
+            innerStroke={16}
             outerProgress={calProgress}
             innerProgress={proProgress}
-            outerColor={'#6D28D9'}
-            innerColor={'#22C55E'}
+            outerColor={'rgba(109, 40, 217, 0.95)'}
+            innerColor={'rgba(34, 197, 94, 0.95)'}
             centerTitle={`${totals.calories} kcal`}
             centerSub={calGoal ? `Goal ${calGoal} kcal\nProtein ${totals.protein}/${proGoal || '—'}g` : `Protein ${totals.protein}/${proGoal || '—'}g`}
           />
@@ -85,7 +89,7 @@ export function HomeScreen({ navigation }: Props) {
         keyExtractor={(item) => item.id}
         ListEmptyComponent={<Text style={styles.empty}>No entries yet.</Text>}
         renderItem={({ item }) => (
-          <View style={styles.row}>
+          <Pressable style={styles.row} onPress={() => navigation.navigate('EditEntry', { id: item.id })}>
             <Text style={styles.emoji}>{item.emoji || '🍽️'}</Text>
             <View style={{ flex: 1 }}>
               <Text style={styles.rowTitle}>
@@ -95,7 +99,7 @@ export function HomeScreen({ navigation }: Props) {
               {!!item.rawText && <Text style={styles.raw}>{item.rawText}</Text>}
             </View>
             <Text style={styles.time}>{formatTime(new Date(item.createdAt))}</Text>
-          </View>
+          </Pressable>
         )}
       />
     </View>

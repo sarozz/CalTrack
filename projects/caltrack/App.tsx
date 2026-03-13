@@ -3,11 +3,13 @@ import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
+import { Ionicons } from '@expo/vector-icons';
 
 import { HomeScreen, type HomeStackParamList } from './src/screens/HomeScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
 import { LogScreen } from './src/screens/LogScreen';
 import { BarcodeScanScreen } from './src/screens/BarcodeScanScreen';
+import { EditEntryScreen } from './src/screens/EditEntryScreen';
 import { HistoryScreen, type HistoryStackParamList } from './src/screens/HistoryScreen';
 import { DayDetailScreen } from './src/screens/DayDetailScreen';
 
@@ -21,6 +23,7 @@ function HomeStackNavigator() {
     <HomeStack.Navigator>
       <HomeStack.Screen name="Home" component={HomeScreen} options={{ title: 'CalTrack' }} />
       <HomeStack.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
+      <HomeStack.Screen name="EditEntry" component={EditEntryScreen} options={{ title: 'Edit entry' }} />
     </HomeStack.Navigator>
   );
 }
@@ -30,6 +33,7 @@ function HistoryStackNavigator() {
     <HistoryStack.Navigator>
       <HistoryStack.Screen name="History" component={HistoryScreen} options={{ title: 'History' }} />
       <HistoryStack.Screen name="DayDetail" component={DayDetailScreen} options={{ title: 'Day' }} />
+      <HistoryStack.Screen name="EditEntry" component={EditEntryScreen} options={{ title: 'Edit entry' }} />
     </HistoryStack.Navigator>
   );
 }
@@ -52,10 +56,20 @@ export default function App() {
       }}
     >
       <Tab.Navigator
-        screenOptions={{
+        screenOptions={({ route }) => ({
           headerShown: false,
-          tabBarActiveTintColor: '#0a66ff',
-        }}
+          tabBarActiveTintColor: '#6D28D9',
+          tabBarInactiveTintColor: 'rgba(17,17,17,0.55)',
+          tabBarIcon: ({ color, size }) => {
+            const name =
+              route.name === 'HomeTab'
+                ? 'home'
+                : route.name === 'LogTab'
+                  ? 'add-circle'
+                  : 'time';
+            return <Ionicons name={name as any} size={size} color={color} />;
+          },
+        })}
       >
         <Tab.Screen
           name="HomeTab"

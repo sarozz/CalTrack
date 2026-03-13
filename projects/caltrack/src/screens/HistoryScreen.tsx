@@ -9,6 +9,7 @@ import { formatDateLabel } from '../utils/date';
 export type HistoryStackParamList = {
   History: undefined;
   DayDetail: { dateKey: string };
+  EditEntry: { id: string };
 };
 
 type Props = NativeStackScreenProps<HistoryStackParamList, 'History'>;
