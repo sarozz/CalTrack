@@ -2,6 +2,7 @@ import React from 'react';
 import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { COLORS } from '../styles/theme';
+import { AnimatedNumber } from './AnimatedNumber';
 
 type Props = {
   size?: number;
@@ -51,6 +52,8 @@ export function MultiRing({
   const outerAnim = React.useRef(new Animated.Value(clamp01(outerProgress))).current;
   const innerAnim = React.useRef(new Animated.Value(clamp01(innerProgress))).current;
 
+  const scaleAnim = React.useRef(new Animated.Value(1)).current;
+
   React.useEffect(() => {
     Animated.timing(outerAnim, {
       toValue: clamp01(outerProgress),
@@ -58,7 +61,13 @@ export function MultiRing({
       easing: Easing.out(Easing.cubic),
       useNativeDriver: false,
     }).start();
-  }, [outerProgress, animateMs, outerAnim]);
+
+    // subtle bounce when values update
+    Animated.sequence([
+      Animated.timing(scaleAnim, { toValue: 1.02, duration: 120, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
+      Animated.spring(scaleAnim, { toValue: 1, friction: 6, tension: 80, useNativeDriver: true }),
+    ]).start();
+  }, [outerProgress, animateMs, outerAnim, scaleAnim]);
 
   React.useEffect(() => {
     Animated.timing(innerAnim, {
@@ -82,8 +91,10 @@ export function MultiRing({
   const cx = size / 2;
   const cy = size / 2;
 
+  const centerCalories = Number(String(centerTitle).match(/\d+/)?.[0] || '0');
+
   return (
-    <View style={[styles.wrap, { width: size, height: size }]}>
+    <Animated.View style={[styles.wrap, { width: size, height: size, transform: [{ scale: scaleAnim }] }]}>
       <Svg width={size} height={size}>
         {/* tracks */}
         <Circle cx={cx} cy={cy} r={outerR} stroke={COLORS.track} strokeWidth={outerStroke} fill="none" />
@@ -121,7 +132,15 @@ export function MultiRing({
       </Svg>
 
       <View style={styles.center}>
-        <Text style={styles.centerTitle}>{centerTitle}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 6 }}>
+          <AnimatedNumber
+            value={centerCalories}
+            durationMs={animateMs}
+            style={styles.centerTitle}
+            format={(n) => `${Math.round(n)}`}
+          />
+          <Text style={styles.centerUnit}>kcal</Text>
+        </View>
         <Text style={styles.centerSub}>{centerSub}</Text>
       </View>
 
@@ -135,14 +154,15 @@ export function MultiRing({
           <Text style={styles.legendTxt}>Pro</Text>
         </View>
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
   wrap: { alignItems: 'center', justifyContent: 'center' },
   center: { position: 'absolute', alignItems: 'center', paddingHorizontal: 10 },
-  centerTitle: { fontSize: 28, fontWeight: '900', color: '#111', letterSpacing: -0.3 },
+  centerTitle: { fontSize: 32, fontWeight: '900', color: '#111', letterSpacing: -0.5 },
+  centerUnit: { fontSize: 14, fontWeight: '900', color: 'rgba(17,17,17,0.55)' },
   centerSub: { marginTop: 6, fontSize: 12, fontWeight: '700', color: 'rgba(17,17,17,0.55)', textAlign: 'center', lineHeight: 16 },
   // Legend should stay inside the card.
   legend: { position: 'absolute', top: 10, right: 12, gap: 6 },
