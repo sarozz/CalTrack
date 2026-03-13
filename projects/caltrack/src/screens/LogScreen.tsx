@@ -170,8 +170,12 @@ export function LogScreen() {
                   return `${base}${title}barcode: ${data}`;
                 });
 
-                if (facts?.calories != null && !calories) setCalories(String(Math.round(facts.calories)));
-                if (facts?.protein != null && !protein) setProtein(String(Math.round(facts.protein)));
+                // Fill form fields (so user can edit) AND auto-log if we have enough data.
+                const c = facts?.calories != null ? Math.round(facts.calories) : undefined;
+                const p = facts?.protein != null ? Math.round(facts.protein) : undefined;
+
+                if (c != null && !calories) setCalories(String(c));
+                if (p != null && !protein) setProtein(String(p));
 
                 if (facts?.fat != null) setFat(facts.fat);
                 if (facts?.carbs != null) setCarbs(facts.carbs);
@@ -182,8 +186,49 @@ export function LogScreen() {
 
                 if (!facts) {
                   Alert.alert('Not found', 'No product found for this barcode. You can still type it manually.');
-                } else if (facts.calories == null && facts.protein == null) {
-                  Alert.alert('No nutrition data', 'Found product but no calories/protein in the free database.');
+                } else if (c == null) {
+                  Alert.alert('No calories found', 'Found product but calories missing. You can enter manually.');
+                } else {
+                  // Auto-log on scan (fast path)
+                  const createdAt = Date.now();
+                  const mealAuto = autoMealFromTime(new Date(createdAt));
+                  const raw = `${name ? `name: ${name}\n` : ''}barcode: ${data}`;
+                  const emoji = recommendEmoji({ meal: mealAuto, text: `${name} ${raw}`, hasBarcode: true });
+
+                  const entry: Entry = {
+                    id: makeId(),
+                    createdAt,
+                    dateKey: toDateKey(new Date(createdAt)),
+                    meal: mealAuto,
+                    emoji,
+                    caption: name || undefined,
+                    rawText: raw,
+                    calories: c,
+                    protein: p ?? 0,
+                    fat: facts.fat,
+                    carbs: facts.carbs,
+                    fiber: facts.fiber,
+                    sugar: facts.sugar,
+                    cholesterol: facts.cholesterol,
+                    sodium: facts.sodium,
+                  };
+
+                  await addEntry(entry);
+
+                  // Reset form
+                  setRawText('');
+                  setCalories('');
+                  setProtein('');
+                  setCaption('');
+                  setFat(undefined);
+                  setCarbs(undefined);
+                  setFiber(undefined);
+                  setSugar(undefined);
+                  setCholesterol(undefined);
+                  setSodium(undefined);
+
+                  Alert.alert('Logged', 'Saved from barcode scan');
+                  navigation.navigate('HomeTab', { screen: 'Home' });
                 }
               } catch {
                 Alert.alert('Lookup failed', 'Could not fetch nutrition details. Try again.');
