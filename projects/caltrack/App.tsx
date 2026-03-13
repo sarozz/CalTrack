@@ -82,7 +82,7 @@ export default function App() {
           name="LogTab"
           component={LogStackNavigator}
           options={{
-            title: '+',
+            title: 'Log',
           }}
         />
         <Tab.Screen

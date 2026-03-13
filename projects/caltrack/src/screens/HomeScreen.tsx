@@ -88,14 +88,13 @@ export function HomeScreen({ navigation }: Props) {
             innerStroke={18}
             outerProgress={calProgress}
             innerProgress={proProgress}
-            outerColor={COLORS.purple}
+            outerColor={'rgba(236, 72, 153, 0.55)'}
             innerColor={COLORS.green}
             centerTitle={`${totals.calories} kcal`}
             centerSub={calGoal ? `Goal ${calGoal} kcal\nProtein ${totals.protein}/${proGoal || '—'}g` : `Protein ${totals.protein}/${proGoal || '—'}g`}
           />
         </View>
 
-        <Text style={styles.subtle}>Tap Log (+) to add an entry.</Text>
 
         <View style={styles.microGrid}>
           <AnimatedRing
@@ -104,8 +103,8 @@ export function HomeScreen({ navigation }: Props) {
             subText={fatGoal ? `/ ${fatGoal}g` : undefined}
             progress={fatGoal ? totals.fat / fatGoal : 0}
             color={'rgba(236, 72, 153, 0.55)'}
-            size={104}
-            stroke={12}
+            size={92}
+            stroke={11}
           />
           <AnimatedRing
             label="Carbs"
@@ -113,8 +112,8 @@ export function HomeScreen({ navigation }: Props) {
             subText={carbsGoal ? `/ ${carbsGoal}g` : undefined}
             progress={carbsGoal ? totals.carbs / carbsGoal : 0}
             color={'rgba(14, 165, 233, 0.55)'}
-            size={104}
-            stroke={12}
+            size={92}
+            stroke={11}
           />
           <AnimatedRing
             label="Fiber"
@@ -122,8 +121,8 @@ export function HomeScreen({ navigation }: Props) {
             subText={fiberGoal ? `/ ${fiberGoal}g` : undefined}
             progress={fiberGoal ? totals.fiber / fiberGoal : 0}
             color={'rgba(34, 197, 94, 0.55)'}
-            size={104}
-            stroke={12}
+            size={92}
+            stroke={11}
           />
           <AnimatedRing
             label="Sugar"
@@ -131,8 +130,8 @@ export function HomeScreen({ navigation }: Props) {
             subText={sugarGoal ? `/ ${sugarGoal}g` : undefined}
             progress={sugarGoal ? totals.sugar / sugarGoal : 0}
             color={'rgba(245, 158, 11, 0.55)'}
-            size={104}
-            stroke={12}
+            size={92}
+            stroke={11}
           />
           <AnimatedRing
             label="Chol"
@@ -140,8 +139,8 @@ export function HomeScreen({ navigation }: Props) {
             subText={cholGoal ? `/ ${cholGoal}mg` : undefined}
             progress={cholGoal ? totals.cholesterol / cholGoal : 0}
             color={'rgba(168, 85, 247, 0.55)'}
-            size={104}
-            stroke={12}
+            size={92}
+            stroke={11}
           />
           <AnimatedRing
             label="Sodium"
@@ -149,8 +148,8 @@ export function HomeScreen({ navigation }: Props) {
             subText={sodiumGoal ? `/ ${sodiumGoal}mg` : undefined}
             progress={sodiumGoal ? totals.sodium / sodiumGoal : 0}
             color={'rgba(100, 116, 139, 0.55)'}
-            size={104}
-            stroke={12}
+            size={92}
+            stroke={11}
           />
         </View>
       </View>
