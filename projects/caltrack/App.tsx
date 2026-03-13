@@ -12,6 +12,7 @@ import { BarcodeScanScreen } from './src/screens/BarcodeScanScreen';
 import { EditEntryScreen } from './src/screens/EditEntryScreen';
 import { HistoryScreen, type HistoryStackParamList } from './src/screens/HistoryScreen';
 import { DayDetailScreen } from './src/screens/DayDetailScreen';
+import { InsightsScreen } from './src/screens/InsightsScreen';
 
 const Tab = createBottomTabNavigator();
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
@@ -32,6 +33,7 @@ function HistoryStackNavigator() {
   return (
     <HistoryStack.Navigator>
       <HistoryStack.Screen name="History" component={HistoryScreen} options={{ title: 'History' }} />
+      <HistoryStack.Screen name="Insights" component={InsightsScreen} options={{ title: 'Weekly Insights' }} />
       <HistoryStack.Screen name="DayDetail" component={DayDetailScreen} options={{ title: 'Day' }} />
       <HistoryStack.Screen name="EditEntry" component={EditEntryScreen} options={{ title: 'Edit entry' }} />
     </HistoryStack.Navigator>

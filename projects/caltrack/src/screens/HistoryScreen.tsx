@@ -10,6 +10,7 @@ export type HistoryStackParamList = {
   History: undefined;
   DayDetail: { dateKey: string };
   EditEntry: { id: string };
+  Insights: undefined;
 };
 
 type Props = NativeStackScreenProps<HistoryStackParamList, 'History'>;
@@ -23,6 +24,16 @@ type DayRow = {
 
 export function HistoryScreen({ navigation }: Props) {
   const [rows, setRows] = React.useState<DayRow[]>([]);
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Pressable onPress={() => navigation.navigate('Insights')} style={{ paddingHorizontal: 10, paddingVertical: 6 }}>
+          <Text style={{ color: 'rgba(236, 72, 153, 0.9)', fontWeight: '600' }}>Insights</Text>
+        </Pressable>
+      ),
+    });
+  }, [navigation]);
 
   useFocusEffect(
     React.useCallback(() => {
