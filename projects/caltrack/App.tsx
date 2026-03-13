@@ -7,12 +7,14 @@ import { StatusBar } from 'expo-status-bar';
 import { HomeScreen, type HomeStackParamList } from './src/screens/HomeScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
 import { LogScreen } from './src/screens/LogScreen';
+import { BarcodeScanScreen } from './src/screens/BarcodeScanScreen';
 import { HistoryScreen, type HistoryStackParamList } from './src/screens/HistoryScreen';
 import { DayDetailScreen } from './src/screens/DayDetailScreen';
 
 const Tab = createBottomTabNavigator();
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 const HistoryStack = createNativeStackNavigator<HistoryStackParamList>();
+const LogStack = createNativeStackNavigator();
 
 function HomeStackNavigator() {
   return (
@@ -29,6 +31,15 @@ function HistoryStackNavigator() {
       <HistoryStack.Screen name="History" component={HistoryScreen} options={{ title: 'History' }} />
       <HistoryStack.Screen name="DayDetail" component={DayDetailScreen} options={{ title: 'Day' }} />
     </HistoryStack.Navigator>
+  );
+}
+
+function LogStackNavigator() {
+  return (
+    <LogStack.Navigator>
+      <LogStack.Screen name="Log" component={LogScreen} options={{ title: 'Log' }} />
+      <LogStack.Screen name="BarcodeScan" component={BarcodeScanScreen} options={{ title: 'Scan barcode' }} />
+    </LogStack.Navigator>
   );
 }
 
@@ -54,12 +65,10 @@ export default function App() {
           }}
         />
         <Tab.Screen
-          name="Log"
-          component={LogScreen}
+          name="LogTab"
+          component={LogStackNavigator}
           options={{
             title: '+',
-            headerShown: true,
-            headerTitle: 'Log',
           }}
         />
         <Tab.Screen

@@ -135,9 +135,25 @@ export function LogScreen() {
         />
       </View>
 
-      <Pressable onPress={onSave} style={styles.saveBtn}>
-        <Text style={styles.saveTxt}>Save entry</Text>
-      </Pressable>
+      <View style={styles.row}>
+        <Pressable
+          onPress={() =>
+            navigation.navigate('BarcodeScan', {
+              onScanned: (data: string) => {
+                // For now, just store the barcode in raw text so we can wire up nutrition lookup later.
+                setRawText((prev) => (prev ? `${prev}\nbarcode: ${data}` : `barcode: ${data}`));
+              },
+            })
+          }
+          style={[styles.actionBtn, { backgroundColor: '#111' }]}
+        >
+          <Text style={styles.actionTxt}>Scan barcode</Text>
+        </Pressable>
+
+        <Pressable onPress={onSave} style={[styles.actionBtn, { backgroundColor: '#0a66ff' }]}>
+          <Text style={styles.actionTxt}>Save entry</Text>
+        </Pressable>
+      </View>
     </ScrollView>
   );
 }
@@ -164,12 +180,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   row: { flexDirection: 'row', gap: 10 },
-  saveBtn: {
-    backgroundColor: '#0a66ff',
+  actionBtn: {
+    flex: 1,
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: 'center',
     marginBottom: 40,
   },
-  saveTxt: { color: '#fff', fontWeight: '900', fontSize: 16 },
+  actionTxt: { color: '#fff', fontWeight: '900', fontSize: 16 },
 });
