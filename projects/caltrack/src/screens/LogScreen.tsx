@@ -50,6 +50,7 @@ export function LogScreen() {
         source?: string;
       }
   >(null);
+  const [servings, setServings] = React.useState<string>('1');
 
   const [fat, setFat] = React.useState<number | undefined>(undefined);
   const [carbs, setCarbs] = React.useState<number | undefined>(undefined);
@@ -198,6 +199,8 @@ export function LogScreen() {
   async function savePreview() {
     if (!scanPreview) return;
 
+    const mult = Math.max(0.25, Math.min(20, Number(servings || '1') || 1));
+
     const c = scanPreview.calories;
     if (c == null || !Number.isFinite(c) || c <= 0) {
       Alert.alert('Calories required', 'This item has no calories. Enter manually before saving.');
@@ -206,8 +209,12 @@ export function LogScreen() {
 
     const createdAt = Date.now();
     const mealAuto = autoMealFromTime(new Date(createdAt));
-    const raw = `${scanPreview.name ? `name: ${scanPreview.name}\n` : ''}barcode: ${scanPreview.barcode}`;
-    const emoji = recommendEmoji({ meal: mealAuto, text: `${scanPreview.name || ''} ${raw}`, hasBarcode: true });
+
+    // Keep log clean: don't store barcode lines.
+    const name = (scanPreview.name || '').trim();
+    const emoji = recommendEmoji({ meal: mealAuto, text: name, hasBarcode: false });
+
+    const scale = (n?: number) => (n == null ? undefined : Math.round(n * mult));
 
     const entry: Entry = {
       id: makeId(),
@@ -215,22 +222,80 @@ export function LogScreen() {
       dateKey: toDateKey(new Date(createdAt)),
       meal: mealAuto,
       emoji,
-      caption: scanPreview.name || undefined,
-      rawText: raw,
-      calories: Math.round(c),
-      protein: Math.round(scanPreview.protein || 0),
-      fat: scanPreview.fat,
-      carbs: scanPreview.carbs,
-      fiber: scanPreview.fiber,
-      sugar: scanPreview.sugar,
-      cholesterol: scanPreview.cholesterol,
-      sodium: scanPreview.sodium,
+      caption: name || undefined,
+      rawText: undefined,
+      calories: Math.round(c * mult),
+      protein: Math.round((scanPreview.protein || 0) * mult),
+      fat: scale(scanPreview.fat),
+      carbs: scale(scanPreview.carbs),
+      fiber: scale(scanPreview.fiber),
+      sugar: scale(scanPreview.sugar),
+      cholesterol: scale(scanPreview.cholesterol),
+      sodium: scale(scanPreview.sodium),
     };
 
     await addEntry(entry);
     setScanPreview(null);
-    Alert.alert('Saved', 'Logged from barcode');
+    Alert.alert('Saved', 'Logged');
     navigation.navigate('HomeTab', { screen: 'Home' });
+  }
+
+  if (scanPreview) {
+    const mult = Math.max(0.25, Math.min(20, Number(servings || '1') || 1));
+    const show = (n?: number, unit?: string) => (n == null ? '—' : `${Math.round(n * mult)}${unit || ''}`);
+
+    return (
+      <View style={styles.overlayWrap}>
+        <Animated.View style={[styles.backdrop, { opacity: previewAnim }]} />
+
+        <Animated.View
+          style={[
+            styles.overlayCard,
+            {
+              opacity: previewAnim,
+              transform: [
+                { translateY: previewAnim.interpolate({ inputRange: [0, 1], outputRange: [16, 0] }) },
+                { scale: previewAnim.interpolate({ inputRange: [0, 1], outputRange: [0.98, 1] }) },
+              ],
+            },
+          ]}
+        >
+          <Text style={styles.title}>Scanned item</Text>
+          {!!scanPreview.name && <Text style={styles.scanName}>{scanPreview.name}</Text>}
+
+          <View style={styles.cardInlineRow}>
+            <Text style={styles.scanSub}>Servings</Text>
+            <TextInput
+              value={servings}
+              onChangeText={(t) => setServings(t.replace(/[^0-9.]/g, ''))}
+              keyboardType="decimal-pad"
+              style={styles.servingInput}
+              placeholder="1"
+            />
+          </View>
+
+          <View style={styles.scanGrid}>
+            <Text style={styles.scanCell}>Calories: {show(scanPreview.calories, ' kcal')}</Text>
+            <Text style={styles.scanCell}>Protein: {show(scanPreview.protein, ' g')}</Text>
+            <Text style={styles.scanCell}>Fat: {show(scanPreview.fat, ' g')}</Text>
+            <Text style={styles.scanCell}>Carbs: {show(scanPreview.carbs, ' g')}</Text>
+            <Text style={styles.scanCell}>Fiber: {show(scanPreview.fiber, ' g')}</Text>
+            <Text style={styles.scanCell}>Sugar: {show(scanPreview.sugar, ' g')}</Text>
+            <Text style={styles.scanCell}>Cholesterol: {show(scanPreview.cholesterol, ' mg')}</Text>
+            <Text style={styles.scanCell}>Sodium: {show(scanPreview.sodium, ' mg')}</Text>
+          </View>
+
+          <View style={{ flexDirection: 'row', gap: 10, marginTop: 14 }}>
+            <Pressable onPress={() => setScanPreview(null)} style={[styles.longBtn, { flex: 1 }]}>
+              <Text style={styles.longBtnTxt}>Cancel</Text>
+            </Pressable>
+            <Pressable onPress={savePreview} style={[styles.longBtn, { flex: 1 }]}>
+              <Text style={styles.longBtnTxt}>Save</Text>
+            </Pressable>
+          </View>
+        </Animated.View>
+      </View>
+    );
   }
 
   return (
@@ -270,6 +335,7 @@ export function LogScreen() {
                   setScanPreview(null);
                   Alert.alert('Not found', 'No product found for this barcode. You can still type it manually.');
                 } else {
+                  setServings('1');
                   setScanPreview({
                     name: name || undefined,
                     barcode: data,
@@ -297,49 +363,6 @@ export function LogScreen() {
       >
         <Text style={styles.longBtnTxt}>{barcodeLoading ? 'Scanning…' : 'Scan barcode  🏷️'}</Text>
       </Pressable>
-
-      {scanPreview ? (
-        <Animated.View
-          style={[
-            styles.card,
-            {
-              opacity: previewAnim,
-              transform: [
-                {
-                  translateY: previewAnim.interpolate({ inputRange: [0, 1], outputRange: [10, 0] }),
-                },
-                {
-                  scale: previewAnim.interpolate({ inputRange: [0, 1], outputRange: [0.98, 1] }),
-                },
-              ],
-            },
-          ]}
-        >
-          <Text style={styles.title}>Scan result</Text>
-          {!!scanPreview.name && <Text style={styles.scanName}>{scanPreview.name}</Text>}
-          <Text style={styles.scanSub}>Barcode: {scanPreview.barcode}{scanPreview.source ? ` · ${scanPreview.source}` : ''}</Text>
-
-          <View style={styles.scanGrid}>
-            <Text style={styles.scanCell}>Calories: {scanPreview.calories ?? '—'} kcal</Text>
-            <Text style={styles.scanCell}>Protein: {scanPreview.protein ?? '—'} g</Text>
-            <Text style={styles.scanCell}>Fat: {scanPreview.fat ?? '—'} g</Text>
-            <Text style={styles.scanCell}>Carbs: {scanPreview.carbs ?? '—'} g</Text>
-            <Text style={styles.scanCell}>Fiber: {scanPreview.fiber ?? '—'} g</Text>
-            <Text style={styles.scanCell}>Sugar: {scanPreview.sugar ?? '—'} g</Text>
-            <Text style={styles.scanCell}>Chol: {scanPreview.cholesterol ?? '—'} mg</Text>
-            <Text style={styles.scanCell}>Sodium: {scanPreview.sodium ?? '—'} mg</Text>
-          </View>
-
-          <View style={{ flexDirection: 'row', gap: 10, marginTop: 12 }}>
-            <Pressable onPress={() => setScanPreview(null)} style={[styles.longBtn, { flex: 1 }]}>
-              <Text style={styles.longBtnTxt}>Dismiss</Text>
-            </Pressable>
-            <Pressable onPress={savePreview} style={[styles.longBtn, { flex: 1 }]}>
-              <Text style={styles.longBtnTxt}>Save</Text>
-            </Pressable>
-          </View>
-        </Animated.View>
-      ) : null}
 
       <View style={styles.card}>
         <Text style={styles.title}>What did you eat?</Text>
@@ -531,14 +554,37 @@ const styles = StyleSheet.create({
   suggestTxt: { color: '#111', fontWeight: '800', flex: 1 },
   suggestMeta: { color: 'rgba(17,17,17,0.55)', fontWeight: '800', fontSize: 12 },
 
-  scanName: { fontWeight: '900', fontSize: 16, color: '#111' },
-  scanSub: { color: 'rgba(17,17,17,0.55)', fontWeight: '800', marginTop: 4 },
-  scanGrid: { marginTop: 10, gap: 6 },
+  // Overlay (scan preview)
+  overlayWrap: { flex: 1, backgroundColor: '#f6f6f6', justifyContent: 'center', padding: 14 },
+  backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.25)' },
+  overlayCard: {
+    backgroundColor: '#fff',
+    borderRadius: 18,
+    padding: 14,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#ddd',
+  },
+  cardInlineRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 },
+  servingInput: {
+    width: 90,
+    textAlign: 'center',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#ddd',
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: '#fafafa',
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  scanName: { fontWeight: '900', fontSize: 16, color: '#111', marginTop: 6 },
+  scanSub: { color: 'rgba(17,17,17,0.55)', fontWeight: '800' },
+  scanGrid: { marginTop: 12, gap: 8 },
   scanCell: {
     backgroundColor: 'rgba(0,0,0,0.04)',
-    borderRadius: 10,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
     color: '#111',
     fontWeight: '800',
   },
