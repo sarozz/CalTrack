@@ -21,6 +21,11 @@ export function HomeScreen({ navigation }: Props) {
   const [entries, setEntries] = React.useState<Entry[]>([]);
   const [settings, setSettings] = React.useState<Settings | null>(null);
   const feedAnim = React.useRef(new Animated.Value(0)).current;
+  const [breakdown, setBreakdown] = React.useState<null | {
+    key: 'calories' | 'protein' | 'fat' | 'carbs' | 'fiber' | 'sugar' | 'cholesterol' | 'sodium';
+    title: string;
+    unit: string;
+  }>(null);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -80,15 +85,63 @@ export function HomeScreen({ navigation }: Props) {
   const cholGoal = settings?.cholesterolGoal ?? 0;
   const sodiumGoal = settings?.sodiumGoal ?? 0;
 
+  const breakdownRows = React.useMemo(() => {
+    if (!breakdown) return [] as Array<{ id: string; label: string; value: number }>;
+    const key = breakdown.key;
+    const rows = todays
+      .map((e) => {
+        const v = Number((e as any)[key] || 0);
+        const label = (e.caption || e.rawText || e.meal || 'Food').split('\n')[0].trim();
+        return { id: e.id, label, value: v };
+      })
+      .filter((r) => r.value > 0)
+      .sort((a, b) => b.value - a.value);
+    return rows;
+  }, [breakdown, todays]);
+
   const calProgress = calGoal > 0 ? totals.calories / calGoal : 0;
   const proProgress = proGoal > 0 ? totals.protein / proGoal : 0;
 
   return (
     <View style={styles.container}>
+      {breakdown ? (
+        <View style={styles.modalWrap}>
+          <Pressable style={styles.backdrop} onPress={() => setBreakdown(null)} />
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>{breakdown.title}</Text>
+            <Text style={styles.modalSub}>Top sources today</Text>
+
+            {breakdownRows.length === 0 ? (
+              <Text style={styles.modalEmpty}>No data yet.</Text>
+            ) : (
+              <View style={{ marginTop: 10, gap: 8 }}>
+                {breakdownRows.slice(0, 8).map((r) => (
+                  <View key={r.id} style={styles.modalRow}>
+                    <Text style={styles.modalRowLabel} numberOfLines={1}>
+                      {r.label}
+                    </Text>
+                    <Text style={styles.modalRowVal}>
+                      {Math.round(r.value)}{breakdown.unit}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            <Pressable onPress={() => setBreakdown(null)} style={[styles.modalBtn, { marginTop: 12 }]}>
+              <Text style={styles.modalBtnTxt}>Close</Text>
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
+
       <View style={styles.card}>
         <Text style={styles.title}>Today</Text>
 
-        <View style={{ alignItems: 'center', marginTop: 8, marginBottom: 12 }}>
+        <Pressable
+          style={{ alignItems: 'center', marginTop: 8, marginBottom: 12 }}
+          onPress={() => setBreakdown({ key: 'calories', title: 'Calories (kcal)', unit: ' kcal' })}
+        >
           <MultiRing
             size={280}
             outerStroke={24}
@@ -100,64 +153,76 @@ export function HomeScreen({ navigation }: Props) {
             centerTitle={`${totals.calories} kcal`}
             centerSub={calGoal ? `Goal ${calGoal} kcal\nProtein ${totals.protein}/${proGoal || '—'}g` : `Protein ${totals.protein}/${proGoal || '—'}g`}
           />
-        </View>
+        </Pressable>
 
 
         <View style={styles.microGrid}>
-          <AnimatedRing
-            label="Fat"
-            valueText={`${Math.round(totals.fat)}g`}
-            subText={fatGoal ? `/ ${fatGoal}g` : undefined}
-            progress={fatGoal ? totals.fat / fatGoal : 0}
-            color={'rgba(236, 72, 153, 0.55)'}
-            size={92}
-            stroke={11}
-          />
-          <AnimatedRing
-            label="Carbs"
-            valueText={`${Math.round(totals.carbs)}g`}
-            subText={carbsGoal ? `/ ${carbsGoal}g` : undefined}
-            progress={carbsGoal ? totals.carbs / carbsGoal : 0}
-            color={'rgba(14, 165, 233, 0.55)'}
-            size={92}
-            stroke={11}
-          />
-          <AnimatedRing
-            label="Fiber"
-            valueText={`${Math.round(totals.fiber)}g`}
-            subText={fiberGoal ? `/ ${fiberGoal}g` : undefined}
-            progress={fiberGoal ? totals.fiber / fiberGoal : 0}
-            color={'rgba(34, 197, 94, 0.55)'}
-            size={92}
-            stroke={11}
-          />
-          <AnimatedRing
-            label="Sugar"
-            valueText={`${Math.round(totals.sugar)}g`}
-            subText={sugarGoal ? `/ ${sugarGoal}g` : undefined}
-            progress={sugarGoal ? totals.sugar / sugarGoal : 0}
-            color={'rgba(245, 158, 11, 0.55)'}
-            size={92}
-            stroke={11}
-          />
-          <AnimatedRing
-            label="Chol"
-            valueText={`${Math.round(totals.cholesterol)}mg`}
-            subText={cholGoal ? `/ ${cholGoal}mg` : undefined}
-            progress={cholGoal ? totals.cholesterol / cholGoal : 0}
-            color={'rgba(168, 85, 247, 0.55)'}
-            size={92}
-            stroke={11}
-          />
-          <AnimatedRing
-            label="Sodium"
-            valueText={`${Math.round(totals.sodium)}mg`}
-            subText={sodiumGoal ? `/ ${sodiumGoal}mg` : undefined}
-            progress={sodiumGoal ? totals.sodium / sodiumGoal : 0}
-            color={'rgba(100, 116, 139, 0.55)'}
-            size={92}
-            stroke={11}
-          />
+          <Pressable onPress={() => setBreakdown({ key: 'fat', title: 'Fat (g)', unit: 'g' })}>
+            <AnimatedRing
+              label="Fat"
+              valueText={`${Math.round(totals.fat)}g`}
+              subText={fatGoal ? `/ ${fatGoal}g` : undefined}
+              progress={fatGoal ? totals.fat / fatGoal : 0}
+              color={'rgba(244, 63, 94, 0.55)'}
+              size={92}
+              stroke={11}
+            />
+          </Pressable>
+          <Pressable onPress={() => setBreakdown({ key: 'carbs', title: 'Carbs (g)', unit: 'g' })}>
+            <AnimatedRing
+              label="Carbs"
+              valueText={`${Math.round(totals.carbs)}g`}
+              subText={carbsGoal ? `/ ${carbsGoal}g` : undefined}
+              progress={carbsGoal ? totals.carbs / carbsGoal : 0}
+              color={'rgba(14, 165, 233, 0.55)'}
+              size={92}
+              stroke={11}
+            />
+          </Pressable>
+          <Pressable onPress={() => setBreakdown({ key: 'fiber', title: 'Fiber (g)', unit: 'g' })}>
+            <AnimatedRing
+              label="Fiber"
+              valueText={`${Math.round(totals.fiber)}g`}
+              subText={fiberGoal ? `/ ${fiberGoal}g` : undefined}
+              progress={fiberGoal ? totals.fiber / fiberGoal : 0}
+              color={'rgba(34, 197, 94, 0.55)'}
+              size={92}
+              stroke={11}
+            />
+          </Pressable>
+          <Pressable onPress={() => setBreakdown({ key: 'sugar', title: 'Sugar (g)', unit: 'g' })}>
+            <AnimatedRing
+              label="Sugar"
+              valueText={`${Math.round(totals.sugar)}g`}
+              subText={sugarGoal ? `/ ${sugarGoal}g` : undefined}
+              progress={sugarGoal ? totals.sugar / sugarGoal : 0}
+              color={'rgba(245, 158, 11, 0.55)'}
+              size={92}
+              stroke={11}
+            />
+          </Pressable>
+          <Pressable onPress={() => setBreakdown({ key: 'cholesterol', title: 'Cholesterol (mg)', unit: 'mg' })}>
+            <AnimatedRing
+              label="Chol"
+              valueText={`${Math.round(totals.cholesterol)}mg`}
+              subText={cholGoal ? `/ ${cholGoal}mg` : undefined}
+              progress={cholGoal ? totals.cholesterol / cholGoal : 0}
+              color={'rgba(168, 85, 247, 0.55)'}
+              size={92}
+              stroke={11}
+            />
+          </Pressable>
+          <Pressable onPress={() => setBreakdown({ key: 'sodium', title: 'Sodium (mg)', unit: 'mg' })}>
+            <AnimatedRing
+              label="Sodium"
+              valueText={`${Math.round(totals.sodium)}mg`}
+              subText={sodiumGoal ? `/ ${sodiumGoal}mg` : undefined}
+              progress={sodiumGoal ? totals.sodium / sodiumGoal : 0}
+              color={'rgba(100, 116, 139, 0.55)'}
+              size={92}
+              stroke={11}
+            />
+          </Pressable>
         </View>
       </View>
 
@@ -229,5 +294,39 @@ const styles = StyleSheet.create({
   raw: { color: '#666', marginTop: 2, fontSize: 12 },
   time: { color: '#666', fontSize: 12, marginTop: 2 },
   headerBtn: { paddingHorizontal: 10, paddingVertical: 6 },
-  headerBtnText: { color: '#6D28D9', fontWeight: '800' },
+  headerBtnText: { color: 'rgba(236, 72, 153, 0.9)', fontWeight: '900' },
+
+  // Modal
+  modalWrap: { ...StyleSheet.absoluteFillObject, justifyContent: 'center', padding: 14, zIndex: 50 },
+  backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.25)' },
+  modalCard: {
+    backgroundColor: '#fff',
+    borderRadius: 18,
+    padding: 14,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#ddd',
+  },
+  modalTitle: { fontSize: 16, fontWeight: '900', color: '#111' },
+  modalSub: { marginTop: 4, color: 'rgba(17,17,17,0.55)', fontWeight: '800' },
+  modalEmpty: { marginTop: 10, color: 'rgba(17,17,17,0.55)' },
+  modalRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    backgroundColor: 'rgba(0,0,0,0.04)',
+  },
+  modalRowLabel: { flex: 1, fontWeight: '900', color: '#111' },
+  modalRowVal: { fontWeight: '900', color: 'rgba(17,17,17,0.65)' },
+  modalBtn: {
+    backgroundColor: COLORS.btnBg,
+    borderColor: COLORS.btnBorder,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 14,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  modalBtnTxt: { color: COLORS.btnText, fontWeight: '900', fontSize: 16 },
 });
