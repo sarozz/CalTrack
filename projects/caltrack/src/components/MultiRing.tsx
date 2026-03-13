@@ -38,7 +38,8 @@ export function MultiRing({
   centerSub,
   animateMs = 700,
 }: Props) {
-  const padding = 10;
+  // No visible gap between rings (Apple Health style)
+  const padding = 0;
 
   const outerR = (size - outerStroke) / 2;
   const innerR = outerR - outerStroke / 2 - innerStroke / 2 - padding;
@@ -84,8 +85,8 @@ export function MultiRing({
     <View style={[styles.wrap, { width: size, height: size }]}>
       <Svg width={size} height={size}>
         {/* tracks */}
-        <Circle cx={cx} cy={cy} r={outerR} stroke={'#eee'} strokeWidth={outerStroke} fill="none" />
-        <Circle cx={cx} cy={cy} r={innerR} stroke={'#eee'} strokeWidth={innerStroke} fill="none" />
+        <Circle cx={cx} cy={cy} r={outerR} stroke={'rgba(0,0,0,0.08)'} strokeWidth={outerStroke} fill="none" />
+        <Circle cx={cx} cy={cy} r={innerR} stroke={'rgba(0,0,0,0.08)'} strokeWidth={innerStroke} fill="none" />
 
         {/* progress */}
         <AnimatedCircle
@@ -142,7 +143,8 @@ const styles = StyleSheet.create({
   center: { position: 'absolute', alignItems: 'center', paddingHorizontal: 10 },
   centerTitle: { fontSize: 28, fontWeight: '900', color: '#111', letterSpacing: -0.3 },
   centerSub: { marginTop: 6, fontSize: 12, fontWeight: '700', color: 'rgba(17,17,17,0.55)', textAlign: 'center', lineHeight: 16 },
-  legend: { position: 'absolute', top: 8, right: 10, gap: 6 },
+  // Place legend to the right of the rings (not "attached" on top)
+  legend: { position: 'absolute', top: 8, right: -90, gap: 6 },
   legendRow: { flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'center' },
   dot: { width: 10, height: 10, borderRadius: 10 },
   legendTxt: { color: '#666', fontWeight: '800', fontSize: 12 },

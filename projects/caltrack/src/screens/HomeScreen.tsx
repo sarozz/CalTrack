@@ -73,8 +73,8 @@ export function HomeScreen({ navigation }: Props) {
             innerStroke={16}
             outerProgress={calProgress}
             innerProgress={proProgress}
-            outerColor={'rgba(109, 40, 217, 0.95)'}
-            innerColor={'rgba(34, 197, 94, 0.95)'}
+            outerColor={'rgba(109, 40, 217, 0.75)'}
+            innerColor={'rgba(34, 197, 94, 0.72)'}
             centerTitle={`${totals.calories} kcal`}
             centerSub={calGoal ? `Goal ${calGoal} kcal\nProtein ${totals.protein}/${proGoal || '—'}g` : `Protein ${totals.protein}/${proGoal || '—'}g`}
           />
