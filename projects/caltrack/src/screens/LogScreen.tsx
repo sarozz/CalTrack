@@ -1,9 +1,9 @@
 import React from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { addEntry } from '../storage/store';
+import { addEntry, loadEntries } from '../storage/store';
 import type { Entry, Meal } from '../types/models';
-import { EmojiPicker } from '../components/EmojiPicker';
+import { recommendEmoji } from '../utils/recommendEmoji';
 import { MealPicker } from '../components/MealPicker';
 import { toDateKey } from '../utils/date';
 import { autoMealFromTime, parseNutritionFromText } from '../utils/nutrition';
@@ -18,8 +18,9 @@ export function LogScreen() {
 
   const now = React.useMemo(() => new Date(), []);
   const [rawText, setRawText] = React.useState('');
-  const [emoji, setEmoji] = React.useState<string | undefined>(undefined);
   const [meal, setMeal] = React.useState<Meal>(autoMealFromTime(now));
+  const [suggestions, setSuggestions] = React.useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [calories, setCalories] = React.useState<string>('');
   const [protein, setProtein] = React.useState<string>('');
   const [caption, setCaption] = React.useState<string>('');
@@ -33,11 +34,35 @@ export function LogScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawText]);
 
+  // Autocomplete from history (local, free, works offline)
+  React.useEffect(() => {
+    let alive = true;
+    (async () => {
+      const entries = await loadEntries();
+      if (!alive) return;
+
+      const pool = entries
+        .map((e) => (e.caption || e.rawText || '').split('\n')[0].trim())
+        .filter(Boolean);
+
+      const uniq: string[] = [];
+      const seen = new Set<string>();
+      for (const s of pool) {
+        const k = s.toLowerCase();
+        if (seen.has(k)) continue;
+        seen.add(k);
+        uniq.push(s);
+        if (uniq.length >= 200) break;
+      }
+
+      setSuggestions(uniq);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
   async function onSave() {
-    if (!emoji) {
-      Alert.alert('Pick a tag', 'Please select an emoji tag.');
-      return;
-    }
     const c = Number(calories);
     const p = Number(protein);
     if (!Number.isFinite(c) || c <= 0) {
@@ -50,14 +75,20 @@ export function LogScreen() {
     }
 
     const createdAt = Date.now();
+    const cleanedCaption = caption.trim() ? caption.trim() : undefined;
+    const cleanedRaw = rawText.trim() ? rawText.trim() : undefined;
+
+    const hasBarcode = (cleanedRaw || '').toLowerCase().includes('barcode:');
+    const emoji = recommendEmoji({ meal, text: `${cleanedCaption || ''} ${cleanedRaw || ''}`, hasBarcode });
+
     const entry: Entry = {
       id: makeId(),
       createdAt,
       dateKey: toDateKey(new Date(createdAt)),
       meal,
       emoji,
-      caption: caption.trim() ? caption.trim() : undefined,
-      rawText: rawText.trim() ? rawText.trim() : undefined,
+      caption: cleanedCaption,
+      rawText: cleanedRaw,
       calories: Math.round(c),
       protein: Math.round(p),
     };
@@ -70,24 +101,87 @@ export function LogScreen() {
     setCalories('');
     setProtein('');
     setCaption('');
-    setEmoji(undefined);
 
     // Jump back to Home so dashboard/feed updates on focus
     navigation.navigate('HomeTab', { screen: 'Home' });
   }
 
+  const filtered = rawText.trim()
+    ? suggestions
+        .filter((s) => s.toLowerCase().includes(rawText.trim().toLowerCase()))
+        .slice(0, 6)
+    : [];
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ padding: 14, gap: 12 }}>
+      <Pressable
+        onPress={() =>
+          navigation.navigate('BarcodeScan', {
+            onScanned: async (data: string) => {
+              setBarcodeLoading(true);
+              try {
+                const facts = await lookupOpenFoodFacts(data);
+                const name = facts?.name ? String(facts.name).trim() : '';
+
+                // Always record barcode for traceability.
+                setRawText((prev) => {
+                  const base = prev?.trim() ? prev.trim() + '\n' : '';
+                  const title = name ? `name: ${name}\n` : '';
+                  return `${base}${title}barcode: ${data}`;
+                });
+
+                if (facts?.calories != null && !calories) setCalories(String(Math.round(facts.calories)));
+                if (facts?.protein != null && !protein) setProtein(String(Math.round(facts.protein)));
+
+                if (!facts) {
+                  Alert.alert('Not found', 'No product found for this barcode. You can still type it manually.');
+                } else if (facts.calories == null && facts.protein == null) {
+                  Alert.alert('No nutrition data', 'Found product but no calories/protein in the free database.');
+                }
+              } catch {
+                Alert.alert('Lookup failed', 'Could not fetch nutrition details. Try again.');
+              } finally {
+                setBarcodeLoading(false);
+              }
+            },
+          })
+        }
+        style={[styles.longBtn, { opacity: barcodeLoading ? 0.6 : 1 }]}
+        disabled={barcodeLoading}
+      >
+        <Text style={styles.longBtnTxt}>{barcodeLoading ? 'Scanning…' : 'Scan barcode  🏷️'}</Text>
+      </Pressable>
+
       <View style={styles.card}>
         <Text style={styles.title}>Quick log</Text>
-        <Text style={styles.subtle}>Text mode demo: enter food + (optional) numbers like "650c 30p".</Text>
+        <Text style={styles.subtle}>Start typing and pick from suggestions. Add numbers like "650c 30p".</Text>
         <TextInput
-          style={[styles.input, { height: 92, textAlignVertical: 'top' }]}
+          style={styles.input}
           placeholder="e.g. Chicken rice bowl 650c 35p"
           value={rawText}
-          onChangeText={setRawText}
-          multiline
+          onChangeText={(t) => {
+            setRawText(t);
+            setShowSuggestions(true);
+          }}
+          onFocus={() => setShowSuggestions(true)}
         />
+
+        {showSuggestions && filtered.length > 0 ? (
+          <View style={styles.suggestBox}>
+            {filtered.map((s) => (
+              <Pressable
+                key={s}
+                onPress={() => {
+                  setRawText(s);
+                  setShowSuggestions(false);
+                }}
+                style={styles.suggestRow}
+              >
+                <Text style={styles.suggestTxt}>{s}</Text>
+              </Pressable>
+            ))}
+          </View>
+        ) : null}
       </View>
 
       <View style={styles.card}>
@@ -122,10 +216,6 @@ export function LogScreen() {
         </View>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.title}>Tag (required)</Text>
-        <EmojiPicker value={emoji} onChange={setEmoji} />
-      </View>
 
       <View style={styles.card}>
         <Text style={styles.title}>Caption (optional)</Text>
@@ -137,53 +227,9 @@ export function LogScreen() {
         />
       </View>
 
-      <View style={styles.row}>
-        <Pressable
-          onPress={() =>
-            navigation.navigate('BarcodeScan', {
-              onScanned: async (data: string) => {
-                setBarcodeLoading(true);
-                try {
-                  const facts = await lookupOpenFoodFacts(data);
-                  const name = facts?.name ? String(facts.name).trim() : '';
-
-                  // Always record the barcode in raw text for traceability.
-                  setRawText((prev) => {
-                    const base = prev?.trim() ? prev.trim() + '\n' : '';
-                    const title = name ? `name: ${name}\n` : '';
-                    return `${base}${title}barcode: ${data}`;
-                  });
-
-                  if (facts?.calories != null && !calories) setCalories(String(Math.round(facts.calories)));
-                  if (facts?.protein != null && !protein) setProtein(String(Math.round(facts.protein)));
-
-                  if (!facts) {
-                    Alert.alert('Not found', 'No product found for this barcode.');
-                  } else if (facts.calories == null && facts.protein == null) {
-                    Alert.alert('No nutrition data', 'Found product but no calories/protein in OpenFoodFacts.');
-                  } else if (facts.source === '100g') {
-                    Alert.alert('Loaded (per 100g)', 'Calories/protein filled from OpenFoodFacts per 100g.');
-                  } else {
-                    Alert.alert('Loaded', 'Calories/protein filled from OpenFoodFacts per serving.');
-                  }
-                } catch {
-                  Alert.alert('Lookup failed', 'Could not fetch nutrition details. Try again.');
-                } finally {
-                  setBarcodeLoading(false);
-                }
-              },
-            })
-          }
-          style={[styles.actionBtn, { backgroundColor: '#6D28D9', opacity: barcodeLoading ? 0.6 : 1 }]}
-          disabled={barcodeLoading}
-        >
-          <Text style={styles.actionTxt}>{barcodeLoading ? 'Loading…' : 'Scan barcode'}</Text>
-        </Pressable>
-
-        <Pressable onPress={onSave} style={[styles.actionBtn, { backgroundColor: '#6D28D9' }]}>
-          <Text style={styles.actionTxt}>Save entry</Text>
-        </Pressable>
-      </View>
+      <Pressable onPress={onSave} style={styles.longBtn}>
+        <Text style={styles.longBtnTxt}>Save entry</Text>
+      </Pressable>
     </ScrollView>
   );
 }
@@ -210,12 +256,27 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   row: { flexDirection: 'row', gap: 10 },
-  actionBtn: {
-    flex: 1,
+  longBtn: {
+    backgroundColor: '#6D28D9',
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 20,
   },
-  actionTxt: { color: '#fff', fontWeight: '900', fontSize: 16 },
+  longBtnTxt: { color: '#fff', fontWeight: '900', fontSize: 16 },
+  suggestBox: {
+    marginTop: 10,
+    borderRadius: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#ddd',
+    overflow: 'hidden',
+  },
+  suggestRow: {
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: '#fff',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#eee',
+  },
+  suggestTxt: { color: '#111', fontWeight: '700' },
 });

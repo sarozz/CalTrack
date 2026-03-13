@@ -1,6 +1,6 @@
 import React from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
-import { Ring } from '../components/Ring';
+import { MultiRing } from '../components/MultiRing';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { loadEntries, loadSettings } from '../storage/store';
@@ -65,20 +65,14 @@ export function HomeScreen({ navigation }: Props) {
       <View style={styles.card}>
         <Text style={styles.title}>Today</Text>
 
-        <View style={styles.ringsRow}>
-          <Ring
-            label="Calories"
-            valueText={`${totals.calories}`}
-            subText={calGoal ? `/ ${calGoal} kcal` : 'set goal'}
-            progress={calProgress}
-            color={'#6D28D9'}
-          />
-          <Ring
-            label="Protein"
-            valueText={`${totals.protein}g`}
-            subText={proGoal ? `/ ${proGoal}g` : 'set goal'}
-            progress={proProgress}
-            color={'#7C3AED'}
+        <View style={{ alignItems: 'center', marginTop: 8, marginBottom: 12 }}>
+          <MultiRing
+            outerProgress={calProgress}
+            innerProgress={proProgress}
+            outerColor={'#6D28D9'}
+            innerColor={'#A78BFA'}
+            centerTitle={`${totals.calories} kcal`}
+            centerSub={calGoal ? `Goal ${calGoal} kcal\nProtein ${totals.protein}/${proGoal || '—'}g` : `Protein ${totals.protein}/${proGoal || '—'}g`}
           />
         </View>
 
@@ -92,7 +86,7 @@ export function HomeScreen({ navigation }: Props) {
         ListEmptyComponent={<Text style={styles.empty}>No entries yet.</Text>}
         renderItem={({ item }) => (
           <View style={styles.row}>
-            <Text style={styles.emoji}>{item.emoji}</Text>
+            <Text style={styles.emoji}>{item.emoji || '🍽️'}</Text>
             <View style={{ flex: 1 }}>
               <Text style={styles.rowTitle}>
                 {item.meal} · {item.calories} kcal · {item.protein}g
@@ -120,7 +114,6 @@ const styles = StyleSheet.create({
   title: { fontSize: 16, fontWeight: '800', marginBottom: 6 },
   big: { fontSize: 18, fontWeight: '800', marginTop: 4 },
   subtle: { marginTop: 10, color: '#666' },
-  ringsRow: { flexDirection: 'row', gap: 14, marginTop: 8, marginBottom: 2 },
   section: { fontWeight: '800', fontSize: 14, marginTop: 4 },
   empty: { color: '#666', paddingVertical: 10 },
   row: {

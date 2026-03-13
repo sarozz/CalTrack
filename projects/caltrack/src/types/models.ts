@@ -15,7 +15,8 @@ export type Entry = {
   createdAt: number; // epoch ms
   dateKey: string; // YYYY-MM-DD local
   meal: Meal;
-  emoji: string;
+  /** Optional: recommended by the system (no manual picker). */
+  emoji?: string;
   caption?: string;
   rawText?: string;
   calories: number;

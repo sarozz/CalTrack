@@ -55,7 +55,7 @@ export function DayDetailScreen({ route, navigation }: Props) {
         ListEmptyComponent={<Text style={styles.empty}>No entries.</Text>}
         renderItem={({ item }) => (
           <View style={styles.row}>
-            <Text style={styles.emoji}>{item.emoji}</Text>
+            <Text style={styles.emoji}>{item.emoji || '🍽️'}</Text>
             <View style={{ flex: 1 }}>
               <Text style={styles.rowTitle}>
                 {item.meal} · {item.calories} kcal · {item.protein}g
