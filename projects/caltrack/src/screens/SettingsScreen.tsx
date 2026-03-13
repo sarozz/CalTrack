@@ -16,6 +16,10 @@ const REMINDER_MODES: { label: string; value: ReminderMode; desc: string }[] = [
 ];
 
 export function SettingsScreen({ navigation }: Props) {
+  React.useLayoutEffect(() => {
+    navigation.setOptions({ title: 'Settings' });
+  }, [navigation]);
+
   const [draft, setDraft] = React.useState<Settings>(DEFAULT_SETTINGS);
 
   React.useEffect(() => {
@@ -200,6 +204,22 @@ export function SettingsScreen({ navigation }: Props) {
         </View>
       </View>
 
+      <View style={styles.card}>
+        <Text style={styles.title}>Legal</Text>
+        <Pressable style={styles.linkRow} onPress={() => navigation.navigate('Legal', { kind: 'terms' })}>
+          <Text style={styles.linkTxt}>Terms of Use</Text>
+          <Text style={styles.linkChevron}>›</Text>
+        </Pressable>
+        <Pressable style={styles.linkRow} onPress={() => navigation.navigate('Legal', { kind: 'privacy' })}>
+          <Text style={styles.linkTxt}>Privacy Policy</Text>
+          <Text style={styles.linkChevron}>›</Text>
+        </Pressable>
+        <Pressable style={styles.linkRow} onPress={() => navigation.navigate('Legal', { kind: 'faq' })}>
+          <Text style={styles.linkTxt}>FAQ</Text>
+          <Text style={styles.linkChevron}>›</Text>
+        </Pressable>
+      </View>
+
       <Pressable onPress={onSave} style={styles.saveBtn}>
         <Text style={styles.saveTxt}>Save</Text>
       </Pressable>
@@ -255,4 +275,14 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   saveTxt: { color: COLORS.btnText, fontWeight: '600', fontSize: 16 },
+  linkRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(0,0,0,0.06)',
+  },
+  linkTxt: { color: '#111', fontWeight: '600' },
+  linkChevron: { color: 'rgba(17,17,17,0.45)', fontSize: 18, fontWeight: '600' },
 });

@@ -12,6 +12,7 @@ import { formatTime, toDateKey } from '../utils/date';
 export type HomeStackParamList = {
   Home: undefined;
   Settings: undefined;
+  Legal: { kind: 'terms' | 'privacy' | 'faq' };
   EditEntry: { id: string };
 };
 
