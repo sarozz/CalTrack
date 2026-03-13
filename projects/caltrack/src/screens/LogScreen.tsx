@@ -336,12 +336,9 @@ export function LogScreen() {
                 const facts = await lookupOpenFoodFacts(data);
                 const name = facts?.name ? String(facts.name).trim() : '';
 
-                // Always record barcode for traceability.
-                setRawText((prev) => {
-                  const base = prev?.trim() ? prev.trim() + '\n' : '';
-                  const title = name ? `name: ${name}\n` : '';
-                  return `${base}${title}barcode: ${data}`;
-                });
+                // Do not inject scan text into the manual "What did you eat?" field.
+                setRawText('');
+                setCaption('');
 
                 // Fill form fields (so user can edit)
                 const c = facts?.calories != null ? Math.round(facts.calories) : undefined;

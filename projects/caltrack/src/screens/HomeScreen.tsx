@@ -107,19 +107,28 @@ export function HomeScreen({ navigation }: Props) {
       {breakdown ? (
         <View style={styles.modalWrap}>
           <Pressable style={styles.backdrop} onPress={() => setBreakdown(null)} />
-          <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>{breakdown.title}</Text>
-            <Text style={styles.modalSub}>Top sources today</Text>
+          <View style={styles.modalCardModern}>
+            <View style={styles.modalHeader}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.modalTitle}>{breakdown.title}</Text>
+                <Text style={styles.modalSub}>Top sources today</Text>
+              </View>
+              <Pressable onPress={() => setBreakdown(null)} style={styles.modalX}>
+                <Text style={styles.modalXTxt}>✕</Text>
+              </Pressable>
+            </View>
 
             {breakdownRows.length === 0 ? (
               <Text style={styles.modalEmpty}>No data yet.</Text>
             ) : (
-              <View style={{ marginTop: 10, gap: 8 }}>
+              <View style={{ marginTop: 12, gap: 10 }}>
                 {breakdownRows.slice(0, 8).map((r) => (
-                  <View key={r.id} style={styles.modalRow}>
-                    <Text style={styles.modalRowLabel} numberOfLines={1}>
-                      {r.label}
-                    </Text>
+                  <View key={r.id} style={styles.modalRowModern}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.modalRowLabel} numberOfLines={1}>
+                        {r.label}
+                      </Text>
+                    </View>
                     <Text style={styles.modalRowVal}>
                       {Math.round(r.value)}{breakdown.unit}
                     </Text>
@@ -128,8 +137,8 @@ export function HomeScreen({ navigation }: Props) {
               </View>
             )}
 
-            <Pressable onPress={() => setBreakdown(null)} style={[styles.modalBtn, { marginTop: 12 }]}>
-              <Text style={styles.modalBtnTxt}>Close</Text>
+            <Pressable onPress={() => setBreakdown(null)} style={[styles.modalBtn, { marginTop: 14 }]}>
+              <Text style={styles.modalBtnTxt}>Done</Text>
             </Pressable>
           </View>
         </View>
@@ -299,23 +308,40 @@ const styles = StyleSheet.create({
   // Modal
   modalWrap: { ...StyleSheet.absoluteFillObject, justifyContent: 'center', padding: 14, zIndex: 50 },
   backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.25)' },
-  modalCard: {
-    backgroundColor: '#fff',
-    borderRadius: 18,
-    padding: 14,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#ddd',
-  },
   modalTitle: { fontSize: 16, fontWeight: '900', color: '#111' },
   modalSub: { marginTop: 4, color: 'rgba(17,17,17,0.55)', fontWeight: '800' },
   modalEmpty: { marginTop: 10, color: 'rgba(17,17,17,0.55)' },
-  modalRow: {
+
+  modalCardModern: {
+    backgroundColor: '#fff',
+    borderRadius: 22,
+    padding: 14,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(0,0,0,0.10)',
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 10,
+  },
+  modalHeader: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  modalX: {
+    width: 34,
+    height: 34,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.06)',
+  },
+  modalXTxt: { fontSize: 16, fontWeight: '900', color: 'rgba(17,17,17,0.7)' },
+
+  modalRowModern: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 12,
-    borderRadius: 12,
+    borderRadius: 14,
     backgroundColor: 'rgba(0,0,0,0.04)',
   },
   modalRowLabel: { flex: 1, fontWeight: '900', color: '#111' },
