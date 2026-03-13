@@ -27,6 +27,12 @@ export function SettingsScreen({ navigation }: Props) {
     const cleaned: Settings = {
       caloriesGoal: Math.max(0, Math.round(draft.caloriesGoal || 0)),
       proteinGoal: Math.max(0, Math.round(draft.proteinGoal || 0)),
+      fatGoal: Math.max(0, Math.round(draft.fatGoal || 0)),
+      carbsGoal: Math.max(0, Math.round(draft.carbsGoal || 0)),
+      fiberGoal: Math.max(0, Math.round(draft.fiberGoal || 0)),
+      sugarGoal: Math.max(0, Math.round(draft.sugarGoal || 0)),
+      cholesterolGoal: Math.max(0, Math.round(draft.cholesterolGoal || 0)),
+      sodiumGoal: Math.max(0, Math.round(draft.sodiumGoal || 0)),
       wakeTime: (draft.wakeTime || '07:00').slice(0, 5),
       sleepTime: (draft.sleepTime || '23:00').slice(0, 5),
       reminderMode: draft.reminderMode,
@@ -58,6 +64,72 @@ export function SettingsScreen({ navigation }: Props) {
             value={String(draft.proteinGoal)}
             onChangeText={(t) => setDraft((s) => ({ ...s, proteinGoal: Number(t.replace(/[^0-9]/g, '')) }))}
             placeholder="120"
+          />
+        </View>
+
+        <View style={styles.field}>
+          <Text style={styles.label}>Fat goal (g)</Text>
+          <TextInput
+            style={styles.input}
+            keyboardType="numeric"
+            value={String(draft.fatGoal)}
+            onChangeText={(t) => setDraft((s) => ({ ...s, fatGoal: Number(t.replace(/[^0-9]/g, '')) }))}
+            placeholder="78"
+          />
+        </View>
+
+        <View style={styles.field}>
+          <Text style={styles.label}>Carbs goal (g)</Text>
+          <TextInput
+            style={styles.input}
+            keyboardType="numeric"
+            value={String(draft.carbsGoal)}
+            onChangeText={(t) => setDraft((s) => ({ ...s, carbsGoal: Number(t.replace(/[^0-9]/g, '')) }))}
+            placeholder="275"
+          />
+        </View>
+
+        <View style={styles.field}>
+          <Text style={styles.label}>Fiber goal (g)</Text>
+          <TextInput
+            style={styles.input}
+            keyboardType="numeric"
+            value={String(draft.fiberGoal)}
+            onChangeText={(t) => setDraft((s) => ({ ...s, fiberGoal: Number(t.replace(/[^0-9]/g, '')) }))}
+            placeholder="28"
+          />
+        </View>
+
+        <View style={styles.field}>
+          <Text style={styles.label}>Sugar goal (g)</Text>
+          <TextInput
+            style={styles.input}
+            keyboardType="numeric"
+            value={String(draft.sugarGoal)}
+            onChangeText={(t) => setDraft((s) => ({ ...s, sugarGoal: Number(t.replace(/[^0-9]/g, '')) }))}
+            placeholder="50"
+          />
+        </View>
+
+        <View style={styles.field}>
+          <Text style={styles.label}>Cholesterol goal (mg)</Text>
+          <TextInput
+            style={styles.input}
+            keyboardType="numeric"
+            value={String(draft.cholesterolGoal)}
+            onChangeText={(t) => setDraft((s) => ({ ...s, cholesterolGoal: Number(t.replace(/[^0-9]/g, '')) }))}
+            placeholder="300"
+          />
+        </View>
+
+        <View style={styles.field}>
+          <Text style={styles.label}>Sodium goal (mg)</Text>
+          <TextInput
+            style={styles.input}
+            keyboardType="numeric"
+            value={String(draft.sodiumGoal)}
+            onChangeText={(t) => setDraft((s) => ({ ...s, sodiumGoal: Number(t.replace(/[^0-9]/g, '')) }))}
+            placeholder="2300"
           />
         </View>
       </View>
@@ -155,11 +227,13 @@ const styles = StyleSheet.create({
   modeCheck: { width: 20, textAlign: 'right', color: '#111', fontWeight: '900' },
   modeCheckSelected: { color: '#fff' },
   saveBtn: {
-    backgroundColor: '#6D28D9',
+    backgroundColor: 'rgba(236, 72, 153, 0.18)',
+    borderColor: 'rgba(236, 72, 153, 0.35)',
+    borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: 'center',
     marginBottom: 30,
   },
-  saveTxt: { color: '#fff', fontWeight: '900', fontSize: 16 },
+  saveTxt: { color: '#9D174D', fontWeight: '900', fontSize: 16 },
 });

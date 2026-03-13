@@ -1,6 +1,7 @@
 import React from 'react';
 import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
+import { COLORS } from '../styles/theme';
 
 type Props = {
   size?: number;
@@ -85,8 +86,8 @@ export function MultiRing({
     <View style={[styles.wrap, { width: size, height: size }]}>
       <Svg width={size} height={size}>
         {/* tracks */}
-        <Circle cx={cx} cy={cy} r={outerR} stroke={'rgba(0,0,0,0.08)'} strokeWidth={outerStroke} fill="none" />
-        <Circle cx={cx} cy={cy} r={innerR} stroke={'rgba(0,0,0,0.08)'} strokeWidth={innerStroke} fill="none" />
+        <Circle cx={cx} cy={cy} r={outerR} stroke={COLORS.track} strokeWidth={outerStroke} fill="none" />
+        <Circle cx={cx} cy={cy} r={innerR} stroke={COLORS.track} strokeWidth={innerStroke} fill="none" />
 
         {/* progress */}
         <AnimatedCircle
@@ -127,11 +128,11 @@ export function MultiRing({
       <View style={styles.legend}>
         <View style={styles.legendRow}>
           <View style={[styles.dot, { backgroundColor: outerColor }]} />
-          <Text style={styles.legendTxt}>Calories</Text>
+          <Text style={styles.legendTxt}>Cal</Text>
         </View>
         <View style={styles.legendRow}>
           <View style={[styles.dot, { backgroundColor: innerColor }]} />
-          <Text style={styles.legendTxt}>Protein</Text>
+          <Text style={styles.legendTxt}>Pro</Text>
         </View>
       </View>
     </View>
@@ -143,9 +144,9 @@ const styles = StyleSheet.create({
   center: { position: 'absolute', alignItems: 'center', paddingHorizontal: 10 },
   centerTitle: { fontSize: 28, fontWeight: '900', color: '#111', letterSpacing: -0.3 },
   centerSub: { marginTop: 6, fontSize: 12, fontWeight: '700', color: 'rgba(17,17,17,0.55)', textAlign: 'center', lineHeight: 16 },
-  // Place legend to the right of the rings (not "attached" on top)
-  legend: { position: 'absolute', top: 8, right: -90, gap: 6 },
-  legendRow: { flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'center' },
-  dot: { width: 10, height: 10, borderRadius: 10 },
-  legendTxt: { color: '#666', fontWeight: '800', fontSize: 12 },
+  // Legend should stay inside the card.
+  legend: { position: 'absolute', top: 10, right: 12, gap: 6 },
+  legendRow: { flexDirection: 'row', gap: 6, alignItems: 'center' },
+  dot: { width: 9, height: 9, borderRadius: 9 },
+  legendTxt: { color: 'rgba(17,17,17,0.55)', fontWeight: '900', fontSize: 11 },
 });

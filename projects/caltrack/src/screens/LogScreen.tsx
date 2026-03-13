@@ -28,6 +28,13 @@ export function LogScreen() {
   const [caption, setCaption] = React.useState<string>('');
   const [barcodeLoading, setBarcodeLoading] = React.useState(false);
 
+  const [fat, setFat] = React.useState<number | undefined>(undefined);
+  const [carbs, setCarbs] = React.useState<number | undefined>(undefined);
+  const [fiber, setFiber] = React.useState<number | undefined>(undefined);
+  const [sugar, setSugar] = React.useState<number | undefined>(undefined);
+  const [cholesterol, setCholesterol] = React.useState<number | undefined>(undefined);
+  const [sodium, setSodium] = React.useState<number | undefined>(undefined);
+
   React.useEffect(() => {
     const parsed = parseNutritionFromText(rawText);
     if (parsed.calories != null && !calories) setCalories(String(parsed.calories));
@@ -93,6 +100,12 @@ export function LogScreen() {
       rawText: cleanedRaw,
       calories: Math.round(c),
       protein: Math.round(p),
+      fat,
+      carbs,
+      fiber,
+      sugar,
+      cholesterol,
+      sodium,
     };
 
     await addEntry(entry);
@@ -103,6 +116,12 @@ export function LogScreen() {
     setCalories('');
     setProtein('');
     setCaption('');
+    setFat(undefined);
+    setCarbs(undefined);
+    setFiber(undefined);
+    setSugar(undefined);
+    setCholesterol(undefined);
+    setSodium(undefined);
 
     // Jump back to Home so dashboard/feed updates on focus
     navigation.navigate('HomeTab', { screen: 'Home' });
@@ -152,6 +171,13 @@ export function LogScreen() {
 
                 if (facts?.calories != null && !calories) setCalories(String(Math.round(facts.calories)));
                 if (facts?.protein != null && !protein) setProtein(String(Math.round(facts.protein)));
+
+                if (facts?.fat != null) setFat(facts.fat);
+                if (facts?.carbs != null) setCarbs(facts.carbs);
+                if (facts?.fiber != null) setFiber(facts.fiber);
+                if (facts?.sugar != null) setSugar(facts.sugar);
+                if (facts?.cholesterol != null) setCholesterol(facts.cholesterol);
+                if (facts?.sodium != null) setSodium(facts.sodium);
 
                 if (!facts) {
                   Alert.alert('Not found', 'No product found for this barcode. You can still type it manually.');
@@ -203,6 +229,14 @@ export function LogScreen() {
                     setRawText(facts.name);
                     if (facts.calories != null && !calories) setCalories(String(Math.round(facts.calories)));
                     if (facts.protein != null && !protein) setProtein(String(Math.round(facts.protein)));
+
+                    if (facts.fat != null) setFat(facts.fat);
+                    if (facts.carbs != null) setCarbs(facts.carbs);
+                    if (facts.fiber != null) setFiber(facts.fiber);
+                    if (facts.sugar != null) setSugar(facts.sugar);
+                    if (facts.cholesterol != null) setCholesterol(facts.cholesterol);
+                    if (facts.sodium != null) setSodium(facts.sodium);
+
                     setShowSuggestions(false);
                   }}
                   style={styles.suggestRow}
@@ -303,13 +337,15 @@ const styles = StyleSheet.create({
   },
   row: { flexDirection: 'row', gap: 10 },
   longBtn: {
-    backgroundColor: '#6D28D9',
+    backgroundColor: 'rgba(236, 72, 153, 0.18)',
+    borderColor: 'rgba(236, 72, 153, 0.35)',
+    borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: 'center',
     marginBottom: 20,
   },
-  longBtnTxt: { color: '#fff', fontWeight: '900', fontSize: 16 },
+  longBtnTxt: { color: '#9D174D', fontWeight: '900', fontSize: 16 },
   suggestBox: {
     marginTop: 10,
     borderRadius: 12,

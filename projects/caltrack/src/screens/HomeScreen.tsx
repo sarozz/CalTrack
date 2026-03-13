@@ -1,6 +1,8 @@
 import React from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { MultiRing } from '../components/MultiRing';
+import { AnimatedRing } from '../components/AnimatedRing';
+import { COLORS } from '../styles/theme';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { loadEntries, loadSettings } from '../storage/store';
@@ -50,13 +52,26 @@ export function HomeScreen({ navigation }: Props) {
     (acc, e) => {
       acc.calories += e.calories;
       acc.protein += e.protein;
+      acc.fat += e.fat || 0;
+      acc.carbs += e.carbs || 0;
+      acc.fiber += e.fiber || 0;
+      acc.sugar += e.sugar || 0;
+      acc.cholesterol += e.cholesterol || 0;
+      acc.sodium += e.sodium || 0;
       return acc;
     },
-    { calories: 0, protein: 0 }
+    { calories: 0, protein: 0, fat: 0, carbs: 0, fiber: 0, sugar: 0, cholesterol: 0, sodium: 0 }
   );
 
   const calGoal = settings?.caloriesGoal ?? 0;
   const proGoal = settings?.proteinGoal ?? 0;
+
+  const fatGoal = settings?.fatGoal ?? 0;
+  const carbsGoal = settings?.carbsGoal ?? 0;
+  const fiberGoal = settings?.fiberGoal ?? 0;
+  const sugarGoal = settings?.sugarGoal ?? 0;
+  const cholGoal = settings?.cholesterolGoal ?? 0;
+  const sodiumGoal = settings?.sodiumGoal ?? 0;
 
   const calProgress = calGoal > 0 ? totals.calories / calGoal : 0;
   const proProgress = proGoal > 0 ? totals.protein / proGoal : 0;
@@ -68,19 +83,76 @@ export function HomeScreen({ navigation }: Props) {
 
         <View style={{ alignItems: 'center', marginTop: 8, marginBottom: 12 }}>
           <MultiRing
-            size={260}
-            outerStroke={22}
-            innerStroke={16}
+            size={280}
+            outerStroke={24}
+            innerStroke={18}
             outerProgress={calProgress}
             innerProgress={proProgress}
-            outerColor={'rgba(109, 40, 217, 0.75)'}
-            innerColor={'rgba(34, 197, 94, 0.72)'}
+            outerColor={COLORS.purple}
+            innerColor={COLORS.green}
             centerTitle={`${totals.calories} kcal`}
             centerSub={calGoal ? `Goal ${calGoal} kcal\nProtein ${totals.protein}/${proGoal || '—'}g` : `Protein ${totals.protein}/${proGoal || '—'}g`}
           />
         </View>
 
         <Text style={styles.subtle}>Tap Log (+) to add an entry.</Text>
+
+        <View style={styles.microGrid}>
+          <AnimatedRing
+            label="Fat"
+            valueText={`${Math.round(totals.fat)}g`}
+            subText={fatGoal ? `/ ${fatGoal}g` : undefined}
+            progress={fatGoal ? totals.fat / fatGoal : 0}
+            color={'rgba(236, 72, 153, 0.55)'}
+            size={104}
+            stroke={12}
+          />
+          <AnimatedRing
+            label="Carbs"
+            valueText={`${Math.round(totals.carbs)}g`}
+            subText={carbsGoal ? `/ ${carbsGoal}g` : undefined}
+            progress={carbsGoal ? totals.carbs / carbsGoal : 0}
+            color={'rgba(14, 165, 233, 0.55)'}
+            size={104}
+            stroke={12}
+          />
+          <AnimatedRing
+            label="Fiber"
+            valueText={`${Math.round(totals.fiber)}g`}
+            subText={fiberGoal ? `/ ${fiberGoal}g` : undefined}
+            progress={fiberGoal ? totals.fiber / fiberGoal : 0}
+            color={'rgba(34, 197, 94, 0.55)'}
+            size={104}
+            stroke={12}
+          />
+          <AnimatedRing
+            label="Sugar"
+            valueText={`${Math.round(totals.sugar)}g`}
+            subText={sugarGoal ? `/ ${sugarGoal}g` : undefined}
+            progress={sugarGoal ? totals.sugar / sugarGoal : 0}
+            color={'rgba(245, 158, 11, 0.55)'}
+            size={104}
+            stroke={12}
+          />
+          <AnimatedRing
+            label="Chol"
+            valueText={`${Math.round(totals.cholesterol)}mg`}
+            subText={cholGoal ? `/ ${cholGoal}mg` : undefined}
+            progress={cholGoal ? totals.cholesterol / cholGoal : 0}
+            color={'rgba(168, 85, 247, 0.55)'}
+            size={104}
+            stroke={12}
+          />
+          <AnimatedRing
+            label="Sodium"
+            valueText={`${Math.round(totals.sodium)}mg`}
+            subText={sodiumGoal ? `/ ${sodiumGoal}mg` : undefined}
+            progress={sodiumGoal ? totals.sodium / sodiumGoal : 0}
+            color={'rgba(100, 116, 139, 0.55)'}
+            size={104}
+            stroke={12}
+          />
+        </View>
       </View>
 
       <Text style={styles.section}>Today feed</Text>
@@ -118,6 +190,13 @@ const styles = StyleSheet.create({
   title: { fontSize: 16, fontWeight: '800', marginBottom: 6 },
   big: { fontSize: 18, fontWeight: '800', marginTop: 4 },
   subtle: { marginTop: 10, color: '#666' },
+  microGrid: {
+    marginTop: 14,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    justifyContent: 'center',
+  },
   section: { fontWeight: '800', fontSize: 14, marginTop: 4 },
   empty: { color: '#666', paddingVertical: 10 },
   row: {

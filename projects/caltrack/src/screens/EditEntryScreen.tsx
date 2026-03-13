@@ -188,12 +188,14 @@ const styles = StyleSheet.create({
   },
   row: { flexDirection: 'row', gap: 10 },
   primaryBtn: {
-    backgroundColor: '#6D28D9',
+    backgroundColor: 'rgba(236, 72, 153, 0.18)',
+    borderColor: 'rgba(236, 72, 153, 0.35)',
+    borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: 'center',
   },
-  primaryTxt: { color: '#fff', fontWeight: '900', fontSize: 16 },
+  primaryTxt: { color: '#9D174D', fontWeight: '900', fontSize: 16 },
   dangerBtn: {
     backgroundColor: 'rgba(239, 68, 68, 0.12)',
     borderRadius: 14,

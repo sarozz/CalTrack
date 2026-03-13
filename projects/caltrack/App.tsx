@@ -58,7 +58,7 @@ export default function App() {
       <Tab.Navigator
         screenOptions={({ route }) => ({
           headerShown: false,
-          tabBarActiveTintColor: '#6D28D9',
+          tabBarActiveTintColor: 'rgba(236, 72, 153, 0.9)',
           tabBarInactiveTintColor: 'rgba(17,17,17,0.55)',
           tabBarIcon: ({ color, size }) => {
             const name =
