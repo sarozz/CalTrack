@@ -1,5 +1,6 @@
 import React from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { COLORS } from '../styles/theme';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { deleteEntry, loadEntries, updateEntry } from '../storage/store';
 import type { Entry, Meal } from '../types/models';
@@ -188,14 +189,14 @@ const styles = StyleSheet.create({
   },
   row: { flexDirection: 'row', gap: 10 },
   primaryBtn: {
-    backgroundColor: 'rgba(236, 72, 153, 0.18)',
-    borderColor: 'rgba(236, 72, 153, 0.35)',
+    backgroundColor: COLORS.pinkBg,
+    borderColor: COLORS.pinkBorder,
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: 'center',
   },
-  primaryTxt: { color: '#9D174D', fontWeight: '900', fontSize: 16 },
+  primaryTxt: { color: COLORS.pinkText, fontWeight: '900', fontSize: 16 },
   dangerBtn: {
     backgroundColor: 'rgba(239, 68, 68, 0.12)',
     borderRadius: 14,

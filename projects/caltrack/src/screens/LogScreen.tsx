@@ -3,6 +3,7 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 
 import { useNavigation } from '@react-navigation/native';
 import { addEntry, loadEntries } from '../storage/store';
 import type { Entry, Meal } from '../types/models';
+import { COLORS } from '../styles/theme';
 import { recommendEmoji } from '../utils/recommendEmoji';
 import { MealPicker } from '../components/MealPicker';
 import { toDateKey } from '../utils/date';
@@ -337,15 +338,15 @@ const styles = StyleSheet.create({
   },
   row: { flexDirection: 'row', gap: 10 },
   longBtn: {
-    backgroundColor: 'rgba(236, 72, 153, 0.18)',
-    borderColor: 'rgba(236, 72, 153, 0.35)',
+    backgroundColor: COLORS.pinkBg,
+    borderColor: COLORS.pinkBorder,
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: 'center',
     marginBottom: 20,
   },
-  longBtnTxt: { color: '#9D174D', fontWeight: '900', fontSize: 16 },
+  longBtnTxt: { color: COLORS.pinkText, fontWeight: '900', fontSize: 16 },
   suggestBox: {
     marginTop: 10,
     borderRadius: 12,

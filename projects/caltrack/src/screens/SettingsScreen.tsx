@@ -1,5 +1,6 @@
 import React from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { COLORS } from '../styles/theme';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { loadSettings, saveSettings } from '../storage/store';
 import { DEFAULT_SETTINGS, type ReminderMode, type Settings } from '../types/models';
@@ -227,13 +228,13 @@ const styles = StyleSheet.create({
   modeCheck: { width: 20, textAlign: 'right', color: '#111', fontWeight: '900' },
   modeCheckSelected: { color: '#fff' },
   saveBtn: {
-    backgroundColor: 'rgba(236, 72, 153, 0.18)',
-    borderColor: 'rgba(236, 72, 153, 0.35)',
+    backgroundColor: COLORS.pinkBg,
+    borderColor: COLORS.pinkBorder,
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: 'center',
     marginBottom: 30,
   },
-  saveTxt: { color: '#9D174D', fontWeight: '900', fontSize: 16 },
+  saveTxt: { color: COLORS.pinkText, fontWeight: '900', fontSize: 16 },
 });
