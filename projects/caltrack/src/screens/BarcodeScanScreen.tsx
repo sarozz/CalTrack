@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 18, fontWeight: '900', marginBottom: 8 },
   subtle: { color: '#666', textAlign: 'center', marginBottom: 16 },
   btn: {
-    backgroundColor: '#0a66ff',
+    backgroundColor: '#6D28D9',
     borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 16,
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   overlayTitle: { color: '#fff', fontSize: 18, fontWeight: '900' },
   overlaySub: { color: 'rgba(255,255,255,0.85)', marginTop: 4 },
   smallBtn: { paddingVertical: 10, paddingHorizontal: 14, borderRadius: 12 },
-  smallBtnDark: { backgroundColor: '#0a66ff' },
+  smallBtnDark: { backgroundColor: '#6D28D9' },
   smallBtnLight: { backgroundColor: '#fff' },
   smallBtnTxt: { color: '#fff', fontWeight: '900' },
 });

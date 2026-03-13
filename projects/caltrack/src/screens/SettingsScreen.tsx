@@ -147,11 +147,11 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#ddd',
   },
-  modeRowSelected: { borderColor: '#111', backgroundColor: '#111' },
+  modeRowSelected: { borderColor: '#6D28D9', backgroundColor: '#6D28D9' },
   modeTitle: { fontWeight: '800', color: '#111' },
   modeTitleSelected: { color: '#fff' },
   modeDesc: { color: '#666', marginTop: 2, fontSize: 12 },
-  modeDescSelected: { color: '#d6d6d6' },
+  modeDescSelected: { color: 'rgba(255,255,255,0.85)' },
   modeCheck: { width: 20, textAlign: 'right', color: '#111', fontWeight: '900' },
   modeCheckSelected: { color: '#fff' },
   saveBtn: {
