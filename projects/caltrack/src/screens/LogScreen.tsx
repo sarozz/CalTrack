@@ -15,12 +15,13 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { addEntry, loadEntries } from '../storage/store';
+import { formatTime } from '../utils/date';
 import type { Entry, Meal } from '../types/models';
 import { COLORS } from '../styles/theme';
 import { recommendEmoji } from '../utils/recommendEmoji';
 import { MealPicker } from '../components/MealPicker';
 import { toDateKey } from '../utils/date';
-import { autoMealFromTime, parseNutritionFromText } from '../utils/nutrition';
+import { parseNutritionFromText } from '../utils/nutrition';
 import { lookupOpenFoodFacts } from '../utils/openfoodfacts';
 import { usdaFactsFromItem, usdaSearch } from '../utils/usda';
 import { guessCaloriesProtein } from '../utils/quickFacts';
@@ -35,7 +36,8 @@ export function LogScreen() {
   const now = React.useMemo(() => new Date(), []);
   const [rawText, setRawText] = React.useState('');
   const [meal, setMeal] = React.useState<Meal>('Lunch');
-  const [suggestions, setSuggestions] = React.useState<string[]>([]); // local history
+  const [suggestions, setSuggestions] = React.useState<string[]>([]); // local history (strings)
+  const [recent, setRecent] = React.useState<Entry[]>([]);
   const [usdaSuggestions, setUsdaSuggestions] = React.useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [calories, setCalories] = React.useState<string>('');
@@ -103,6 +105,20 @@ export function LogScreen() {
       }
 
       setSuggestions(uniq);
+
+      // Recent foods list (unique by caption/text)
+      const rec: Entry[] = [];
+      const seen2 = new Set<string>();
+      for (const e of entries) {
+        const label = (e.caption || e.rawText || '').split('\n')[0].trim();
+        if (!label) continue;
+        const k = label.toLowerCase();
+        if (seen2.has(k)) continue;
+        seen2.add(k);
+        rec.push(e);
+        if (rec.length >= 12) break;
+      }
+      setRecent(rec);
     })();
     return () => {
       alive = false;
@@ -225,11 +241,10 @@ export function LogScreen() {
     }
 
     const createdAt = Date.now();
-    const mealAuto = autoMealFromTime(new Date(createdAt));
 
     // Keep log clean: don't store barcode lines.
     const name = (scanPreview.name || '').trim();
-    const emoji = recommendEmoji({ meal: mealAuto, text: name, hasBarcode: false });
+    const emoji = recommendEmoji({ meal, text: name, hasBarcode: false });
 
     const scale = (n?: number) => (n == null ? undefined : Math.round(n * mult));
 
@@ -237,7 +252,7 @@ export function LogScreen() {
       id: makeId(),
       createdAt,
       dateKey: toDateKey(new Date(createdAt)),
-      meal: mealAuto,
+      meal,
       emoji,
       caption: name || undefined,
       rawText: undefined,
@@ -390,6 +405,44 @@ export function LogScreen() {
       >
         <Text style={styles.longBtnTxt}>{barcodeLoading ? 'Scanning…' : 'Scan barcode  🏷️'}</Text>
       </Pressable>
+
+      {recent.length ? (
+        <View style={styles.card}>
+          <Text style={styles.title}>Recent</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10 }}>
+            {recent.map((e) => {
+              const label = (e.caption || e.rawText || e.meal).split('\n')[0].trim();
+              return (
+                <Pressable
+                  key={e.id}
+                  style={styles.recentChip}
+                  onPress={async () => {
+                    const createdAt = Date.now();
+                    const name = label;
+                    const emoji = recommendEmoji({ meal, text: name, hasBarcode: false });
+                    await addEntry({
+                      ...e,
+                      id: makeId(),
+                      createdAt,
+                      dateKey: toDateKey(new Date(createdAt)),
+                      meal,
+                      emoji,
+                      caption: name,
+                      rawText: undefined,
+                    });
+                    Alert.alert('Logged', `${name} · ${formatTime(new Date(createdAt))}`);
+                  }}
+                >
+                  <Text style={styles.recentEmoji}>{e.emoji || '🍽️'}</Text>
+                  <Text style={styles.recentTxt} numberOfLines={1}>
+                    {label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
+      ) : null}
 
       <View style={styles.card}>
         <Text style={styles.title}>What did you eat?</Text>
@@ -582,6 +635,21 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     overflow: 'hidden',
   },
+
+  recentChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    backgroundColor: 'rgba(0,0,0,0.04)',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(0,0,0,0.06)',
+    maxWidth: 220,
+  },
+  recentEmoji: { fontSize: 16 },
+  recentTxt: { color: '#111', fontWeight: '600', maxWidth: 170 },
   suggestRow: {
     paddingVertical: 10,
     paddingHorizontal: 12,

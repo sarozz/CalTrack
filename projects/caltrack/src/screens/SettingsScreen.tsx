@@ -3,6 +3,7 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 
 import { COLORS } from '../styles/theme';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { loadSettings, saveSettings } from '../storage/store';
+import { cancelDailyReminder, scheduleDailyReminder } from '../utils/reminders';
 import { DEFAULT_SETTINGS, type ReminderMode, type Settings } from '../types/models';
 import type { HomeStackParamList } from './HomeScreen';
 
@@ -10,8 +11,8 @@ type Props = NativeStackScreenProps<HomeStackParamList, 'Settings'>;
 
 const REMINDER_MODES: { label: string; value: ReminderMode; desc: string }[] = [
   { label: 'Off', value: 'off', desc: 'No reminders' },
-  { label: 'Daily', value: 'daily', desc: 'Simple daily nudges' },
-  { label: 'Smart', value: 'smart', desc: 'Demo mode (no push yet)' },
+  { label: 'Daily', value: 'daily', desc: 'Local notification every day at your Wake time' },
+  { label: 'Smart', value: 'smart', desc: 'Coming soon' },
 ];
 
 export function SettingsScreen({ navigation }: Props) {
@@ -39,7 +40,24 @@ export function SettingsScreen({ navigation }: Props) {
       reminderMode: draft.reminderMode,
     };
     await saveSettings(cleaned);
-    Alert.alert('Saved', 'Goals updated');
+
+    // Apply reminder setting (best-effort)
+    try {
+      if (cleaned.reminderMode === 'daily') {
+        const r = await scheduleDailyReminder(cleaned.wakeTime);
+        if (!r.ok) {
+          Alert.alert('Saved', 'Settings saved (reminder permission denied).');
+          navigation.goBack();
+          return;
+        }
+      } else {
+        await cancelDailyReminder();
+      }
+    } catch {
+      // ignore
+    }
+
+    Alert.alert('Saved', 'Updated');
     navigation.goBack();
   }
 
