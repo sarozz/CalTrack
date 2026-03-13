@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { MultiRing } from '../components/MultiRing';
 import { AnimatedRing } from '../components/AnimatedRing';
 import { COLORS } from '../styles/theme';
@@ -20,6 +20,7 @@ type Props = NativeStackScreenProps<HomeStackParamList, 'Home'>;
 export function HomeScreen({ navigation }: Props) {
   const [entries, setEntries] = React.useState<Entry[]>([]);
   const [settings, setSettings] = React.useState<Settings | null>(null);
+  const feedAnim = React.useRef(new Animated.Value(0)).current;
 
   useFocusEffect(
     React.useCallback(() => {
@@ -29,6 +30,12 @@ export function HomeScreen({ navigation }: Props) {
         if (!mounted) return;
         setEntries(e);
         setSettings(s);
+        Animated.timing(feedAnim, {
+          toValue: 1,
+          duration: 260,
+          easing: (t) => t,
+          useNativeDriver: true,
+        }).start();
       })();
       return () => {
         mounted = false;
@@ -159,19 +166,26 @@ export function HomeScreen({ navigation }: Props) {
         data={todays}
         keyExtractor={(item) => item.id}
         ListEmptyComponent={<Text style={styles.empty}>No entries yet.</Text>}
-        renderItem={({ item }) => (
-          <Pressable style={styles.row} onPress={() => navigation.navigate('EditEntry', { id: item.id })}>
-            <Text style={styles.emoji}>{item.emoji || '🍽️'}</Text>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.rowTitle}>
-                {item.meal} · {item.calories} kcal · {item.protein}g
-              </Text>
-              {!!item.caption && <Text style={styles.caption}>{item.caption}</Text>}
-              {!!item.rawText && <Text style={styles.raw}>{item.rawText}</Text>}
-            </View>
-            <Text style={styles.time}>{formatTime(new Date(item.createdAt))}</Text>
-          </Pressable>
-        )}
+        renderItem={({ item, index }) => {
+          const t = Math.min(1, Math.max(0, (index + 1) / 8));
+          const rowOpacity = feedAnim.interpolate({ inputRange: [0, 1], outputRange: [0, 1] });
+          const rowTranslate = feedAnim.interpolate({ inputRange: [0, 1], outputRange: [12 * (1 - t), 0] });
+          return (
+            <Animated.View style={{ opacity: rowOpacity, transform: [{ translateY: rowTranslate }] }}>
+              <Pressable style={styles.row} onPress={() => navigation.navigate('EditEntry', { id: item.id })}>
+                <Text style={styles.emoji}>{item.emoji || '🍽️'}</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.rowTitle}>
+                    {item.meal} · {item.calories} kcal · {item.protein}g
+                  </Text>
+                  {!!item.caption && <Text style={styles.caption}>{item.caption}</Text>}
+                  {!!item.rawText && <Text style={styles.raw}>{item.rawText}</Text>}
+                </View>
+                <Text style={styles.time}>{formatTime(new Date(item.createdAt))}</Text>
+              </Pressable>
+            </Animated.View>
+          );
+        }}
       />
     </View>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Animated, Easing, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { addEntry, loadEntries } from '../storage/store';
 import type { Entry, Meal } from '../types/models';
@@ -28,6 +28,11 @@ export function LogScreen() {
   const [protein, setProtein] = React.useState<string>('');
   const [caption, setCaption] = React.useState<string>('');
   const [barcodeLoading, setBarcodeLoading] = React.useState(false);
+
+  // Animations
+  const previewAnim = React.useRef(new Animated.Value(0)).current;
+  const suggestAnim = React.useRef(new Animated.Value(0)).current;
+
   const [scanPreview, setScanPreview] = React.useState<
     | null
     | {
@@ -168,6 +173,27 @@ export function LogScreen() {
     return () => clearTimeout(t);
   }, [rawText, showSuggestions]);
 
+  // Animate suggestions open/close
+  React.useEffect(() => {
+    const open = showSuggestions && (filtered.length > 0 || usdaSuggestions.length > 0);
+    Animated.timing(suggestAnim, {
+      toValue: open ? 1 : 0,
+      duration: open ? 180 : 120,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [showSuggestions, filtered.length, usdaSuggestions.length, suggestAnim]);
+
+  // Animate scan preview card in/out
+  React.useEffect(() => {
+    Animated.timing(previewAnim, {
+      toValue: scanPreview ? 1 : 0,
+      duration: scanPreview ? 220 : 160,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [scanPreview, previewAnim]);
+
   async function savePreview() {
     if (!scanPreview) return;
 
@@ -272,7 +298,22 @@ export function LogScreen() {
       </Pressable>
 
       {scanPreview ? (
-        <View style={styles.card}>
+        <Animated.View
+          style={[
+            styles.card,
+            {
+              opacity: previewAnim,
+              transform: [
+                {
+                  translateY: previewAnim.interpolate({ inputRange: [0, 1], outputRange: [10, 0] }),
+                },
+                {
+                  scale: previewAnim.interpolate({ inputRange: [0, 1], outputRange: [0.98, 1] }),
+                },
+              ],
+            },
+          ]}
+        >
           <Text style={styles.title}>Scan result</Text>
           {!!scanPreview.name && <Text style={styles.scanName}>{scanPreview.name}</Text>}
           <Text style={styles.scanSub}>Barcode: {scanPreview.barcode}{scanPreview.source ? ` · ${scanPreview.source}` : ''}</Text>
@@ -296,7 +337,7 @@ export function LogScreen() {
               <Text style={styles.longBtnTxt}>Save</Text>
             </Pressable>
           </View>
-        </View>
+        </Animated.View>
       ) : null}
 
       <View style={styles.card}>
@@ -314,7 +355,22 @@ export function LogScreen() {
         />
 
         {showSuggestions && (filtered.length > 0 || usdaSuggestions.length > 0) ? (
-          <View style={styles.suggestBox}>
+          <Animated.View
+            style={[
+              styles.suggestBox,
+              {
+                opacity: suggestAnim,
+                transform: [
+                  {
+                    translateY: suggestAnim.interpolate({ inputRange: [0, 1], outputRange: [-6, 0] }),
+                  },
+                  {
+                    scaleY: suggestAnim.interpolate({ inputRange: [0, 1], outputRange: [0.96, 1] }),
+                  },
+                ],
+              },
+            ]}
+          >
             {usdaSuggestions.slice(0, 5).map((it: any) => {
               const facts = usdaFactsFromItem(it);
               const right =
@@ -361,7 +417,7 @@ export function LogScreen() {
                 <Text style={styles.suggestMeta}>history</Text>
               </Pressable>
             ))}
-          </View>
+          </Animated.View>
         ) : null}
       </View>
 
