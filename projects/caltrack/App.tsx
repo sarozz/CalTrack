@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { HomeScreen, type HomeStackParamList } from './src/screens/HomeScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
+import { ProfileScreen } from './src/screens/ProfileScreen';
 import { LegalScreen } from './src/screens/LegalScreen';
 import { LogScreen } from './src/screens/LogScreen';
 import { BarcodeScanScreen } from './src/screens/BarcodeScanScreen';
@@ -24,7 +25,7 @@ function HomeStackNavigator() {
   return (
     <HomeStack.Navigator>
       <HomeStack.Screen name="Home" component={HomeScreen} options={{ title: 'CalTrack' }} />
-      <HomeStack.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
+      <HomeStack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
       <HomeStack.Screen name="Legal" component={LegalScreen} options={{ title: 'Legal' }} />
       <HomeStack.Screen name="EditEntry" component={EditEntryScreen} options={{ title: 'Edit entry' }} />
     </HomeStack.Navigator>

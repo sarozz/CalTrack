@@ -11,7 +11,7 @@ import { formatTime, toDateKey } from '../utils/date';
 
 export type HomeStackParamList = {
   Home: undefined;
-  Settings: undefined;
+  Profile: undefined;
   Legal: { kind: 'terms' | 'privacy' | 'faq' };
   EditEntry: { id: string };
 };
@@ -52,8 +52,8 @@ export function HomeScreen({ navigation }: Props) {
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Pressable onPress={() => navigation.navigate('Settings')} style={styles.headerBtn}>
-          <Text style={styles.headerBtnText}>Settings</Text>
+        <Pressable onPress={() => navigation.navigate('Profile')} style={styles.headerBtn}>
+          <Text style={styles.headerBtnText}>Profile</Text>
         </Pressable>
       ),
     });

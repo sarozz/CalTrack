@@ -7,8 +7,7 @@ import { cancelDailyReminder, scheduleDailyReminder } from '../utils/reminders';
 import { DEFAULT_SETTINGS, type ReminderMode, type Settings } from '../types/models';
 import type { HomeStackParamList } from './HomeScreen';
 
-// Deprecated: replaced by ProfileScreen. Kept temporarily for reference.
-type Props = NativeStackScreenProps<any, any>;
+type Props = NativeStackScreenProps<HomeStackParamList, 'Profile'>;
 
 const REMINDER_MODES: { label: string; value: ReminderMode; desc: string }[] = [
   { label: 'Off', value: 'off', desc: 'No reminders' },
@@ -16,9 +15,9 @@ const REMINDER_MODES: { label: string; value: ReminderMode; desc: string }[] = [
   { label: 'Smart', value: 'smart', desc: 'Coming soon' },
 ];
 
-export function SettingsScreen({ navigation }: Props) {
+export function ProfileScreen({ navigation }: Props) {
   React.useLayoutEffect(() => {
-    navigation.setOptions({ title: 'Settings' });
+    navigation.setOptions({ title: 'Profile' });
   }, [navigation]);
 
   const [draft, setDraft] = React.useState<Settings>(DEFAULT_SETTINGS);
@@ -44,6 +43,7 @@ export function SettingsScreen({ navigation }: Props) {
       sleepTime: (draft.sleepTime || '23:00').slice(0, 5),
       reminderMode: draft.reminderMode,
     };
+
     await saveSettings(cleaned);
 
     // Apply reminder setting (best-effort)
@@ -51,8 +51,7 @@ export function SettingsScreen({ navigation }: Props) {
       if (cleaned.reminderMode === 'daily') {
         const r = await scheduleDailyReminder(cleaned.wakeTime);
         if (!r.ok) {
-          Alert.alert('Saved', 'Settings saved (reminder permission denied).');
-          navigation.goBack();
+          Alert.alert('Saved', 'Profile saved (reminder permission denied).');
           return;
         }
       } else {
@@ -63,13 +62,13 @@ export function SettingsScreen({ navigation }: Props) {
     }
 
     Alert.alert('Saved', 'Updated');
-    navigation.goBack();
   }
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ padding: 14, gap: 14 }}>
       <View style={styles.card}>
         <Text style={styles.title}>Goals</Text>
+
         <View style={styles.field}>
           <Text style={styles.label}>Calories goal (kcal)</Text>
           <TextInput
@@ -80,6 +79,7 @@ export function SettingsScreen({ navigation }: Props) {
             placeholder="2000"
           />
         </View>
+
         <View style={styles.field}>
           <Text style={styles.label}>Protein goal (g)</Text>
           <TextInput
@@ -184,7 +184,6 @@ export function SettingsScreen({ navigation }: Props) {
 
       <View style={styles.card}>
         <Text style={styles.title}>Reminders</Text>
-        <Text style={styles.subtle}>For tonight's demo, reminder mode is stored only (no notifications).</Text>
         <View style={{ gap: 8, marginTop: 8 }}>
           {REMINDER_MODES.map((m) => {
             const selected = m.value === draft.reminderMode;
@@ -249,7 +248,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fafafa',
     fontSize: 16,
   },
-  subtle: { color: '#666', marginTop: -4 },
   modeRow: {
     flexDirection: 'row',
     gap: 10,
@@ -259,13 +257,13 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#ddd',
   },
-  modeRowSelected: { borderColor: '#6D28D9', backgroundColor: '#6D28D9' },
+  modeRowSelected: { borderColor: 'rgba(236, 72, 153, 0.35)', backgroundColor: 'rgba(236, 72, 153, 0.18)' },
   modeTitle: { fontWeight: '600', color: '#111' },
-  modeTitleSelected: { color: '#fff' },
+  modeTitleSelected: { color: '#9D174D' },
   modeDesc: { color: '#666', marginTop: 2, fontSize: 12 },
-  modeDescSelected: { color: 'rgba(255,255,255,0.85)' },
+  modeDescSelected: { color: 'rgba(157, 23, 77, 0.8)' },
   modeCheck: { width: 20, textAlign: 'right', color: '#111', fontWeight: '600' },
-  modeCheckSelected: { color: '#fff' },
+  modeCheckSelected: { color: '#9D174D' },
   saveBtn: {
     backgroundColor: COLORS.btnBg,
     borderColor: COLORS.btnBorder,
