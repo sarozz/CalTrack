@@ -1,44 +1,16 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRoute } from '@react-navigation/native';
-import * as FileSystem from 'expo-file-system';
-
-// Minimal in-app legal/faq renderer.
-// For v1 we load markdown files bundled in the repo via metro using `require`.
+import { FAQ_TEXT, PRIVACY_TEXT, TERMS_TEXT } from '../legal/legalText';
 
 type Kind = 'terms' | 'privacy' | 'faq';
-
-function getAsset(kind: Kind) {
-  switch (kind) {
-    case 'terms':
-      return require('../../legal/TERMS.md');
-    case 'privacy':
-      return require('../../legal/PRIVACY.md');
-    case 'faq':
-      return require('../../legal/FAQ.md');
-  }
-}
 
 export function LegalScreen() {
   const route = useRoute<any>();
   const kind: Kind = route.params?.kind || 'terms';
   const title = kind === 'terms' ? 'Terms of Use' : kind === 'privacy' ? 'Privacy Policy' : 'FAQ';
 
-  const [text, setText] = React.useState<string>('');
-
-  React.useEffect(() => {
-    (async () => {
-      try {
-        const asset = getAsset(kind);
-        // expo-file-system can read from asset modules in Expo.
-        const uri = asset?.uri || asset;
-        const t = await FileSystem.readAsStringAsync(uri);
-        setText(t);
-      } catch {
-        setText('Unable to load document.');
-      }
-    })();
-  }, [kind]);
+  const text = kind === 'terms' ? TERMS_TEXT : kind === 'privacy' ? PRIVACY_TEXT : FAQ_TEXT;
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ padding: 14 }}>
