@@ -1,40 +1,16 @@
-# TOOLS.md - Local Notes
+# TOOLS.md (Local environment notes)
 
-Skills define _how_ tools work. This file is for _your_ specifics — the stuff that's unique to your setup.
+Only put **machine/setup-specific** facts here (no passwords, no secrets). If it’s generic “how-to”, it belongs in a skill.
 
-## What Goes Here
+## Accounts / email
+- Ops email (Proton): **morgantheman@proton.me**
+  - Password managed by Saroj (do not store). Use Browser Relay for Proton web UI.
 
-Things like:
+## Social handles
+- Pinterest: **easyupgradehome**
 
-- Camera names and locations
-- SSH hosts and aliases
-- Preferred voices for TTS
-- Speaker/room names
-- Device nicknames
-- Anything environment-specific
+## TTS (optional)
+- Preferred voice: **Nova**
 
-## Examples
-
-```markdown
-### Cameras
-
-- living-room → Main area, 180° wide angle
-- front-door → Entrance, motion-triggered
-
-### SSH
-
-- home-server → 192.168.1.100, user: admin
-
-### TTS
-
-- Preferred voice: "Nova" (warm, slightly British)
-- Default speaker: Kitchen HomePod
-```
-
-## Why Separate?
-
-Skills are shared. Your setup is yours. Keeping them apart means you can update skills without losing your notes, and share skills without leaking your infrastructure.
-
----
-
-Add whatever helps you do your job. This is your cheat sheet.
+## Notes
+- If you add cameras/SSH/devices later, list them here with exact nicknames.
