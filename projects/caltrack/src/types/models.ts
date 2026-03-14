@@ -1,8 +1,17 @@
 export type ReminderMode = 'off' | 'daily' | 'smart';
 
+export type Gender = 'female' | 'male' | 'other' | 'prefer_not_to_say';
+
 export type Settings = {
+  // Profile (local-only)
+  name?: string;
+  gender?: Gender;
+  age?: number;
+  onboardingDone?: boolean;
+
   caloriesGoal: number;
   proteinGoal: number;
+
   // micronutrients goals (daily)
   fatGoal: number; // g
   carbsGoal: number; // g

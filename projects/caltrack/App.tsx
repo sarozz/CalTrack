@@ -6,7 +6,6 @@ import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 
 import { HomeScreen, type HomeStackParamList } from './src/screens/HomeScreen';
-import { SettingsScreen } from './src/screens/SettingsScreen';
 import { ProfileScreen } from './src/screens/ProfileScreen';
 import { LegalScreen } from './src/screens/LegalScreen';
 import { LogScreen } from './src/screens/LogScreen';
@@ -15,8 +14,12 @@ import { EditEntryScreen } from './src/screens/EditEntryScreen';
 import { HistoryScreen, type HistoryStackParamList } from './src/screens/HistoryScreen';
 import { DayDetailScreen } from './src/screens/DayDetailScreen';
 import { InsightsScreen } from './src/screens/InsightsScreen';
+import { LoadingScreen } from './src/screens/LoadingScreen';
+import { OnboardingScreen } from './src/screens/OnboardingScreen';
+import { loadSettings } from './src/storage/store';
 
 const Tab = createBottomTabNavigator();
+const RootStack = createNativeStackNavigator();
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 const HistoryStack = createNativeStackNavigator<HistoryStackParamList>();
 const LogStack = createNativeStackNavigator();
@@ -52,7 +55,42 @@ function LogStackNavigator() {
   );
 }
 
+function MainTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarActiveTintColor: 'rgba(236, 72, 153, 0.9)',
+        tabBarInactiveTintColor: 'rgba(17,17,17,0.55)',
+        tabBarIcon: ({ color, size }) => {
+          const name = route.name === 'HomeTab' ? 'home' : route.name === 'LogTab' ? 'add-circle' : 'time';
+          return <Ionicons name={name as any} size={size} color={color} />;
+        },
+      })}
+    >
+      <Tab.Screen name="HomeTab" component={HomeStackNavigator} options={{ title: 'Home' }} />
+      <Tab.Screen name="LogTab" component={LogStackNavigator} options={{ title: 'Log' }} />
+      <Tab.Screen name="HistoryTab" component={HistoryStackNavigator} options={{ title: 'History' }} />
+    </Tab.Navigator>
+  );
+}
+
 export default function App() {
+  const [boot, setBoot] = React.useState<'loading' | 'onboarding' | 'ready'>('loading');
+
+  React.useEffect(() => {
+    let alive = true;
+    (async () => {
+      const s = await loadSettings();
+      if (!alive) return;
+      const needs = !s.onboardingDone || !s.name || !s.gender || !s.age;
+      setBoot(needs ? 'onboarding' : 'ready');
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
   return (
     <NavigationContainer
       theme={{
@@ -60,44 +98,15 @@ export default function App() {
         colors: { ...DefaultTheme.colors, background: '#f6f6f6' },
       }}
     >
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          headerShown: false,
-          tabBarActiveTintColor: 'rgba(236, 72, 153, 0.9)',
-          tabBarInactiveTintColor: 'rgba(17,17,17,0.55)',
-          tabBarIcon: ({ color, size }) => {
-            const name =
-              route.name === 'HomeTab'
-                ? 'home'
-                : route.name === 'LogTab'
-                  ? 'add-circle'
-                  : 'time';
-            return <Ionicons name={name as any} size={size} color={color} />;
-          },
-        })}
-      >
-        <Tab.Screen
-          name="HomeTab"
-          component={HomeStackNavigator}
-          options={{
-            title: 'Home',
-          }}
-        />
-        <Tab.Screen
-          name="LogTab"
-          component={LogStackNavigator}
-          options={{
-            title: 'Log',
-          }}
-        />
-        <Tab.Screen
-          name="HistoryTab"
-          component={HistoryStackNavigator}
-          options={{
-            title: 'History',
-          }}
-        />
-      </Tab.Navigator>
+      <RootStack.Navigator screenOptions={{ headerShown: false }}>
+        {boot === 'loading' ? <RootStack.Screen name="Loading" component={LoadingScreen} /> : null}
+        {boot === 'onboarding' ? (
+          <RootStack.Screen name="Onboarding">
+            {() => <OnboardingScreen onFinished={() => setBoot('ready')} />}
+          </RootStack.Screen>
+        ) : null}
+        {boot === 'ready' ? <RootStack.Screen name="Main" component={MainTabs} /> : null}
+      </RootStack.Navigator>
       <StatusBar style="auto" />
     </NavigationContainer>
   );
