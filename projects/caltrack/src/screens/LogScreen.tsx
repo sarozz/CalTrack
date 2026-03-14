@@ -1,4 +1,5 @@
 import React from 'react';
+import * as Haptics from 'expo-haptics';
 import {
   Alert,
   Animated,
@@ -192,6 +193,7 @@ export function LogScreen() {
     };
 
     await addEntry(entry);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
     Alert.alert('Saved', 'Added to today', [
       {
         text: 'Save as preset',
@@ -214,6 +216,7 @@ export function LogScreen() {
           };
           const next = await toggleFavorite(fav);
           setFavorites(next);
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
           Alert.alert('Preset saved', label);
         },
       },
@@ -523,6 +526,7 @@ export function LogScreen() {
                 setSugar(t.sugar);
                 setCarbs(t.carbs);
                 setFat(t.fat);
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
                 setShowMicros(true);
                 setToast('Template added');
               }}
