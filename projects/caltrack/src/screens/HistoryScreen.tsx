@@ -11,6 +11,7 @@ export type HistoryStackParamList = {
   DayDetail: { dateKey: string };
   EditEntry: { id: string };
   Insights: undefined;
+  Profile: undefined;
 };
 
 type Props = NativeStackScreenProps<HistoryStackParamList, 'History'>;
@@ -28,9 +29,14 @@ export function HistoryScreen({ navigation }: Props) {
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Pressable onPress={() => navigation.navigate('Insights')} style={{ paddingHorizontal: 10, paddingVertical: 6 }}>
-          <Text style={{ color: 'rgba(236, 72, 153, 0.9)', fontWeight: '600' }}>Insights</Text>
-        </Pressable>
+        <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+          <Pressable onPress={() => navigation.navigate('Insights')} style={{ paddingHorizontal: 10, paddingVertical: 6 }}>
+            <Text style={{ color: 'rgba(236, 72, 153, 0.9)', fontWeight: '700' }}>Insights</Text>
+          </Pressable>
+          <Pressable onPress={() => navigation.navigate('Profile')} style={{ paddingHorizontal: 10, paddingVertical: 6 }}>
+            <Text style={{ color: 'rgba(17,17,17,0.6)', fontWeight: '800' }}>Profile</Text>
+          </Pressable>
+        </View>
       ),
     });
   }, [navigation]);

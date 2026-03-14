@@ -404,6 +404,7 @@ export function ProfileScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f6f6f6' },
+
   igHeader: {
     backgroundColor: '#fff',
     borderRadius: 18,
@@ -443,16 +444,26 @@ const styles = StyleSheet.create({
 
   card: {
     backgroundColor: '#fff',
-    borderRadius: 16,
+    borderRadius: 18,
     padding: 14,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#ddd',
+    borderColor: 'rgba(0,0,0,0.08)',
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 1,
   },
   title: { fontSize: 16, fontWeight: '600', marginBottom: 10 },
 
-  sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  sectionTitle: { fontSize: 16, fontWeight: '800', color: '#111' },
-  sectionMeta: { color: 'rgba(17,17,17,0.55)', fontWeight: '800' },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 2,
+  },
+  sectionTitle: { fontSize: 16, fontWeight: '900', color: '#111' },
+  sectionMeta: { color: 'rgba(17,17,17,0.45)', fontWeight: '900' },
 
   inlineToggle: {
     flexDirection: 'row',

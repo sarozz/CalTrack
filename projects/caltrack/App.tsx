@@ -42,6 +42,7 @@ function HistoryStackNavigator() {
       <HistoryStack.Screen name="Insights" component={InsightsScreen} options={{ title: 'Weekly Insights' }} />
       <HistoryStack.Screen name="DayDetail" component={DayDetailScreen} options={{ title: 'Day' }} />
       <HistoryStack.Screen name="EditEntry" component={EditEntryScreen} options={{ title: 'Edit entry' }} />
+      <HistoryStack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
     </HistoryStack.Navigator>
   );
 }
@@ -70,7 +71,7 @@ function MainTabs() {
     >
       <Tab.Screen name="HomeTab" component={HomeStackNavigator} options={{ title: 'Home' }} />
       <Tab.Screen name="LogTab" component={LogStackNavigator} options={{ title: 'Log' }} />
-      <Tab.Screen name="HistoryTab" component={HistoryStackNavigator} options={{ title: 'History' }} />
+      <Tab.Screen name="HistoryTab" component={HistoryStackNavigator} options={{ title: 'Profile' }} />
     </Tab.Navigator>
   );
 }
