@@ -27,6 +27,12 @@ export function ProfileScreen({ navigation }: Props) {
   const [entriesCount, setEntriesCount] = React.useState(0);
   const [todayKcal, setTodayKcal] = React.useState(0);
   const [streak, setStreak] = React.useState({ current: 0, best: 0, daysThisWeek: 0 });
+
+  const [openGoals, setOpenGoals] = React.useState(false);
+  const [openPersonal, setOpenPersonal] = React.useState(false);
+  const [openNotifications, setOpenNotifications] = React.useState(false);
+  const [openLegal, setOpenLegal] = React.useState(false);
+
   const [showAdvancedGoals, setShowAdvancedGoals] = React.useState(false);
 
   React.useEffect(() => {
@@ -148,203 +154,209 @@ export function ProfileScreen({ navigation }: Props) {
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.title}>Goals</Text>
-
-        <View style={styles.grid}>
-          <View style={styles.field}>
-            <Text style={styles.label}>Calories (kcal)</Text>
-            <TextInput
-              style={styles.input}
-              keyboardType="numeric"
-              value={String(draft.caloriesGoal)}
-              onChangeText={(t) =>
-                setDraft((s) => ({ ...s, caloriesGoal: Number(t.replace(/[^0-9]/g, '')) }))
-              }
-              placeholder="2000"
-            />
-          </View>
-
-          <View style={styles.field}>
-            <Text style={styles.label}>Protein (g)</Text>
-            <TextInput
-              style={styles.input}
-              keyboardType="numeric"
-              value={String(draft.proteinGoal)}
-              onChangeText={(t) =>
-                setDraft((s) => ({ ...s, proteinGoal: Number(t.replace(/[^0-9]/g, '')) }))
-              }
-              placeholder="120"
-            />
-          </View>
-
-          <View style={styles.field}>
-            <Text style={styles.label}>Carbs (g)</Text>
-            <TextInput
-              style={styles.input}
-              keyboardType="numeric"
-              value={String(draft.carbsGoal)}
-              onChangeText={(t) =>
-                setDraft((s) => ({ ...s, carbsGoal: Number(t.replace(/[^0-9]/g, '')) }))
-              }
-              placeholder="275"
-            />
-          </View>
-
-          <View style={styles.field}>
-            <Text style={styles.label}>Fat (g)</Text>
-            <TextInput
-              style={styles.input}
-              keyboardType="numeric"
-              value={String(draft.fatGoal)}
-              onChangeText={(t) =>
-                setDraft((s) => ({ ...s, fatGoal: Number(t.replace(/[^0-9]/g, '')) }))
-              }
-              placeholder="78"
-            />
-          </View>
-        </View>
-
-        <Pressable
-          onPress={() => setShowAdvancedGoals((v) => !v)}
-          style={[styles.linkRow, { borderTopWidth: 0, paddingVertical: 10 }]}
-        >
-          <Text style={styles.advancedLink}>{showAdvancedGoals ? 'Hide advanced' : 'Show advanced'}</Text>
-          <Text style={styles.linkChevron}>{showAdvancedGoals ? '˄' : '˅'}</Text>
+        <Pressable style={styles.sectionHeader} onPress={() => setOpenGoals((v) => !v)}>
+          <Text style={styles.sectionTitle}>Goals</Text>
+          <Text style={styles.sectionMeta}>{openGoals ? 'Hide' : 'Show'}</Text>
         </Pressable>
 
-        {showAdvancedGoals ? (
-          <View style={styles.grid}>
-            <View style={styles.field}>
-              <Text style={styles.label}>Fiber (g)</Text>
-              <TextInput
-                style={styles.input}
-                keyboardType="numeric"
-                value={String(draft.fiberGoal)}
-                onChangeText={(t) =>
-                  setDraft((s) => ({ ...s, fiberGoal: Number(t.replace(/[^0-9]/g, '')) }))
-                }
-                placeholder="28"
-              />
+        {openGoals ? (
+          <View style={{ marginTop: 12, gap: 12 }}>
+            <View style={styles.grid}>
+              <View style={styles.field}>
+                <Text style={styles.label}>Calories (kcal)</Text>
+                <TextInput
+                  style={styles.input}
+                  keyboardType="numeric"
+                  value={String(draft.caloriesGoal)}
+                  onChangeText={(t) => setDraft((s) => ({ ...s, caloriesGoal: Number(t.replace(/[^0-9]/g, '')) }))}
+                  placeholder="2000"
+                />
+              </View>
+
+              <View style={styles.field}>
+                <Text style={styles.label}>Protein (g)</Text>
+                <TextInput
+                  style={styles.input}
+                  keyboardType="numeric"
+                  value={String(draft.proteinGoal)}
+                  onChangeText={(t) => setDraft((s) => ({ ...s, proteinGoal: Number(t.replace(/[^0-9]/g, '')) }))}
+                  placeholder="120"
+                />
+              </View>
+
+              <View style={styles.field}>
+                <Text style={styles.label}>Carbs (g)</Text>
+                <TextInput
+                  style={styles.input}
+                  keyboardType="numeric"
+                  value={String(draft.carbsGoal)}
+                  onChangeText={(t) => setDraft((s) => ({ ...s, carbsGoal: Number(t.replace(/[^0-9]/g, '')) }))}
+                  placeholder="275"
+                />
+              </View>
+
+              <View style={styles.field}>
+                <Text style={styles.label}>Fat (g)</Text>
+                <TextInput
+                  style={styles.input}
+                  keyboardType="numeric"
+                  value={String(draft.fatGoal)}
+                  onChangeText={(t) => setDraft((s) => ({ ...s, fatGoal: Number(t.replace(/[^0-9]/g, '')) }))}
+                  placeholder="78"
+                />
+              </View>
             </View>
 
-            <View style={styles.field}>
-              <Text style={styles.label}>Sugar (g)</Text>
-              <TextInput
-                style={styles.input}
-                keyboardType="numeric"
-                value={String(draft.sugarGoal)}
-                onChangeText={(t) =>
-                  setDraft((s) => ({ ...s, sugarGoal: Number(t.replace(/[^0-9]/g, '')) }))
-                }
-                placeholder="50"
-              />
-            </View>
+            <Pressable onPress={() => setShowAdvancedGoals((v) => !v)} style={styles.inlineToggle}>
+              <Text style={styles.inlineToggleTxt}>{showAdvancedGoals ? 'Hide advanced' : 'Show advanced'}</Text>
+              <Text style={styles.inlineToggleChevron}>{showAdvancedGoals ? '˄' : '˅'}</Text>
+            </Pressable>
 
-            <View style={styles.field}>
-              <Text style={styles.label}>Cholesterol (mg)</Text>
-              <TextInput
-                style={styles.input}
-                keyboardType="numeric"
-                value={String(draft.cholesterolGoal)}
-                onChangeText={(t) =>
-                  setDraft((s) => ({ ...s, cholesterolGoal: Number(t.replace(/[^0-9]/g, '')) }))
-                }
-                placeholder="300"
-              />
-            </View>
+            {showAdvancedGoals ? (
+              <View style={styles.grid}>
+                <View style={styles.field}>
+                  <Text style={styles.label}>Fiber (g)</Text>
+                  <TextInput
+                    style={styles.input}
+                    keyboardType="numeric"
+                    value={String(draft.fiberGoal)}
+                    onChangeText={(t) => setDraft((s) => ({ ...s, fiberGoal: Number(t.replace(/[^0-9]/g, '')) }))}
+                    placeholder="28"
+                  />
+                </View>
 
-            <View style={styles.field}>
-              <Text style={styles.label}>Sodium (mg)</Text>
-              <TextInput
-                style={styles.input}
-                keyboardType="numeric"
-                value={String(draft.sodiumGoal)}
-                onChangeText={(t) =>
-                  setDraft((s) => ({ ...s, sodiumGoal: Number(t.replace(/[^0-9]/g, '')) }))
-                }
-                placeholder="2300"
-              />
-            </View>
+                <View style={styles.field}>
+                  <Text style={styles.label}>Sugar (g)</Text>
+                  <TextInput
+                    style={styles.input}
+                    keyboardType="numeric"
+                    value={String(draft.sugarGoal)}
+                    onChangeText={(t) => setDraft((s) => ({ ...s, sugarGoal: Number(t.replace(/[^0-9]/g, '')) }))}
+                    placeholder="50"
+                  />
+                </View>
+
+                <View style={styles.field}>
+                  <Text style={styles.label}>Cholesterol (mg)</Text>
+                  <TextInput
+                    style={styles.input}
+                    keyboardType="numeric"
+                    value={String(draft.cholesterolGoal)}
+                    onChangeText={(t) => setDraft((s) => ({ ...s, cholesterolGoal: Number(t.replace(/[^0-9]/g, '')) }))}
+                    placeholder="300"
+                  />
+                </View>
+
+                <View style={styles.field}>
+                  <Text style={styles.label}>Sodium (mg)</Text>
+                  <TextInput
+                    style={styles.input}
+                    keyboardType="numeric"
+                    value={String(draft.sodiumGoal)}
+                    onChangeText={(t) => setDraft((s) => ({ ...s, sodiumGoal: Number(t.replace(/[^0-9]/g, '')) }))}
+                    placeholder="2300"
+                  />
+                </View>
+              </View>
+            ) : null}
           </View>
         ) : null}
       </View>
 
 
       <View style={styles.card}>
-        <Text style={styles.title}>Personal</Text>
-        <View style={styles.field}>
-          <Text style={styles.label}>Name</Text>
-          <TextInput
-            style={styles.input}
-            value={draft.name || ''}
-            onChangeText={(t) => setDraft((s) => ({ ...s, name: t }))}
-            placeholder="Your name"
-            autoCapitalize="words"
-          />
-        </View>
-        <View style={styles.row}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.label}>Gender</Text>
-            <TextInput
-              style={styles.input}
-              value={draft.gender ? String(draft.gender) : ''}
-              onChangeText={(t) => setDraft((s) => ({ ...s, gender: (t || undefined) as any }))}
-              placeholder="female / male / other"
-              autoCapitalize="none"
-            />
+        <Pressable style={styles.sectionHeader} onPress={() => setOpenPersonal((v) => !v)}>
+          <Text style={styles.sectionTitle}>Personal</Text>
+          <Text style={styles.sectionMeta}>{openPersonal ? 'Hide' : 'Show'}</Text>
+        </Pressable>
+
+        {openPersonal ? (
+          <View style={{ marginTop: 12, gap: 12 }}>
+            <View style={styles.field}>
+              <Text style={styles.label}>Name</Text>
+              <TextInput
+                style={styles.input}
+                value={draft.name || ''}
+                onChangeText={(t) => setDraft((s) => ({ ...s, name: t }))}
+                placeholder="Your name"
+                autoCapitalize="words"
+              />
+            </View>
+            <View style={styles.row}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.label}>Gender</Text>
+                <TextInput
+                  style={styles.input}
+                  value={draft.gender ? String(draft.gender) : ''}
+                  onChangeText={(t) => setDraft((s) => ({ ...s, gender: (t || undefined) as any }))}
+                  placeholder="female / male / other"
+                  autoCapitalize="none"
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.label}>Age</Text>
+                <TextInput
+                  style={styles.input}
+                  value={draft.age ? String(draft.age) : ''}
+                  onChangeText={(t) =>
+                    setDraft((s) => ({ ...s, age: t.trim() ? Number(t.replace(/[^0-9]/g, '')) : undefined }))
+                  }
+                  placeholder="e.g. 28"
+                  keyboardType="numeric"
+                />
+              </View>
+            </View>
           </View>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.label}>Age</Text>
-            <TextInput
-              style={styles.input}
-              value={draft.age ? String(draft.age) : ''}
-              onChangeText={(t) => setDraft((s) => ({ ...s, age: t.trim() ? Number(t.replace(/[^0-9]/g, '')) : undefined }))}
-              placeholder="e.g. 28"
-              keyboardType="numeric"
-            />
-          </View>
-        </View>
+        ) : null}
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.title}>Notifications</Text>
-        <View style={{ gap: 8, marginTop: 8 }}>
-          {REMINDER_MODES.filter((m) => m.value !== 'smart').map((m) => {
-            const selected = m.value === draft.reminderMode;
-            return (
-              <Pressable
-                key={m.value}
-                onPress={() => setDraft((s) => ({ ...s, reminderMode: m.value }))}
-                style={[styles.modeRow, selected && styles.modeRowSelected]}
-              >
-                <View style={{ flex: 1 }}>
-                  <Text style={[styles.modeTitle, selected && styles.modeTitleSelected]}>{m.label}</Text>
-                  <Text style={[styles.modeDesc, selected && styles.modeDescSelected]}>{m.desc}</Text>
-                </View>
-                <Text style={[styles.modeCheck, selected && styles.modeCheckSelected]}>{selected ? '✓' : ''}</Text>
-              </Pressable>
-            );
-          })}
-        </View>
-
-        <Pressable
-          style={[styles.linkRow, { borderTopWidth: 0, marginTop: 8 }]}
-          onPress={async () => {
-            try {
-              const r = await sendTestNotification();
-              if (!r.ok) {
-                Alert.alert('Permission needed', 'Enable notifications to receive reminders.');
-                return;
-              }
-              Alert.alert('Sent', 'Check your notifications.');
-            } catch {
-              Alert.alert('Failed', 'Could not send test notification.');
-            }
-          }}
-        >
-          <Text style={styles.linkTxt}>Send test notification</Text>
-          <Text style={styles.linkChevron}>›</Text>
+        <Pressable style={styles.sectionHeader} onPress={() => setOpenNotifications((v) => !v)}>
+          <Text style={styles.sectionTitle}>Notifications</Text>
+          <Text style={styles.sectionMeta}>{openNotifications ? 'Hide' : 'Show'}</Text>
         </Pressable>
+
+        {openNotifications ? (
+          <View style={{ marginTop: 12, gap: 12 }}>
+            <View style={{ gap: 8 }}>
+              {REMINDER_MODES.filter((m) => m.value !== 'smart').map((m) => {
+                const selected = m.value === draft.reminderMode;
+                return (
+                  <Pressable
+                    key={m.value}
+                    onPress={() => setDraft((s) => ({ ...s, reminderMode: m.value }))}
+                    style={[styles.modeRow, selected && styles.modeRowSelected]}
+                  >
+                    <View style={{ flex: 1 }}>
+                      <Text style={[styles.modeTitle, selected && styles.modeTitleSelected]}>{m.label}</Text>
+                      <Text style={[styles.modeDesc, selected && styles.modeDescSelected]}>{m.desc}</Text>
+                    </View>
+                    <Text style={[styles.modeCheck, selected && styles.modeCheckSelected]}>{selected ? '✓' : ''}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+
+            <Pressable
+              style={[styles.linkRow, { borderTopWidth: 0 }]}
+              onPress={async () => {
+                try {
+                  const r = await sendTestNotification();
+                  if (!r.ok) {
+                    Alert.alert('Permission needed', 'Enable notifications to receive reminders.');
+                    return;
+                  }
+                  Alert.alert('Sent', 'Check your notifications.');
+                } catch {
+                  Alert.alert('Failed', 'Could not send test notification.');
+                }
+              }}
+            >
+              <Text style={styles.linkTxt}>Send test notification</Text>
+              <Text style={styles.linkChevron}>›</Text>
+            </Pressable>
+          </View>
+        ) : null}
       </View>
 
       <View style={styles.card}>
@@ -360,19 +372,27 @@ export function ProfileScreen({ navigation }: Props) {
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.title}>Legal</Text>
-        <Pressable style={styles.linkRow} onPress={() => navigation.navigate('Legal', { kind: 'terms' })}>
-          <Text style={styles.linkTxt}>Terms of Use</Text>
-          <Text style={styles.linkChevron}>›</Text>
+        <Pressable style={styles.sectionHeader} onPress={() => setOpenLegal((v) => !v)}>
+          <Text style={styles.sectionTitle}>Legal</Text>
+          <Text style={styles.sectionMeta}>{openLegal ? 'Hide' : 'Show'}</Text>
         </Pressable>
-        <Pressable style={styles.linkRow} onPress={() => navigation.navigate('Legal', { kind: 'privacy' })}>
-          <Text style={styles.linkTxt}>Privacy Policy</Text>
-          <Text style={styles.linkChevron}>›</Text>
-        </Pressable>
-        <Pressable style={styles.linkRow} onPress={() => navigation.navigate('Legal', { kind: 'faq' })}>
-          <Text style={styles.linkTxt}>FAQ</Text>
-          <Text style={styles.linkChevron}>›</Text>
-        </Pressable>
+
+        {openLegal ? (
+          <View style={{ marginTop: 12 }}>
+            <Pressable style={[styles.linkRow, { borderTopWidth: 0 }]} onPress={() => navigation.navigate('Legal', { kind: 'terms' })}>
+              <Text style={styles.linkTxt}>Terms of Use</Text>
+              <Text style={styles.linkChevron}>›</Text>
+            </Pressable>
+            <Pressable style={styles.linkRow} onPress={() => navigation.navigate('Legal', { kind: 'privacy' })}>
+              <Text style={styles.linkTxt}>Privacy Policy</Text>
+              <Text style={styles.linkChevron}>›</Text>
+            </Pressable>
+            <Pressable style={styles.linkRow} onPress={() => navigation.navigate('Legal', { kind: 'faq' })}>
+              <Text style={styles.linkTxt}>FAQ</Text>
+              <Text style={styles.linkChevron}>›</Text>
+            </Pressable>
+          </View>
+        ) : null}
       </View>
 
       <Pressable onPress={onSave} style={styles.saveBtn}>
@@ -429,6 +449,22 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
   },
   title: { fontSize: 16, fontWeight: '600', marginBottom: 10 },
+
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  sectionTitle: { fontSize: 16, fontWeight: '800', color: '#111' },
+  sectionMeta: { color: 'rgba(17,17,17,0.55)', fontWeight: '800' },
+
+  inlineToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(0,0,0,0.06)',
+  },
+  inlineToggleTxt: { color: '#111', fontWeight: '800' },
+  inlineToggleChevron: { color: 'rgba(17,17,17,0.45)', fontSize: 18, fontWeight: '800' },
+
   advancedLink: { color: '#111', fontWeight: '600' },
   row: { flexDirection: 'row', gap: 12 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
