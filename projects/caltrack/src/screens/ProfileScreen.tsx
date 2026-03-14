@@ -8,9 +8,9 @@ import { toDateKey } from '../utils/date';
 import { exportCsv, exportJson, makeBundle } from '../utils/exportData';
 import { cancelDailyReminder, scheduleDailyReminder, sendTestNotification } from '../utils/reminders';
 import { DEFAULT_SETTINGS, type ReminderMode, type Settings } from '../types/models';
-import type { HomeStackParamList } from './HomeScreen';
+import type { HistoryStackParamList } from './HistoryScreen';
 
-type Props = NativeStackScreenProps<HomeStackParamList, 'Profile'>;
+type Props = NativeStackScreenProps<HistoryStackParamList, 'Profile'>;
 
 const REMINDER_MODES: { label: string; value: ReminderMode; desc: string }[] = [
   { label: 'Off', value: 'off', desc: 'No reminders' },
@@ -20,7 +20,14 @@ const REMINDER_MODES: { label: string; value: ReminderMode; desc: string }[] = [
 
 export function ProfileScreen({ navigation }: Props) {
   React.useLayoutEffect(() => {
-    navigation.setOptions({ title: 'Profile' });
+    navigation.setOptions({
+      title: 'Profile',
+      headerRight: () => (
+        <Pressable onPress={() => navigation.navigate('History')} style={{ paddingHorizontal: 10, paddingVertical: 6 }}>
+          <Text style={{ color: 'rgba(17,17,17,0.6)', fontWeight: '800' }}>History</Text>
+        </Pressable>
+      ),
+    });
   }, [navigation]);
 
   const [draft, setDraft] = React.useState<Settings>(DEFAULT_SETTINGS);

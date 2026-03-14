@@ -38,11 +38,11 @@ function HomeStackNavigator() {
 function HistoryStackNavigator() {
   return (
     <HistoryStack.Navigator>
+      <HistoryStack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
       <HistoryStack.Screen name="History" component={HistoryScreen} options={{ title: 'History' }} />
       <HistoryStack.Screen name="Insights" component={InsightsScreen} options={{ title: 'Weekly Insights' }} />
       <HistoryStack.Screen name="DayDetail" component={DayDetailScreen} options={{ title: 'Day' }} />
       <HistoryStack.Screen name="EditEntry" component={EditEntryScreen} options={{ title: 'Edit entry' }} />
-      <HistoryStack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
     </HistoryStack.Navigator>
   );
 }

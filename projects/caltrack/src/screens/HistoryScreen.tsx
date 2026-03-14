@@ -7,11 +7,12 @@ import type { Entry } from '../types/models';
 import { formatDateLabel } from '../utils/date';
 
 export type HistoryStackParamList = {
+  Profile: undefined;
   History: undefined;
   DayDetail: { dateKey: string };
   EditEntry: { id: string };
   Insights: undefined;
-  Profile: undefined;
+  Legal: { kind: 'terms' | 'privacy' | 'faq' };
 };
 
 type Props = NativeStackScreenProps<HistoryStackParamList, 'History'>;
@@ -29,14 +30,9 @@ export function HistoryScreen({ navigation }: Props) {
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
-          <Pressable onPress={() => navigation.navigate('Insights')} style={{ paddingHorizontal: 10, paddingVertical: 6 }}>
-            <Text style={{ color: 'rgba(236, 72, 153, 0.9)', fontWeight: '700' }}>Insights</Text>
-          </Pressable>
-          <Pressable onPress={() => navigation.navigate('Profile')} style={{ paddingHorizontal: 10, paddingVertical: 6 }}>
-            <Text style={{ color: 'rgba(17,17,17,0.6)', fontWeight: '800' }}>Profile</Text>
-          </Pressable>
-        </View>
+        <Pressable onPress={() => navigation.navigate('Profile')} style={{ paddingHorizontal: 10, paddingVertical: 6 }}>
+          <Text style={{ color: 'rgba(17,17,17,0.6)', fontWeight: '800' }}>Profile</Text>
+        </Pressable>
       ),
     });
   }, [navigation]);
@@ -66,6 +62,14 @@ export function HistoryScreen({ navigation }: Props) {
 
   return (
     <View style={styles.container}>
+      <Pressable style={styles.insightsCard} onPress={() => navigation.navigate('Insights')}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.insightsTitle}>Weekly insights</Text>
+          <Text style={styles.insightsSub}>See trends and consistency for the last 7 days.</Text>
+        </View>
+        <Text style={styles.insightsChevron}>›</Text>
+      </Pressable>
+
       <FlatList
         data={rows}
         keyExtractor={(item) => item.dateKey}
@@ -89,6 +93,20 @@ export function HistoryScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f6f6f6', padding: 14 },
+  insightsCard: {
+    backgroundColor: '#0B0F1A',
+    borderRadius: 16,
+    padding: 14,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(255,255,255,0.12)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 12,
+  },
+  insightsTitle: { color: '#fff', fontWeight: '900', fontSize: 16 },
+  insightsSub: { color: 'rgba(255,255,255,0.65)', marginTop: 4, lineHeight: 16 },
+  insightsChevron: { color: 'rgba(255,255,255,0.55)', fontSize: 22, fontWeight: '800' },
   empty: { color: '#666', paddingVertical: 10 },
   row: {
     backgroundColor: '#fff',
