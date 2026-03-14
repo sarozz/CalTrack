@@ -170,7 +170,33 @@ export function LogScreen() {
     };
 
     await addEntry(entry);
-    Alert.alert('Saved', 'Added to today');
+    Alert.alert('Saved', 'Added to today', [
+      {
+        text: 'Save as preset',
+        onPress: async () => {
+          const label = (cleanedCaption || cleanedRaw || '').trim();
+          if (!label) {
+            Alert.alert('Name required', 'Add a caption or quick log text first.');
+            return;
+          }
+          const fav = {
+            name: label,
+            calories: Math.round(c * s),
+            protein: Math.round(p * s),
+            fat: fat != null ? Math.round(fat * s) : undefined,
+            carbs: carbs != null ? Math.round(carbs * s) : undefined,
+            fiber: fiber != null ? Math.round(fiber * s) : undefined,
+            sugar: sugar != null ? Math.round(sugar * s) : undefined,
+            cholesterol: cholesterol != null ? Math.round(cholesterol * s) : undefined,
+            sodium: sodium != null ? Math.round(sodium * s) : undefined,
+          };
+          const next = await toggleFavorite(fav);
+          setFavorites(next);
+          Alert.alert('Preset saved', label);
+        },
+      },
+      { text: 'OK' },
+    ]);
 
     // Reset form for quick consecutive logging
     setRawText('');
