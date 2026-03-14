@@ -672,9 +672,10 @@ export function LogScreen() {
 
       <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <Text style={[styles.title, { color: colors.text }]}>What did you eat?</Text>
-        <Text style={styles.subtle}>Start typing and pick a match. You can still add "650c 30p".</Text>
+        <Text style={[styles.subtle, { color: colors.subtext }]}>Start typing and pick a match. You can still add "650c 30p".</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, { backgroundColor: colors.card2, borderColor: colors.border, color: colors.text }]}
+          placeholderTextColor={colors.subtext}
           placeholder="e.g. Chicken rice bowl 650c 35p"
           value={rawText}
           onChangeText={(t) => {
@@ -791,9 +792,10 @@ export function LogScreen() {
 
         <View style={styles.row}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.label}>Calories (kcal)</Text>
+            <Text style={[styles.label, { color: colors.subtext }]}>Calories (kcal)</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: colors.card2, borderColor: colors.border, color: colors.text }]}
+              placeholderTextColor={colors.subtext}
               keyboardType="numeric"
               value={calories}
               onChangeText={(t) => setCalories(t.replace(/[^0-9]/g, ''))}
@@ -801,9 +803,10 @@ export function LogScreen() {
             />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.label}>Protein (g)</Text>
+            <Text style={[styles.label, { color: colors.subtext }]}>Protein (g)</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: colors.card2, borderColor: colors.border, color: colors.text }]}
+              placeholderTextColor={colors.subtext}
               keyboardType="numeric"
               value={protein}
               onChangeText={(t) => setProtein(t.replace(/[^0-9]/g, ''))}
@@ -846,27 +849,29 @@ export function LogScreen() {
         </View>
 
         <Pressable style={styles.advRow} onPress={() => setShowMicros((v) => !v)}>
-          <Text style={styles.advTxt}>{showMicros ? 'Hide micros' : 'Add micros (sugar, carbs, fat…)'} </Text>
-          <Text style={styles.advChevron}>{showMicros ? '˄' : '˅'}</Text>
+          <Text style={[styles.advTxt, { color: colors.text }]}>{showMicros ? 'Hide micros' : 'Add micros (sugar, carbs, fat…)'} </Text>
+          <Text style={[styles.advChevron, { color: colors.subtext }]}>{showMicros ? '˄' : '˅'}</Text>
         </Pressable>
 
         {showMicros ? (
           <View style={styles.microGrid}>
             <View style={styles.microField}>
-              <Text style={styles.label}>Sugar (g)</Text>
+              <Text style={[styles.label, { color: colors.subtext }]}>Sugar (g)</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, { backgroundColor: colors.card2, borderColor: colors.border, color: colors.text }]}
+                placeholderTextColor={colors.subtext}
                 keyboardType="numeric"
                 value={sugar == null ? '' : String(sugar)}
                 onChangeText={(t) => setSugar(t.trim() ? Number(t.replace(/[^0-9.]/g, '')) : undefined)}
                 placeholder="e.g. 8"
               />
-              <Text style={styles.microHint}>Tip: type “2 tsp sugar” in Quick log → auto-fills (~8g).</Text>
+              <Text style={[styles.microHint, { color: colors.subtext }]}>Tip: type “2 tsp sugar” in Quick log → auto-fills (~8g).</Text>
             </View>
             <View style={styles.microField}>
-              <Text style={styles.label}>Carbs (g)</Text>
+              <Text style={[styles.label, { color: colors.subtext }]}>Carbs (g)</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, { backgroundColor: colors.card2, borderColor: colors.border, color: colors.text }]}
+                placeholderTextColor={colors.subtext}
                 keyboardType="numeric"
                 value={carbs == null ? '' : String(carbs)}
                 onChangeText={(t) => setCarbs(t.trim() ? Number(t.replace(/[^0-9.]/g, '')) : undefined)}
@@ -874,9 +879,10 @@ export function LogScreen() {
               />
             </View>
             <View style={styles.microField}>
-              <Text style={styles.label}>Fat (g)</Text>
+              <Text style={[styles.label, { color: colors.subtext }]}>Fat (g)</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, { backgroundColor: colors.card2, borderColor: colors.border, color: colors.text }]}
+                placeholderTextColor={colors.subtext}
                 keyboardType="numeric"
                 value={fat == null ? '' : String(fat)}
                 onChangeText={(t) => setFat(t.trim() ? Number(t.replace(/[^0-9.]/g, '')) : undefined)}
@@ -884,9 +890,10 @@ export function LogScreen() {
               />
             </View>
             <View style={styles.microField}>
-              <Text style={styles.label}>Fiber (g)</Text>
+              <Text style={[styles.label, { color: colors.subtext }]}>Fiber (g)</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, { backgroundColor: colors.card2, borderColor: colors.border, color: colors.text }]}
+                placeholderTextColor={colors.subtext}
                 keyboardType="numeric"
                 value={fiber == null ? '' : String(fiber)}
                 onChangeText={(t) => setFiber(t.trim() ? Number(t.replace(/[^0-9.]/g, '')) : undefined)}
@@ -894,9 +901,10 @@ export function LogScreen() {
               />
             </View>
             <View style={styles.microField}>
-              <Text style={styles.label}>Sodium (mg)</Text>
+              <Text style={[styles.label, { color: colors.subtext }]}>Sodium (mg)</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, { backgroundColor: colors.card2, borderColor: colors.border, color: colors.text }]}
+                placeholderTextColor={colors.subtext}
                 keyboardType="numeric"
                 value={sodium == null ? '' : String(sodium)}
                 onChangeText={(t) => setSodium(t.trim() ? Number(t.replace(/[^0-9.]/g, '')) : undefined)}
@@ -904,9 +912,10 @@ export function LogScreen() {
               />
             </View>
             <View style={styles.microField}>
-              <Text style={styles.label}>Chol (mg)</Text>
+              <Text style={[styles.label, { color: colors.subtext }]}>Chol (mg)</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, { backgroundColor: colors.card2, borderColor: colors.border, color: colors.text }]}
+                placeholderTextColor={colors.subtext}
                 keyboardType="numeric"
                 value={cholesterol == null ? '' : String(cholesterol)}
                 onChangeText={(t) => setCholesterol(t.trim() ? Number(t.replace(/[^0-9.]/g, '')) : undefined)}
@@ -921,7 +930,8 @@ export function LogScreen() {
       <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <Text style={[styles.title, { color: colors.text }]}>Caption (optional)</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, { backgroundColor: colors.card2, borderColor: colors.border, color: colors.text }]}
+          placeholderTextColor={colors.subtext}
           placeholder="e.g. felt great after this"
           value={caption}
           onChangeText={setCaption}

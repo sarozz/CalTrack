@@ -290,7 +290,7 @@ export function HomeScreen({ navigation }: Props) {
           return (
             <Animated.View style={{ opacity: rowOpacity, transform: [{ translateY: rowTranslate }] }}>
               <Pressable
-                style={styles.row}
+                style={[styles.row, { backgroundColor: colors.card, borderColor: colors.border }]}
                 onPress={() => navigation.navigate('EditEntry', { id: item.id })}
                 onLongPress={() => {
                   Alert.alert('Entry', 'What do you want to do?', [
@@ -328,13 +328,11 @@ export function HomeScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f6f6f6', padding: 14, gap: 12 },
+  container: { flex: 1, padding: 14, gap: 12 },
   card: {
-    backgroundColor: '#fff',
     borderRadius: 16,
     padding: 14,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#ddd',
   },
   todayHeader: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 6 },
   streakMini: { color: 'rgba(17,17,17,0.55)', fontWeight: '800' },
