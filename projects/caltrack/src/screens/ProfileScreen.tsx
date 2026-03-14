@@ -4,7 +4,7 @@ import { COLORS } from '../styles/theme';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { loadEntries, loadSettings, saveSettings } from '../storage/store';
 import { exportCsv, exportJson, makeBundle } from '../utils/exportData';
-import { cancelDailyReminder, scheduleDailyReminder } from '../utils/reminders';
+import { cancelDailyReminder, scheduleDailyReminder, sendTestNotification } from '../utils/reminders';
 import { DEFAULT_SETTINGS, type ReminderMode, type Settings } from '../types/models';
 import type { HomeStackParamList } from './HomeScreen';
 
@@ -255,6 +255,25 @@ export function ProfileScreen({ navigation }: Props) {
             );
           })}
         </View>
+
+        <Pressable
+          style={[styles.linkRow, { borderTopWidth: 0, marginTop: 8 }]}
+          onPress={async () => {
+            try {
+              const r = await sendTestNotification();
+              if (!r.ok) {
+                Alert.alert('Permission needed', 'Enable notifications to receive reminders.');
+                return;
+              }
+              Alert.alert('Sent', 'Check your notifications.');
+            } catch {
+              Alert.alert('Failed', 'Could not send test notification.');
+            }
+          }}
+        >
+          <Text style={styles.linkTxt}>Send test notification</Text>
+          <Text style={styles.linkChevron}>›</Text>
+        </Pressable>
       </View>
 
       <View style={styles.card}>

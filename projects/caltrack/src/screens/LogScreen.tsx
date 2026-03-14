@@ -30,6 +30,21 @@ function makeId() {
   return `${Date.now()}_${Math.random().toString(16).slice(2)}`;
 }
 
+const QUICK_TEMPLATES: Array<{
+  name: string;
+  calories: number;
+  protein: number;
+  sugar?: number;
+  carbs?: number;
+  fat?: number;
+}> = [
+  { name: 'Chai (milk + sugar)', calories: 120, protein: 3, sugar: 10, carbs: 16, fat: 4 },
+  { name: 'Coffee (with sugar)', calories: 60, protein: 1, sugar: 8, carbs: 10, fat: 1 },
+  { name: 'Dal + rice (1 plate)', calories: 520, protein: 18, carbs: 86, fat: 10 },
+  { name: 'Roti + curry (2 + 1)', calories: 480, protein: 16, carbs: 70, fat: 14 },
+  { name: 'Chicken biryani (1 plate)', calories: 650, protein: 28, carbs: 85, fat: 18 },
+];
+
 export function LogScreen() {
   const navigation = useNavigation<any>();
 
@@ -478,6 +493,35 @@ export function LogScreen() {
       >
         <Text style={styles.longBtnTxt}>{barcodeLoading ? 'Scanning…' : 'Scan barcode  🏷️'}</Text>
       </Pressable>
+
+      <View style={styles.card}>
+        <Text style={styles.title}>Quick add (templates)</Text>
+        <Text style={styles.subtle}>Tap to prefill. Adjust calories/protein if needed.</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10 }}>
+          {QUICK_TEMPLATES.map((t) => (
+            <Pressable
+              key={t.name}
+              style={styles.recentChip}
+              onPress={() => {
+                setCaption(t.name);
+                setRawText('');
+                setCalories(String(t.calories));
+                setProtein(String(t.protein));
+                setManualServings('1');
+                setSugar(t.sugar);
+                setCarbs(t.carbs);
+                setFat(t.fat);
+                setShowMicros(Boolean(t.sugar || t.carbs || t.fat));
+              }}
+            >
+              <Text style={styles.recentEmoji}>⚡</Text>
+              <Text style={styles.recentTxt} numberOfLines={1}>
+                {t.name}
+              </Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+      </View>
 
       {favorites.length ? (
         <View style={styles.card}>

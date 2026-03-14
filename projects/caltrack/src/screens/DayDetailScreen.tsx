@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { loadEntries } from '../storage/store';
@@ -12,6 +12,8 @@ type Props = NativeStackScreenProps<HistoryStackParamList, 'DayDetail'>;
 export function DayDetailScreen({ route, navigation }: Props) {
   const { dateKey } = route.params;
   const [entries, setEntries] = React.useState<Entry[]>([]);
+  const [q, setQ] = React.useState('');
+  const [mealFilter, setMealFilter] = React.useState<'All' | Entry['meal']>('All');
 
   useFocusEffect(
     React.useCallback(() => {
@@ -32,7 +34,14 @@ export function DayDetailScreen({ route, navigation }: Props) {
     navigation.setOptions({ title: formatDateLabel(dateKey) });
   }, [dateKey, navigation]);
 
-  const totals = entries.reduce(
+  const filtered = entries.filter((e) => {
+    if (mealFilter !== 'All' && e.meal !== mealFilter) return false;
+    if (!q.trim()) return true;
+    const hay = `${e.caption || ''} ${e.rawText || ''}`.toLowerCase();
+    return hay.includes(q.trim().toLowerCase());
+  });
+
+  const totals = filtered.reduce(
     (acc, e) => {
       acc.calories += e.calories;
       acc.protein += e.protein;
@@ -49,10 +58,34 @@ export function DayDetailScreen({ route, navigation }: Props) {
         <Text style={styles.headerBig}>{totals.protein} g protein</Text>
       </View>
 
+      <View style={styles.filterCard}>
+        <TextInput
+          style={styles.search}
+          placeholder="Search this day…"
+          value={q}
+          onChangeText={setQ}
+          placeholderTextColor="rgba(17,17,17,0.45)"
+        />
+        <View style={styles.chips}>
+          {(['All', 'Breakfast', 'Lunch', 'Dinner', 'Snack'] as const).map((m) => {
+            const selected = mealFilter === m;
+            return (
+              <Pressable
+                key={m}
+                style={[styles.chip, selected && styles.chipSelected]}
+                onPress={() => setMealFilter(m as any)}
+              >
+                <Text style={[styles.chipTxt, selected && styles.chipTxtSelected]}>{m}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
+
       <FlatList
-        data={entries}
+        data={filtered}
         keyExtractor={(item) => item.id}
-        ListEmptyComponent={<Text style={styles.empty}>No entries.</Text>}
+        ListEmptyComponent={<Text style={styles.empty}>No matches.</Text>}
         renderItem={({ item }) => (
           <Pressable style={styles.row} onPress={() => navigation.navigate('EditEntry', { id: item.id })}>
             <Text style={styles.emoji}>{item.emoji || '🍽️'}</Text>
@@ -80,6 +113,35 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#ddd',
   },
+  filterCard: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#ddd',
+  },
+  search: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(0,0,0,0.10)',
+    borderRadius: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: '#fafafa',
+    fontSize: 16,
+    color: '#111',
+  },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 10 },
+  chip: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    backgroundColor: 'rgba(0,0,0,0.05)',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(0,0,0,0.06)',
+  },
+  chipSelected: { backgroundColor: 'rgba(236, 72, 153, 0.12)', borderColor: 'rgba(236, 72, 153, 0.30)' },
+  chipTxt: { color: 'rgba(17,17,17,0.65)', fontWeight: '700' },
+  chipTxtSelected: { color: '#9D174D' },
   headerTitle: { fontWeight: '600', fontSize: 14, color: '#111' },
   headerBig: { fontWeight: '600', fontSize: 18, marginTop: 4 },
   empty: { color: '#666', paddingVertical: 10 },

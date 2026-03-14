@@ -8,6 +8,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { loadEntries, loadSettings } from '../storage/store';
 import type { Entry, Settings } from '../types/models';
 import { formatTime, toDateKey } from '../utils/date';
+import { computeStreak } from '../utils/streak';
 
 export type HomeStackParamList = {
   Home: undefined;
@@ -103,6 +104,8 @@ export function HomeScreen({ navigation }: Props) {
   const calProgress = calGoal > 0 ? totals.calories / calGoal : 0;
   const proProgress = proGoal > 0 ? totals.protein / proGoal : 0;
 
+  const streak = computeStreak(entries);
+
   return (
     <View style={styles.container}>
       {breakdown ? (
@@ -144,6 +147,17 @@ export function HomeScreen({ navigation }: Props) {
           </View>
         </View>
       ) : null}
+
+      <View style={styles.streakCard}>
+        <Text style={[styles.title, { color: '#fff' }]}>Consistency</Text>
+        <View style={styles.streakRow}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.streakBig}>{streak.current} day streak</Text>
+            <Text style={styles.streakSubtle}>{streak.daysThisWeek}/7 days logged this week · best {streak.best}</Text>
+          </View>
+          <Text style={styles.streakBadge}>🔥</Text>
+        </View>
+      </View>
 
       <View style={styles.card}>
         <Text style={styles.title}>Today</Text>
@@ -286,7 +300,19 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#ddd',
   },
-  title: { fontSize: 16, fontWeight: '600', marginBottom: 6 },
+  streakCard: {
+    backgroundColor: '#0B0F1A',
+    borderRadius: 18,
+    padding: 14,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(255,255,255,0.12)',
+  },
+  streakRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  streakBig: { color: '#fff', fontWeight: '900', fontSize: 18 },
+  streakSubtle: { color: 'rgba(255,255,255,0.6)', marginTop: 4, fontWeight: '600' },
+  streakBadge: { fontSize: 24 },
+
+  title: { fontSize: 16, fontWeight: '600', marginBottom: 6, color: '#111' },
   big: { fontSize: 18, fontWeight: '600', marginTop: 4 },
   subtle: { marginTop: 10, color: '#666' },
   bigLegendRow: { flexDirection: 'row', justifyContent: 'center', gap: 14, marginBottom: 8 },

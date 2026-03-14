@@ -50,3 +50,21 @@ export async function scheduleDailyReminder(timeHHMM: string) {
   await AsyncStorage.setItem(REMINDER_ID_KEY, id);
   return { ok: true as const, id };
 }
+
+export async function sendTestNotification() {
+  const perm = await Notifications.getPermissionsAsync();
+  if (!perm.granted) {
+    const req = await Notifications.requestPermissionsAsync();
+    if (!req.granted) return { ok: false as const, reason: 'permission_denied' as const };
+  }
+
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: 'CalTrack',
+      body: 'Test notification — reminders are working.',
+    },
+    trigger: null,
+  });
+
+  return { ok: true as const };
+}
