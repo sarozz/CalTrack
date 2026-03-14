@@ -64,7 +64,12 @@ function MainTabs() {
         tabBarActiveTintColor: 'rgba(236, 72, 153, 0.9)',
         tabBarInactiveTintColor: 'rgba(17,17,17,0.55)',
         tabBarIcon: ({ color, size }) => {
-          const name = route.name === 'HomeTab' ? 'home' : route.name === 'LogTab' ? 'add-circle' : 'time';
+          const name =
+            route.name === 'HomeTab'
+              ? 'home'
+              : route.name === 'LogTab'
+                ? 'add-circle'
+                : 'person-circle';
           return <Ionicons name={name as any} size={size} color={color} />;
         },
       })}

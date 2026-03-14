@@ -53,12 +53,12 @@ export function HomeScreen({ navigation }: Props) {
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Pressable onPress={() => navigation.navigate('Profile')} style={styles.headerBtn}>
-          <Text style={styles.headerBtnText}>Profile</Text>
+        <Pressable onPress={() => navigation.getParent()?.navigate('HistoryTab' as never)} style={styles.headerBtn}>
+          <Text style={styles.headerBtnText}>History</Text>
         </Pressable>
       ),
     });
-  }, [navigation, entries]);
+  }, [navigation]);
 
   const todayKey = toDateKey(new Date());
   const todays = entries.filter((e) => e.dateKey === todayKey);
