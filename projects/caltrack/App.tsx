@@ -86,7 +86,7 @@ export default function App() {
       const elapsed = Date.now() - start;
 
       // Make the loading screen visible (otherwise it flashes too fast to notice).
-      const minMs = 900;
+      const minMs = 1500;
       if (elapsed < minMs) {
         await new Promise((r) => setTimeout(r, minMs - elapsed));
       }
