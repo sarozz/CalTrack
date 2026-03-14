@@ -1,5 +1,6 @@
 import React from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../styles/theme';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { loadEntries, loadSettings, saveSettings } from '../storage/store';
@@ -24,7 +25,7 @@ export function ProfileScreen({ navigation }: Props) {
       title: 'Profile',
       headerRight: () => (
         <Pressable onPress={() => navigation.navigate('History')} style={{ paddingHorizontal: 10, paddingVertical: 6 }}>
-          <Text style={{ color: 'rgba(17,17,17,0.6)', fontWeight: '800' }}>History</Text>
+          <Ionicons name="time-outline" size={22} color="rgba(17,17,17,0.65)" />
         </Pressable>
       ),
     });
@@ -433,10 +434,10 @@ const styles = StyleSheet.create({
   igAvatarTxt: { color: '#9D174D', fontWeight: '900', fontSize: 30 },
   igStats: { flex: 1, flexDirection: 'row', justifyContent: 'space-between' },
   igStat: { alignItems: 'center', flex: 1 },
-  igStatNum: { fontWeight: '900', color: '#111', fontSize: 18 },
-  igStatLbl: { marginTop: 2, color: 'rgba(17,17,17,0.55)', fontWeight: '700', fontSize: 12 },
-  igName: { marginTop: 12, fontWeight: '900', fontSize: 18, color: '#111' },
-  igHandle: { marginTop: 2, color: 'rgba(17,17,17,0.55)', fontWeight: '700' },
+  igStatNum: { fontWeight: '700', color: '#111', fontSize: 18 },
+  igStatLbl: { marginTop: 2, color: 'rgba(17,17,17,0.55)', fontWeight: '600', fontSize: 12 },
+  igName: { marginTop: 12, fontWeight: '700', fontSize: 18, color: '#111' },
+  igHandle: { marginTop: 2, color: 'rgba(17,17,17,0.55)', fontWeight: '600' },
   igBio: { marginTop: 10, color: 'rgba(17,17,17,0.72)', lineHeight: 18 },
   igPills: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 12 },
   pill: {
@@ -447,7 +448,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 999,
   },
-  pillTxt: { color: 'rgba(17,17,17,0.75)', fontWeight: '800' },
+  pillTxt: { color: 'rgba(17,17,17,0.75)', fontWeight: '600' },
 
   card: {
     backgroundColor: '#fff',
@@ -469,8 +470,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 2,
   },
-  sectionTitle: { fontSize: 16, fontWeight: '900', color: '#111' },
-  sectionMeta: { color: 'rgba(17,17,17,0.45)', fontWeight: '900' },
+  sectionTitle: { fontSize: 16, fontWeight: '700', color: '#111' },
+  sectionMeta: { color: 'rgba(17,17,17,0.45)', fontWeight: '700' },
 
   inlineToggle: {
     flexDirection: 'row',

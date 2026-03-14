@@ -1,5 +1,6 @@
 import React from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import Svg, { Polyline } from 'react-native-svg';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { loadEntries } from '../storage/store';
@@ -24,8 +25,39 @@ type DayRow = {
   count: number;
 };
 
+function Sparkline({ values }: { values: number[] }) {
+  const w = 170;
+  const h = 44;
+  if (!values || values.length < 2) {
+    return (
+      <View style={styles.sparkEmpty}>
+        <Text style={styles.sparkEmptyTxt}>Log a few days to see your trend.</Text>
+      </View>
+    );
+  }
+
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = Math.max(1, max - min);
+
+  const pts = values
+    .map((v, i) => {
+      const x = (i / (values.length - 1)) * w;
+      const y = h - ((v - min) / range) * h;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .join(' ');
+
+  return (
+    <Svg width={w} height={h}>
+      <Polyline points={pts} fill="none" stroke="rgba(236, 72, 153, 0.9)" strokeWidth={3} />
+    </Svg>
+  );
+}
+
 export function HistoryScreen({ navigation }: Props) {
   const [rows, setRows] = React.useState<DayRow[]>([]);
+  const [spark, setSpark] = React.useState<number[]>([]);
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -51,8 +83,13 @@ export function HistoryScreen({ navigation }: Props) {
           map.set(e.dateKey, r);
         }
         const list = Array.from(map.values()).sort((a, b) => (a.dateKey < b.dateKey ? 1 : -1));
+
+        // Sparkline: last 7 days calories (oldest -> newest)
+        const last7 = list.slice(0, 7).reverse().map((r) => r.calories);
+
         if (!mounted) return;
         setRows(list);
+        setSpark(last7);
       })();
       return () => {
         mounted = false;
@@ -65,7 +102,11 @@ export function HistoryScreen({ navigation }: Props) {
       <Pressable style={styles.insightsCard} onPress={() => navigation.navigate('Insights')}>
         <View style={{ flex: 1 }}>
           <Text style={styles.insightsTitle}>Weekly insights</Text>
-          <Text style={styles.insightsSub}>See trends and consistency for the last 7 days.</Text>
+          <Text style={styles.insightsSub}>See your last 7 days at a glance.</Text>
+
+          <View style={{ marginTop: 10 }}>
+            <Sparkline values={spark} />
+          </View>
         </View>
         <Text style={styles.insightsChevron}>›</Text>
       </Pressable>
@@ -94,19 +135,24 @@ export function HistoryScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f6f6f6', padding: 14 },
   insightsCard: {
-    backgroundColor: '#0B0F1A',
+    backgroundColor: '#fff',
     borderRadius: 16,
     padding: 14,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(255,255,255,0.12)',
+    borderColor: 'rgba(0,0,0,0.10)',
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
     marginBottom: 12,
   },
-  insightsTitle: { color: '#fff', fontWeight: '900', fontSize: 16 },
-  insightsSub: { color: 'rgba(255,255,255,0.65)', marginTop: 4, lineHeight: 16 },
-  insightsChevron: { color: 'rgba(255,255,255,0.55)', fontSize: 22, fontWeight: '800' },
+  insightsTitle: { color: '#111', fontWeight: '700', fontSize: 16 },
+  insightsSub: { color: 'rgba(17,17,17,0.60)', marginTop: 4, lineHeight: 16 },
+  insightsChevron: { color: 'rgba(17,17,17,0.45)', fontSize: 22, fontWeight: '700' },
+  sparkEmpty: {
+    height: 44,
+    justifyContent: 'center',
+  },
+  sparkEmptyTxt: { color: 'rgba(17,17,17,0.5)', fontSize: 12, fontWeight: '600' },
   empty: { color: '#666', paddingVertical: 10 },
   row: {
     backgroundColor: '#fff',
