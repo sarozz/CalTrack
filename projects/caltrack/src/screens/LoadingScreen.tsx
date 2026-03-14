@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
+import { Animated, Easing, Image, StyleSheet, Text, View } from 'react-native';
 
 const BULLETS = [
   { title: 'Smart tracking', body: 'Log in seconds. Keep it simple and consistent.' },
@@ -31,21 +31,27 @@ export function LoadingScreen() {
 
   return (
     <View style={styles.wrap}>
-      <Text style={styles.h1}>CalTrack</Text>
-      <Text style={styles.sub}>Getting things ready…</Text>
+      <View style={styles.center}>
+        <View style={styles.logoWrap}>
+          <Image source={require('../../assets/icon.png')} style={styles.logo} />
+        </View>
 
-      <View style={styles.barTrack}>
-        <Animated.View style={[styles.barFill, { width }]} />
-      </View>
+        <Text style={styles.h1}>CalTrack</Text>
+        <Text style={styles.sub}>Getting things ready…</Text>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>{b.title}</Text>
-        <Text style={styles.cardBody}>{b.body}</Text>
+        <View style={styles.barTrack}>
+          <Animated.View style={[styles.barFill, { width }]} />
+        </View>
 
-        <View style={{ marginTop: 10, gap: 6 }}>
-          <Text style={styles.stat}>• Avg log time: ~8 seconds</Text>
-          <Text style={styles.stat}>• People who track daily are more consistent over time</Text>
-          <Text style={styles.stat}>• Focus: calories + protein + key micros</Text>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>{b.title}</Text>
+          <Text style={styles.cardBody}>{b.body}</Text>
+
+          <View style={{ marginTop: 10, gap: 6 }}>
+            <Text style={styles.stat}>• Avg log time: ~8 seconds</Text>
+            <Text style={styles.stat}>• Focus: calories + protein + key micros</Text>
+            <Text style={styles.stat}>• Local-first by default</Text>
+          </View>
         </View>
       </View>
     </View>
@@ -53,12 +59,34 @@ export function LoadingScreen() {
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, backgroundColor: '#0B0F1A', padding: 18, paddingTop: 60 },
-  h1: { color: '#fff', fontSize: 30, fontWeight: '900' },
-  sub: { color: 'rgba(255,255,255,0.65)', marginTop: 6 },
+  wrap: {
+    flex: 1,
+    backgroundColor: '#0B0F1A',
+    padding: 18,
+  },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoWrap: {
+    width: 84,
+    height: 84,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 14,
+  },
+  logo: { width: 64, height: 64, borderRadius: 16 },
+  h1: { color: '#fff', fontSize: 28, fontWeight: '900', textAlign: 'center' },
+  sub: { color: 'rgba(255,255,255,0.65)', marginTop: 6, textAlign: 'center' },
   barTrack: {
     marginTop: 18,
     height: 10,
+    width: 260,
     borderRadius: 999,
     backgroundColor: 'rgba(255,255,255,0.10)',
     overflow: 'hidden',
@@ -72,13 +100,14 @@ const styles = StyleSheet.create({
   },
   card: {
     marginTop: 18,
+    width: 320,
     backgroundColor: 'rgba(255,255,255,0.06)',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.10)',
     borderRadius: 18,
     padding: 14,
   },
-  cardTitle: { color: '#fff', fontWeight: '800', fontSize: 16 },
-  cardBody: { color: 'rgba(255,255,255,0.78)', marginTop: 6, lineHeight: 19 },
-  stat: { color: 'rgba(255,255,255,0.60)', fontSize: 12, lineHeight: 16 },
+  cardTitle: { color: '#fff', fontWeight: '800', fontSize: 16, textAlign: 'center' },
+  cardBody: { color: 'rgba(255,255,255,0.78)', marginTop: 6, lineHeight: 19, textAlign: 'center' },
+  stat: { color: 'rgba(255,255,255,0.60)', fontSize: 12, lineHeight: 16, textAlign: 'center' },
 });
