@@ -19,6 +19,7 @@ import { addEntry, loadEntries, loadFavorites, toggleFavorite, type Favorite } f
 import { formatTime } from '../utils/date';
 import type { Entry, Meal } from '../types/models';
 import { COLORS } from '../styles/theme';
+import { useAppTheme } from '../styles/appTheme';
 import { recommendEmoji } from '../utils/recommendEmoji';
 import { MealPicker } from '../components/MealPicker';
 import { toDateKey } from '../utils/date';
@@ -49,6 +50,7 @@ const QUICK_TEMPLATES: Array<{
 
 export function LogScreen() {
   const navigation = useNavigation<any>();
+  const { colors, scheme } = useAppTheme();
 
   const now = React.useMemo(() => new Date(), []);
   const [rawText, setRawText] = React.useState('');
@@ -448,7 +450,7 @@ export function LogScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ padding: 14, gap: 12 }}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.bg }]} contentContainerStyle={{ padding: 14, gap: 12 }}>
       {toast ? (
         <View style={styles.toast}>
           <Text style={styles.toastTxt}>{toast}</Text>
@@ -514,9 +516,9 @@ export function LogScreen() {
         <Text style={styles.longBtnTxt}>{barcodeLoading ? 'Scanning…' : 'Scan barcode  🏷️'}</Text>
       </Pressable>
 
-      <View style={styles.card}>
-        <Text style={styles.title}>Quick add (templates)</Text>
-        <Text style={styles.subtle}>Tap to prefill. Adjust calories/protein if needed.</Text>
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <Text style={[styles.title, { color: colors.text }]}>Quick add (templates)</Text>
+        <Text style={[styles.subtle, { color: colors.subtext }]}>Tap to prefill. Adjust calories/protein if needed.</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10 }}>
           {QUICK_TEMPLATES.map((t) => (
             <Pressable
@@ -546,7 +548,7 @@ export function LogScreen() {
       </View>
 
       {favorites.length ? (
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
           <View style={styles.cardHeaderRow}>
             <Text style={styles.title}>Favorites</Text>
             <Pressable
@@ -615,7 +617,7 @@ export function LogScreen() {
       ) : null}
 
       {recent.length ? (
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
           <Text style={styles.title}>Recent</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10 }}>
             {recent.map((e) => {
@@ -668,8 +670,8 @@ export function LogScreen() {
         </View>
       ) : null}
 
-      <View style={styles.card}>
-        <Text style={styles.title}>What did you eat?</Text>
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <Text style={[styles.title, { color: colors.text }]}>What did you eat?</Text>
         <Text style={styles.subtle}>Start typing and pick a match. You can still add "650c 30p".</Text>
         <TextInput
           style={styles.input}
@@ -779,13 +781,13 @@ export function LogScreen() {
         ) : null}
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.title}>Meal</Text>
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <Text style={[styles.title, { color: colors.text }]}>Meal</Text>
         <MealPicker value={meal} onChange={setMeal} />
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.title}>Nutrition</Text>
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <Text style={[styles.title, { color: colors.text }]}>Nutrition</Text>
 
         <View style={styles.row}>
           <View style={{ flex: 1 }}>
@@ -916,8 +918,8 @@ export function LogScreen() {
       </View>
 
 
-      <View style={styles.card}>
-        <Text style={styles.title}>Caption (optional)</Text>
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <Text style={[styles.title, { color: colors.text }]}>Caption (optional)</Text>
         <TextInput
           style={styles.input}
           placeholder="e.g. felt great after this"
@@ -934,7 +936,7 @@ export function LogScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f6f6f6' },
+  container: { flex: 1 },
   toast: {
     backgroundColor: '#0B0F1A',
     borderRadius: 14,

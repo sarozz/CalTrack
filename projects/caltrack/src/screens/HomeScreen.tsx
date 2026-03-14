@@ -24,7 +24,7 @@ type Props = NativeStackScreenProps<HomeStackParamList, 'Home'>;
 export function HomeScreen({ navigation }: Props) {
   const [entries, setEntries] = React.useState<Entry[]>([]);
   const [settings, setSettings] = React.useState<Settings | null>(null);
-  const { scheme } = useAppTheme();
+  const { scheme, colors } = useAppTheme();
 
   const feedAnim = React.useRef(new Animated.Value(0)).current;
   const [breakdown, setBreakdown] = React.useState<null | {
@@ -61,11 +61,7 @@ export function HomeScreen({ navigation }: Props) {
           onPress={() => (navigation.getParent()?.getParent() as any)?.navigate('HistoryTab', { screen: 'History' })}
           style={styles.headerBtn}
         >
-          <Ionicons
-            name="time-outline"
-            size={22}
-            color={scheme === 'dark' ? 'rgba(255,255,255,0.72)' : 'rgba(17,17,17,0.65)'}
-          />
+          <Ionicons name="time-outline" size={22} color={scheme === 'dark' ? colors.subtext : 'rgba(17,17,17,0.65)'} />
         </Pressable>
       ),
     });
@@ -120,15 +116,15 @@ export function HomeScreen({ navigation }: Props) {
   const streak = computeStreak(entries);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.bg }]}>
       {breakdown ? (
         <View style={styles.modalWrap}>
           <Pressable style={styles.backdrop} onPress={() => setBreakdown(null)} />
           <View style={styles.modalCardModern}>
             <View style={styles.modalHeader}>
               <View style={{ flex: 1 }}>
-                <Text style={styles.modalTitle}>{breakdown.title}</Text>
-                <Text style={styles.modalSub}>Top sources today</Text>
+                <Text style={[styles.modalTitle, { color: colors.text }]}>{breakdown.title}</Text>
+                <Text style={[styles.modalSub, { color: colors.subtext }]}>Top sources today</Text>
               </View>
               <Pressable onPress={() => setBreakdown(null)} style={styles.modalX}>
                 <Text style={styles.modalXTxt}>✕</Text>
@@ -136,17 +132,17 @@ export function HomeScreen({ navigation }: Props) {
             </View>
 
             {breakdownRows.length === 0 ? (
-              <Text style={styles.modalEmpty}>No data yet.</Text>
+              <Text style={[styles.modalEmpty, { color: colors.subtext }]}>No data yet.</Text>
             ) : (
               <View style={{ marginTop: 12, gap: 10 }}>
                 {breakdownRows.slice(0, 8).map((r) => (
                   <View key={r.id} style={styles.modalRowModern}>
                     <View style={{ flex: 1 }}>
-                      <Text style={styles.modalRowLabel} numberOfLines={1}>
+                      <Text style={[styles.modalRowLabel, { color: colors.text }]} numberOfLines={1}>
                         {r.label}
                       </Text>
                     </View>
-                    <Text style={styles.modalRowVal}>
+                    <Text style={[styles.modalRowVal, { color: colors.text }]}>
                       {Math.round(r.value)}{breakdown.unit}
                     </Text>
                   </View>
@@ -161,9 +157,9 @@ export function HomeScreen({ navigation }: Props) {
         </View>
       ) : null}
 
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <View style={styles.todayHeader}>
-          <Text style={styles.title}>Today</Text>
+          <Text style={[styles.title, { color: colors.text }]}>Today</Text>
           <Text style={styles.streakMini}>
             {streak.current}🔥 · {streak.daysThisWeek}/7
           </Text>
@@ -189,17 +185,17 @@ export function HomeScreen({ navigation }: Props) {
         <View style={styles.bigLegendRow}>
           <View style={styles.bigLegendItem}>
             <View style={[styles.bigDot, { backgroundColor: 'rgba(236, 72, 153, 0.55)' }]} />
-            <Text style={styles.bigLegendTxt}>Calories</Text>
+            <Text style={[styles.bigLegendTxt, { color: colors.subtext }]}>Calories</Text>
           </View>
           <View style={styles.bigLegendItem}>
             <View style={[styles.bigDot, { backgroundColor: COLORS.green }]} />
-            <Text style={styles.bigLegendTxt}>Protein</Text>
+            <Text style={[styles.bigLegendTxt, { color: colors.subtext }]}>Protein</Text>
           </View>
         </View>
 
         <View style={styles.leftRow}>
-          <Text style={styles.leftTxt}>{calGoal ? `${calLeft} kcal left` : 'Set a calorie goal in Profile'}</Text>
-          <Text style={styles.leftTxt}>{proGoal ? `${proLeft}g protein left` : ''}</Text>
+          <Text style={[styles.leftTxt, { color: colors.subtext }]}>{calGoal ? `${calLeft} kcal left` : 'Set a calorie goal in Profile'}</Text>
+          <Text style={[styles.leftTxt, { color: colors.subtext }]}>{proGoal ? `${proLeft}g protein left` : ''}</Text>
         </View>
 
         <View style={styles.microGrid}>
@@ -272,13 +268,13 @@ export function HomeScreen({ navigation }: Props) {
         </View>
       </View>
 
-      <Text style={styles.section}>Today feed</Text>
+      <Text style={[styles.section, { color: colors.subtext }]}>Today feed</Text>
       <FlatList
         data={todays}
         keyExtractor={(item) => item.id}
         ListEmptyComponent={
           <View style={styles.emptyWrap}>
-            <Text style={styles.empty}>No entries yet.</Text>
+            <Text style={[styles.empty, { color: colors.subtext }]}>No entries yet.</Text>
             <Pressable
               style={styles.emptyCta}
               onPress={() => navigation.getParent()?.navigate('LogTab' as never)}
@@ -315,13 +311,13 @@ export function HomeScreen({ navigation }: Props) {
               >
                 <Text style={styles.emoji}>{item.emoji || '🍽️'}</Text>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.rowTitle}>
+                  <Text style={[styles.rowTitle, { color: colors.text }]}>
                     {item.meal} · {item.calories} kcal · {item.protein}g
                   </Text>
-                  {!!item.caption && <Text style={styles.caption}>{item.caption}</Text>}
-                  {!!item.rawText && <Text style={styles.raw}>{item.rawText}</Text>}
+                  {!!item.caption && <Text style={[styles.caption, { color: colors.text }]}>{item.caption}</Text>}
+                  {!!item.rawText && <Text style={[styles.raw, { color: colors.subtext }]}>{item.rawText}</Text>}
                 </View>
-                <Text style={styles.time}>{formatTime(new Date(item.createdAt))}</Text>
+                <Text style={[styles.time, { color: colors.subtext }]}>{formatTime(new Date(item.createdAt))}</Text>
               </Pressable>
             </Animated.View>
           );
