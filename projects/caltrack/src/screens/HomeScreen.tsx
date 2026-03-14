@@ -151,7 +151,7 @@ export function HomeScreen({ navigation }: Props) {
             )}
 
             <Pressable onPress={() => setBreakdown(null)} style={[styles.modalBtn, { marginTop: 14 }]}>
-              <Text style={styles.modalBtnTxt}>Done</Text>
+              <Text style={[styles.modalBtnTxt, { color: scheme === 'dark' ? 'rgba(255,255,255,0.92)' : '#111' }]}>Done</Text>
             </Pressable>
           </View>
         </View>
@@ -279,7 +279,7 @@ export function HomeScreen({ navigation }: Props) {
               style={styles.emptyCta}
               onPress={() => navigation.getParent()?.navigate('LogTab' as never)}
             >
-              <Text style={styles.emptyCtaTxt}>Log your first meal</Text>
+              <Text style={[styles.emptyCtaTxt, { color: scheme === 'dark' ? 'rgba(255,255,255,0.88)' : '#9D174D' }]}>Log your first meal</Text>
             </Pressable>
           </View>
         }

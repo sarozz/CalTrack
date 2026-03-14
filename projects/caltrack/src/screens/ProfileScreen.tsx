@@ -138,23 +138,23 @@ export function ProfileScreen({ navigation }: Props) {
 
           <View style={styles.igStats}>
             <View style={styles.igStat}>
-              <Text style={styles.igStatNum}>{streak.current}</Text>
-              <Text style={styles.igStatLbl}>Streak</Text>
+              <Text style={[styles.igStatNum, { color: colors.text }]}>{streak.current}</Text>
+              <Text style={[styles.igStatLbl, { color: colors.subtext }]}>Streak</Text>
             </View>
             <View style={styles.igStat}>
-              <Text style={styles.igStatNum}>{todayKcal}</Text>
-              <Text style={styles.igStatLbl}>Today kcal</Text>
+              <Text style={[styles.igStatNum, { color: colors.text }]}>{todayKcal}</Text>
+              <Text style={[styles.igStatLbl, { color: colors.subtext }]}>Today kcal</Text>
             </View>
             <View style={styles.igStat}>
-              <Text style={styles.igStatNum}>{entriesCount}</Text>
-              <Text style={styles.igStatLbl}>Entries</Text>
+              <Text style={[styles.igStatNum, { color: colors.text }]}>{entriesCount}</Text>
+              <Text style={[styles.igStatLbl, { color: colors.subtext }]}>Entries</Text>
             </View>
           </View>
         </View>
 
-        <Text style={styles.igName}>{displayName}</Text>
-        <Text style={styles.igHandle}>{username}</Text>
-        <Text style={styles.igBio}>Local-first nutrition tracking • calories + protein + key micros</Text>
+        <Text style={[styles.igName, { color: colors.text }]}>{displayName}</Text>
+        <Text style={[styles.igHandle, { color: colors.subtext }]}>{username}</Text>
+        <Text style={[styles.igBio, { color: colors.subtext }]}>Local-first nutrition tracking • calories + protein + key micros</Text>
 
         <View style={styles.igPills}>
           <View style={styles.pill}>
@@ -168,8 +168,8 @@ export function ProfileScreen({ navigation }: Props) {
 
       <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <Pressable style={styles.sectionHeader} onPress={() => setOpenGoals((v) => !v)}>
-          <Text style={styles.sectionTitle}>Goals</Text>
-          <Text style={styles.sectionMeta}>{openGoals ? 'Hide' : 'Show'}</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Goals</Text>
+          <Text style={[styles.sectionMeta, { color: colors.subtext }]}>{openGoals ? 'Hide' : 'Show'}</Text>
         </Pressable>
 
         {openGoals ? (
@@ -279,8 +279,8 @@ export function ProfileScreen({ navigation }: Props) {
 
       <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <Pressable style={styles.sectionHeader} onPress={() => setOpenPersonal((v) => !v)}>
-          <Text style={styles.sectionTitle}>Personal</Text>
-          <Text style={styles.sectionMeta}>{openPersonal ? 'Hide' : 'Show'}</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Personal</Text>
+          <Text style={[styles.sectionMeta, { color: colors.subtext }]}>{openPersonal ? 'Hide' : 'Show'}</Text>
         </Pressable>
 
         {openPersonal ? (
@@ -325,8 +325,8 @@ export function ProfileScreen({ navigation }: Props) {
 
       <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <Pressable style={styles.sectionHeader} onPress={() => setOpenNotifications((v) => !v)}>
-          <Text style={styles.sectionTitle}>Notifications</Text>
-          <Text style={styles.sectionMeta}>{openNotifications ? 'Hide' : 'Show'}</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Notifications</Text>
+          <Text style={[styles.sectionMeta, { color: colors.subtext }]}>{openNotifications ? 'Hide' : 'Show'}</Text>
         </Pressable>
 
         {openNotifications ? (
@@ -365,7 +365,7 @@ export function ProfileScreen({ navigation }: Props) {
                 }
               }}
             >
-              <Text style={styles.linkTxt}>Send test notification</Text>
+              <Text style={[styles.linkTxt, { color: colors.text }]}>Send test notification</Text>
               <Text style={styles.linkChevron}>›</Text>
             </Pressable>
           </View>
@@ -374,8 +374,8 @@ export function ProfileScreen({ navigation }: Props) {
 
       <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <Pressable style={styles.sectionHeader} onPress={() => setOpenAppearance((v) => !v)}>
-          <Text style={styles.sectionTitle}>Appearance</Text>
-          <Text style={styles.sectionMeta}>{openAppearance ? 'Hide' : 'Show'}</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Appearance</Text>
+          <Text style={[styles.sectionMeta, { color: colors.subtext }]}>{openAppearance ? 'Hide' : 'Show'}</Text>
         </Pressable>
 
         {openAppearance ? (
@@ -421,33 +421,33 @@ export function ProfileScreen({ navigation }: Props) {
       <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <Text style={[styles.title, { color: colors.text }]}>Export</Text>
         <Pressable style={styles.linkRow} onPress={onExportCsv}>
-          <Text style={styles.linkTxt}>Export CSV</Text>
+          <Text style={[styles.linkTxt, { color: colors.text }]}>Export CSV</Text>
           <Text style={styles.linkChevron}>›</Text>
         </Pressable>
         <Pressable style={styles.linkRow} onPress={onExportJson}>
-          <Text style={styles.linkTxt}>Export JSON</Text>
+          <Text style={[styles.linkTxt, { color: colors.text }]}>Export JSON</Text>
           <Text style={styles.linkChevron}>›</Text>
         </Pressable>
       </View>
 
       <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <Pressable style={styles.sectionHeader} onPress={() => setOpenLegal((v) => !v)}>
-          <Text style={styles.sectionTitle}>Legal</Text>
-          <Text style={styles.sectionMeta}>{openLegal ? 'Hide' : 'Show'}</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Legal</Text>
+          <Text style={[styles.sectionMeta, { color: colors.subtext }]}>{openLegal ? 'Hide' : 'Show'}</Text>
         </Pressable>
 
         {openLegal ? (
           <View style={{ marginTop: 12 }}>
             <Pressable style={[styles.linkRow, { borderTopWidth: 0 }]} onPress={() => navigation.navigate('Legal', { kind: 'terms' })}>
-              <Text style={styles.linkTxt}>Terms of Use</Text>
+              <Text style={[styles.linkTxt, { color: colors.text }]}>Terms of Use</Text>
               <Text style={styles.linkChevron}>›</Text>
             </Pressable>
             <Pressable style={styles.linkRow} onPress={() => navigation.navigate('Legal', { kind: 'privacy' })}>
-              <Text style={styles.linkTxt}>Privacy Policy</Text>
+              <Text style={[styles.linkTxt, { color: colors.text }]}>Privacy Policy</Text>
               <Text style={styles.linkChevron}>›</Text>
             </Pressable>
             <Pressable style={styles.linkRow} onPress={() => navigation.navigate('Legal', { kind: 'faq' })}>
-              <Text style={styles.linkTxt}>FAQ</Text>
+              <Text style={[styles.linkTxt, { color: colors.text }]}>FAQ</Text>
               <Text style={styles.linkChevron}>›</Text>
             </Pressable>
           </View>
