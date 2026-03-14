@@ -184,9 +184,9 @@ export function HomeScreen({ navigation }: Props) {
           onPress={() => setBreakdown({ key: 'calories', title: 'Calories (kcal)', unit: ' kcal' })}
         >
           <MultiRing
-            size={310}
-            outerStroke={34}
-            innerStroke={24}
+            size={258}
+            outerStroke={30}
+            innerStroke={20}
             outerProgress={calProgress}
             innerProgress={proProgress}
             outerColor={'rgba(236, 72, 153, 0.55)'}
