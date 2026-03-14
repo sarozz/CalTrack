@@ -60,12 +60,19 @@ function LogStackNavigator() {
 }
 
 function MainTabs() {
+  const themeCtx = React.useContext(require('./src/styles/appTheme').ThemeCtx) as any;
+  const scheme = (themeCtx?.scheme as 'light' | 'dark') || 'light';
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarActiveTintColor: 'rgba(236, 72, 153, 0.9)',
-        tabBarInactiveTintColor: 'rgba(17,17,17,0.55)',
+        tabBarStyle: {
+          backgroundColor: scheme === 'dark' ? '#111827' : '#ffffff',
+          borderTopColor: scheme === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.10)',
+        },
+        tabBarActiveTintColor: scheme === 'dark' ? 'rgba(236, 72, 153, 0.95)' : 'rgba(236, 72, 153, 0.9)',
+        tabBarInactiveTintColor: scheme === 'dark' ? 'rgba(255,255,255,0.55)' : 'rgba(17,17,17,0.55)',
         tabBarIcon: ({ color, size }) => {
           const name =
             route.name === 'HomeTab'

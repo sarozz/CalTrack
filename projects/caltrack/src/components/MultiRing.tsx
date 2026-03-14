@@ -2,6 +2,7 @@ import React from 'react';
 import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { COLORS } from '../styles/theme';
+import { useAppTheme } from '../styles/appTheme';
 import { AnimatedNumber } from './AnimatedNumber';
 
 type Props = {
@@ -91,6 +92,8 @@ export function MultiRing({
   const cx = size / 2;
   const cy = size / 2;
 
+  const { colors } = useAppTheme();
+
   const centerCalories = Number(String(centerTitle).match(/\d+/)?.[0] || '0');
 
   return (
@@ -136,12 +139,12 @@ export function MultiRing({
           <AnimatedNumber
             value={centerCalories}
             durationMs={animateMs}
-            style={styles.centerTitle}
+            style={[styles.centerTitle, { color: colors.text }]}
             format={(n) => `${Math.round(n)}`}
           />
-          <Text style={styles.centerUnit}>kcal</Text>
+          <Text style={[styles.centerUnit, { color: colors.subtext }]}>kcal</Text>
         </View>
-        <Text style={styles.centerSub}>{centerSub}</Text>
+        <Text style={[styles.centerSub, { color: colors.subtext }]}>{centerSub}</Text>
       </View>
 
     </Animated.View>
