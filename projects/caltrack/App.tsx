@@ -81,7 +81,16 @@ export default function App() {
   React.useEffect(() => {
     let alive = true;
     (async () => {
+      const start = Date.now();
       const s = await loadSettings();
+      const elapsed = Date.now() - start;
+
+      // Make the loading screen visible (otherwise it flashes too fast to notice).
+      const minMs = 900;
+      if (elapsed < minMs) {
+        await new Promise((r) => setTimeout(r, minMs - elapsed));
+      }
+
       if (!alive) return;
       const needs = !s.onboardingDone || !s.name || !s.gender || !s.age;
       setBoot(needs ? 'onboarding' : 'ready');

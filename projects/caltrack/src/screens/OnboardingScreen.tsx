@@ -74,9 +74,10 @@ export function OnboardingScreen({ onFinished }: { onFinished: () => void }) {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ padding: 18, paddingTop: 28 }}>
-      <Text style={styles.h1}>Welcome to CalTrack</Text>
-      <Text style={styles.sub}>Quick setup. We’ll use this to prefill healthy default micronutrient goals.</Text>
+    <ScrollView style={styles.container} contentContainerStyle={{ padding: 18, flexGrow: 1 }}>
+      <View style={styles.centerWrap}>
+        <Text style={styles.h1}>Welcome to CalTrack</Text>
+        <Text style={styles.sub}>Quick setup. We’ll use this to prefill healthy default micronutrient goals.</Text>
 
       {step === 'name' ? (
         <View style={styles.card}>
@@ -140,57 +141,63 @@ export function OnboardingScreen({ onFinished }: { onFinished: () => void }) {
       ) : null}
 
       <Text style={styles.footer}>Not medical advice. You can change goals anytime in Profile.</Text>
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f6f6f6' },
-  h1: { fontSize: 26, fontWeight: '800', color: '#111' },
-  sub: { marginTop: 8, color: 'rgba(17,17,17,0.65)', lineHeight: 20 },
-  card: {
-    marginTop: 16,
-    backgroundColor: '#fff',
-    borderRadius: 18,
-    padding: 14,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#ddd',
+  container: { flex: 1, backgroundColor: '#0B0F1A' },
+  centerWrap: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingTop: 18,
+    paddingBottom: 18,
   },
-  title: { fontSize: 16, fontWeight: '700', color: '#111', marginBottom: 10 },
-  muted: { color: 'rgba(17,17,17,0.6)', marginTop: -6 },
+  h1: { fontSize: 28, fontWeight: '900', color: '#fff' },
+  sub: { marginTop: 8, color: 'rgba(255,255,255,0.68)', lineHeight: 20 },
+  card: {
+    marginTop: 18,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderRadius: 18,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.10)',
+  },
+  title: { fontSize: 16, fontWeight: '800', color: '#fff', marginBottom: 10 },
+  muted: { color: 'rgba(255,255,255,0.60)', marginTop: -6 },
   input: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#ddd',
-    borderRadius: 14,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    backgroundColor: '#fafafa',
-    fontSize: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.22)',
+    paddingHorizontal: 2,
+    paddingVertical: 10,
+    color: '#fff',
+    fontSize: 18,
   },
   primaryBtn: {
-    marginTop: 12,
-    backgroundColor: COLORS.btnBg,
-    borderColor: COLORS.btnBorder,
+    marginTop: 14,
+    backgroundColor: 'rgba(236, 72, 153, 0.95)',
+    borderColor: 'rgba(255,255,255,0.12)',
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: 'center',
   },
-  primaryTxt: { color: COLORS.btnText, fontWeight: '700', fontSize: 16 },
+  primaryTxt: { color: '#fff', fontWeight: '800', fontSize: 16 },
   option: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 12,
     borderRadius: 14,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#ddd',
-    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+    backgroundColor: 'rgba(0,0,0,0.18)',
   },
-  optionSelected: { borderColor: 'rgba(236, 72, 153, 0.35)', backgroundColor: 'rgba(236, 72, 153, 0.10)' },
-  optionText: { color: '#111', fontWeight: '700' },
-  optionTextSelected: { color: '#9D174D' },
-  optionCheck: { width: 20, textAlign: 'right', color: '#111', fontWeight: '800' },
-  optionCheckSelected: { color: '#9D174D' },
-  footer: { marginTop: 16, color: 'rgba(17,17,17,0.5)', fontSize: 12, lineHeight: 16 },
+  optionSelected: { borderColor: 'rgba(236, 72, 153, 0.55)', backgroundColor: 'rgba(236, 72, 153, 0.14)' },
+  optionText: { color: '#fff', fontWeight: '800' },
+  optionTextSelected: { color: '#fff' },
+  optionCheck: { width: 20, textAlign: 'right', color: 'rgba(255,255,255,0.85)', fontWeight: '900' },
+  optionCheckSelected: { color: '#fff' },
+  footer: { marginTop: 16, color: 'rgba(255,255,255,0.55)', fontSize: 12, lineHeight: 16 },
 });
