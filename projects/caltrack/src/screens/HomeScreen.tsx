@@ -1,11 +1,11 @@
 import React from 'react';
-import { Animated, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Animated, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { MultiRing } from '../components/MultiRing';
 import { AnimatedRing } from '../components/AnimatedRing';
 import { COLORS } from '../styles/theme';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { loadEntries, loadSettings } from '../storage/store';
+import { addEntry, deleteEntry, loadEntries, loadSettings } from '../storage/store';
 import type { Entry, Settings } from '../types/models';
 import { formatTime, toDateKey } from '../utils/date';
 import { computeStreak } from '../utils/streak';
@@ -53,12 +53,33 @@ export function HomeScreen({ navigation }: Props) {
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Pressable onPress={() => navigation.navigate('Profile')} style={styles.headerBtn}>
-          <Text style={styles.headerBtnText}>Profile</Text>
-        </Pressable>
+        <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+          <Pressable
+            onPress={async () => {
+              if (!entries.length) {
+                navigation.getParent()?.navigate('LogTab' as never);
+                return;
+              }
+              const last = entries[0];
+              const createdAt = Date.now();
+              await addEntry({
+                ...last,
+                id: `${createdAt}_${Math.random().toString(16).slice(2)}`,
+                createdAt,
+                dateKey: toDateKey(new Date(createdAt)),
+              });
+            }}
+            style={styles.headerBtn}
+          >
+            <Text style={styles.headerBtnText}>Repeat</Text>
+          </Pressable>
+          <Pressable onPress={() => navigation.navigate('Profile')} style={styles.headerBtn}>
+            <Text style={styles.headerBtnText}>Profile</Text>
+          </Pressable>
+        </View>
       ),
     });
-  }, [navigation]);
+  }, [navigation, entries]);
 
   const todayKey = toDateKey(new Date());
   const todays = entries.filter((e) => e.dateKey === todayKey);
@@ -79,6 +100,8 @@ export function HomeScreen({ navigation }: Props) {
 
   const calGoal = settings?.caloriesGoal ?? 0;
   const proGoal = settings?.proteinGoal ?? 0;
+  const calLeft = Math.max(0, Math.round(calGoal - totals.calories));
+  const proLeft = Math.max(0, Math.round(proGoal - totals.protein));
 
   const fatGoal = settings?.fatGoal ?? 0;
   const carbsGoal = settings?.carbsGoal ?? 0;
@@ -184,6 +207,10 @@ export function HomeScreen({ navigation }: Props) {
           </View>
         </View>
 
+        <View style={styles.leftRow}>
+          <Text style={styles.leftTxt}>{calGoal ? `${calLeft} kcal left` : 'Set a calorie goal in Profile'}</Text>
+          <Text style={styles.leftTxt}>{proGoal ? `${proLeft}g protein left` : ''}</Text>
+        </View>
 
         <View style={styles.microGrid}>
           <Pressable onPress={() => setBreakdown({ key: 'fat', title: 'Fat (g)', unit: 'g' })}>
@@ -259,14 +286,43 @@ export function HomeScreen({ navigation }: Props) {
       <FlatList
         data={todays}
         keyExtractor={(item) => item.id}
-        ListEmptyComponent={<Text style={styles.empty}>No entries yet.</Text>}
+        ListEmptyComponent={
+          <View style={styles.emptyWrap}>
+            <Text style={styles.empty}>No entries yet.</Text>
+            <Pressable
+              style={styles.emptyCta}
+              onPress={() => navigation.getParent()?.navigate('LogTab' as never)}
+            >
+              <Text style={styles.emptyCtaTxt}>Log your first meal</Text>
+            </Pressable>
+          </View>
+        }
         renderItem={({ item, index }) => {
           const t = Math.min(1, Math.max(0, (index + 1) / 8));
           const rowOpacity = feedAnim.interpolate({ inputRange: [0, 1], outputRange: [0, 1] });
           const rowTranslate = feedAnim.interpolate({ inputRange: [0, 1], outputRange: [12 * (1 - t), 0] });
           return (
             <Animated.View style={{ opacity: rowOpacity, transform: [{ translateY: rowTranslate }] }}>
-              <Pressable style={styles.row} onPress={() => navigation.navigate('EditEntry', { id: item.id })}>
+              <Pressable
+                style={styles.row}
+                onPress={() => navigation.navigate('EditEntry', { id: item.id })}
+                onLongPress={() => {
+                  Alert.alert('Entry', 'What do you want to do?', [
+                    { text: 'Cancel', style: 'cancel' },
+                    { text: 'Edit', onPress: () => navigation.navigate('EditEntry', { id: item.id }) },
+                    {
+                      text: 'Delete',
+                      style: 'destructive',
+                      onPress: async () => {
+                        await deleteEntry(item.id);
+                        const [e, s] = await Promise.all([loadEntries(), loadSettings()]);
+                        setEntries(e);
+                        setSettings(s);
+                      },
+                    },
+                  ]);
+                }}
+              >
                 <Text style={styles.emoji}>{item.emoji || '🍽️'}</Text>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.rowTitle}>
@@ -304,6 +360,8 @@ const styles = StyleSheet.create({
   bigLegendItem: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   bigDot: { width: 10, height: 10, borderRadius: 10 },
   bigLegendTxt: { color: 'rgba(17,17,17,0.55)', fontWeight: '600' },
+  leftRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: -2, marginBottom: 10 },
+  leftTxt: { color: 'rgba(17,17,17,0.6)', fontWeight: '700' },
 
   microGrid: {
     marginTop: 10,
@@ -313,7 +371,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   section: { fontWeight: '600', fontSize: 14, marginTop: 4 },
-  empty: { color: '#666', paddingVertical: 10 },
+  emptyWrap: { alignItems: 'center', paddingVertical: 18, gap: 10 },
+  empty: { color: '#666' },
+  emptyCta: {
+    backgroundColor: 'rgba(236, 72, 153, 0.12)',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(236, 72, 153, 0.35)',
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 14,
+  },
+  emptyCtaTxt: { color: '#9D174D', fontWeight: '800' },
   row: {
     backgroundColor: '#fff',
     borderRadius: 14,

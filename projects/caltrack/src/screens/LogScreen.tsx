@@ -23,6 +23,7 @@ import { recommendEmoji } from '../utils/recommendEmoji';
 import { MealPicker } from '../components/MealPicker';
 import { toDateKey } from '../utils/date';
 import { parseNutritionFromText } from '../utils/nutrition';
+import { parseSugarFromText } from '../utils/sugar';
 import { lookupOpenFoodFacts } from '../utils/openfoodfacts';
 import { usdaFactsFromItem, usdaSearch } from '../utils/usda';
 import { guessCaloriesProtein } from '../utils/quickFacts';
@@ -98,6 +99,10 @@ export function LogScreen() {
     const parsed = parseNutritionFromText(rawText);
     if (parsed.calories != null && !calories) setCalories(String(parsed.calories));
     if (parsed.protein != null && !protein) setProtein(String(parsed.protein));
+
+    const sug = parseSugarFromText(rawText);
+    if (sug.sugarG != null && sugar == null) setSugar(Math.round(sug.sugarG));
+
     // only auto-fill once (keep user overrides)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawText]);
@@ -829,6 +834,7 @@ export function LogScreen() {
                 onChangeText={(t) => setSugar(t.trim() ? Number(t.replace(/[^0-9.]/g, '')) : undefined)}
                 placeholder="e.g. 8"
               />
+              <Text style={styles.microHint}>Tip: type “2 tsp sugar” in Quick log → auto-fills (~8g).</Text>
             </View>
             <View style={styles.microField}>
               <Text style={styles.label}>Carbs (g)</Text>
@@ -1012,6 +1018,7 @@ const styles = StyleSheet.create({
   advChevron: { color: 'rgba(17,17,17,0.55)', fontSize: 18, fontWeight: '700' },
   microGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 12 },
   microField: { flexGrow: 1, flexBasis: 160 },
+  microHint: { marginTop: 6, color: 'rgba(17,17,17,0.55)', fontSize: 12, lineHeight: 16 },
 
   suggestRow: {
     paddingVertical: 10,
