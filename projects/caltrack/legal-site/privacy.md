@@ -41,7 +41,7 @@ Your entries are stored on your device until you delete them or uninstall the Ap
 8. YOUR CHOICES
 You can:
 - Edit or delete entries in the App.
-- Disable reminders in Settings.
+- Disable reminders in Profile.
 
 9. CHILDREN
 The App is not directed to children under 13. If you believe a child has provided personal information, contact us.

@@ -2,7 +2,8 @@ import React from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { COLORS } from '../styles/theme';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { loadSettings, saveSettings } from '../storage/store';
+import { loadEntries, loadSettings, saveSettings } from '../storage/store';
+import { exportCsv, exportJson, makeBundle } from '../utils/exportData';
 import { cancelDailyReminder, scheduleDailyReminder } from '../utils/reminders';
 import { DEFAULT_SETTINGS, type ReminderMode, type Settings } from '../types/models';
 import type { HomeStackParamList } from './HomeScreen';
@@ -21,6 +22,7 @@ export function ProfileScreen({ navigation }: Props) {
   }, [navigation]);
 
   const [draft, setDraft] = React.useState<Settings>(DEFAULT_SETTINGS);
+  const [showAdvancedGoals, setShowAdvancedGoals] = React.useState(false);
 
   React.useEffect(() => {
     (async () => {
@@ -64,98 +66,149 @@ export function ProfileScreen({ navigation }: Props) {
     Alert.alert('Saved', 'Updated');
   }
 
+  async function onExportJson() {
+    try {
+      const entries = await loadEntries();
+      const bundle = makeBundle(draft, entries);
+      const res = await exportJson(bundle);
+      if (!res.ok) Alert.alert('Export unavailable', 'Sharing is not available on this device.');
+    } catch {
+      Alert.alert('Export failed', 'Could not export data.');
+    }
+  }
+
+  async function onExportCsv() {
+    try {
+      const entries = await loadEntries();
+      const res = await exportCsv(entries);
+      if (!res.ok) Alert.alert('Export unavailable', 'Sharing is not available on this device.');
+    } catch {
+      Alert.alert('Export failed', 'Could not export data.');
+    }
+  }
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ padding: 14, gap: 14 }}>
       <View style={styles.card}>
         <Text style={styles.title}>Goals</Text>
 
-        <View style={styles.field}>
-          <Text style={styles.label}>Calories goal (kcal)</Text>
-          <TextInput
-            style={styles.input}
-            keyboardType="numeric"
-            value={String(draft.caloriesGoal)}
-            onChangeText={(t) => setDraft((s) => ({ ...s, caloriesGoal: Number(t.replace(/[^0-9]/g, '')) }))}
-            placeholder="2000"
-          />
+        <View style={styles.grid}>
+          <View style={styles.field}>
+            <Text style={styles.label}>Calories (kcal)</Text>
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              value={String(draft.caloriesGoal)}
+              onChangeText={(t) =>
+                setDraft((s) => ({ ...s, caloriesGoal: Number(t.replace(/[^0-9]/g, '')) }))
+              }
+              placeholder="2000"
+            />
+          </View>
+
+          <View style={styles.field}>
+            <Text style={styles.label}>Protein (g)</Text>
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              value={String(draft.proteinGoal)}
+              onChangeText={(t) =>
+                setDraft((s) => ({ ...s, proteinGoal: Number(t.replace(/[^0-9]/g, '')) }))
+              }
+              placeholder="120"
+            />
+          </View>
+
+          <View style={styles.field}>
+            <Text style={styles.label}>Carbs (g)</Text>
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              value={String(draft.carbsGoal)}
+              onChangeText={(t) =>
+                setDraft((s) => ({ ...s, carbsGoal: Number(t.replace(/[^0-9]/g, '')) }))
+              }
+              placeholder="275"
+            />
+          </View>
+
+          <View style={styles.field}>
+            <Text style={styles.label}>Fat (g)</Text>
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              value={String(draft.fatGoal)}
+              onChangeText={(t) =>
+                setDraft((s) => ({ ...s, fatGoal: Number(t.replace(/[^0-9]/g, '')) }))
+              }
+              placeholder="78"
+            />
+          </View>
         </View>
 
-        <View style={styles.field}>
-          <Text style={styles.label}>Protein goal (g)</Text>
-          <TextInput
-            style={styles.input}
-            keyboardType="numeric"
-            value={String(draft.proteinGoal)}
-            onChangeText={(t) => setDraft((s) => ({ ...s, proteinGoal: Number(t.replace(/[^0-9]/g, '')) }))}
-            placeholder="120"
-          />
-        </View>
+        <Pressable
+          onPress={() => setShowAdvancedGoals((v) => !v)}
+          style={[styles.linkRow, { borderTopWidth: 0, paddingVertical: 10 }]}
+        >
+          <Text style={styles.advancedLink}>{showAdvancedGoals ? 'Hide advanced' : 'Show advanced'}</Text>
+          <Text style={styles.linkChevron}>{showAdvancedGoals ? '˄' : '˅'}</Text>
+        </Pressable>
 
-        <View style={styles.field}>
-          <Text style={styles.label}>Fat goal (g)</Text>
-          <TextInput
-            style={styles.input}
-            keyboardType="numeric"
-            value={String(draft.fatGoal)}
-            onChangeText={(t) => setDraft((s) => ({ ...s, fatGoal: Number(t.replace(/[^0-9]/g, '')) }))}
-            placeholder="78"
-          />
-        </View>
+        {showAdvancedGoals ? (
+          <View style={styles.grid}>
+            <View style={styles.field}>
+              <Text style={styles.label}>Fiber (g)</Text>
+              <TextInput
+                style={styles.input}
+                keyboardType="numeric"
+                value={String(draft.fiberGoal)}
+                onChangeText={(t) =>
+                  setDraft((s) => ({ ...s, fiberGoal: Number(t.replace(/[^0-9]/g, '')) }))
+                }
+                placeholder="28"
+              />
+            </View>
 
-        <View style={styles.field}>
-          <Text style={styles.label}>Carbs goal (g)</Text>
-          <TextInput
-            style={styles.input}
-            keyboardType="numeric"
-            value={String(draft.carbsGoal)}
-            onChangeText={(t) => setDraft((s) => ({ ...s, carbsGoal: Number(t.replace(/[^0-9]/g, '')) }))}
-            placeholder="275"
-          />
-        </View>
+            <View style={styles.field}>
+              <Text style={styles.label}>Sugar (g)</Text>
+              <TextInput
+                style={styles.input}
+                keyboardType="numeric"
+                value={String(draft.sugarGoal)}
+                onChangeText={(t) =>
+                  setDraft((s) => ({ ...s, sugarGoal: Number(t.replace(/[^0-9]/g, '')) }))
+                }
+                placeholder="50"
+              />
+            </View>
 
-        <View style={styles.field}>
-          <Text style={styles.label}>Fiber goal (g)</Text>
-          <TextInput
-            style={styles.input}
-            keyboardType="numeric"
-            value={String(draft.fiberGoal)}
-            onChangeText={(t) => setDraft((s) => ({ ...s, fiberGoal: Number(t.replace(/[^0-9]/g, '')) }))}
-            placeholder="28"
-          />
-        </View>
+            <View style={styles.field}>
+              <Text style={styles.label}>Cholesterol (mg)</Text>
+              <TextInput
+                style={styles.input}
+                keyboardType="numeric"
+                value={String(draft.cholesterolGoal)}
+                onChangeText={(t) =>
+                  setDraft((s) => ({ ...s, cholesterolGoal: Number(t.replace(/[^0-9]/g, '')) }))
+                }
+                placeholder="300"
+              />
+            </View>
 
-        <View style={styles.field}>
-          <Text style={styles.label}>Sugar goal (g)</Text>
-          <TextInput
-            style={styles.input}
-            keyboardType="numeric"
-            value={String(draft.sugarGoal)}
-            onChangeText={(t) => setDraft((s) => ({ ...s, sugarGoal: Number(t.replace(/[^0-9]/g, '')) }))}
-            placeholder="50"
-          />
-        </View>
-
-        <View style={styles.field}>
-          <Text style={styles.label}>Cholesterol goal (mg)</Text>
-          <TextInput
-            style={styles.input}
-            keyboardType="numeric"
-            value={String(draft.cholesterolGoal)}
-            onChangeText={(t) => setDraft((s) => ({ ...s, cholesterolGoal: Number(t.replace(/[^0-9]/g, '')) }))}
-            placeholder="300"
-          />
-        </View>
-
-        <View style={styles.field}>
-          <Text style={styles.label}>Sodium goal (mg)</Text>
-          <TextInput
-            style={styles.input}
-            keyboardType="numeric"
-            value={String(draft.sodiumGoal)}
-            onChangeText={(t) => setDraft((s) => ({ ...s, sodiumGoal: Number(t.replace(/[^0-9]/g, '')) }))}
-            placeholder="2300"
-          />
-        </View>
+            <View style={styles.field}>
+              <Text style={styles.label}>Sodium (mg)</Text>
+              <TextInput
+                style={styles.input}
+                keyboardType="numeric"
+                value={String(draft.sodiumGoal)}
+                onChangeText={(t) =>
+                  setDraft((s) => ({ ...s, sodiumGoal: Number(t.replace(/[^0-9]/g, '')) }))
+                }
+                placeholder="2300"
+              />
+            </View>
+          </View>
+        ) : null}
       </View>
 
       <View style={styles.card}>
@@ -205,6 +258,18 @@ export function ProfileScreen({ navigation }: Props) {
       </View>
 
       <View style={styles.card}>
+        <Text style={styles.title}>Export</Text>
+        <Pressable style={styles.linkRow} onPress={onExportCsv}>
+          <Text style={styles.linkTxt}>Export CSV</Text>
+          <Text style={styles.linkChevron}>›</Text>
+        </Pressable>
+        <Pressable style={styles.linkRow} onPress={onExportJson}>
+          <Text style={styles.linkTxt}>Export JSON</Text>
+          <Text style={styles.linkChevron}>›</Text>
+        </Pressable>
+      </View>
+
+      <View style={styles.card}>
         <Text style={styles.title}>Legal</Text>
         <Pressable style={styles.linkRow} onPress={() => navigation.navigate('Legal', { kind: 'terms' })}>
           <Text style={styles.linkTxt}>Terms of Use</Text>
@@ -237,7 +302,9 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
   },
   title: { fontSize: 16, fontWeight: '600', marginBottom: 10 },
-  field: { gap: 6, marginBottom: 12 },
+  advancedLink: { color: '#111', fontWeight: '600' },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  field: { gap: 6, marginBottom: 0, flexGrow: 1, flexBasis: 160 },
   label: { fontWeight: '600', color: '#222' },
   input: {
     borderWidth: StyleSheet.hairlineWidth,
