@@ -3,6 +3,8 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 
 import { COLORS } from '../styles/theme';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { loadEntries, loadSettings, saveSettings } from '../storage/store';
+import { computeStreak } from '../utils/streak';
+import { toDateKey } from '../utils/date';
 import { exportCsv, exportJson, makeBundle } from '../utils/exportData';
 import { cancelDailyReminder, scheduleDailyReminder, sendTestNotification } from '../utils/reminders';
 import { DEFAULT_SETTINGS, type ReminderMode, type Settings } from '../types/models';
@@ -22,13 +24,25 @@ export function ProfileScreen({ navigation }: Props) {
   }, [navigation]);
 
   const [draft, setDraft] = React.useState<Settings>(DEFAULT_SETTINGS);
+  const [entriesCount, setEntriesCount] = React.useState(0);
+  const [todayKcal, setTodayKcal] = React.useState(0);
+  const [streak, setStreak] = React.useState({ current: 0, best: 0, daysThisWeek: 0 });
   const [showAdvancedGoals, setShowAdvancedGoals] = React.useState(false);
 
   React.useEffect(() => {
+    let alive = true;
     (async () => {
-      const s = await loadSettings();
+      const [s, e] = await Promise.all([loadSettings(), loadEntries()]);
+      if (!alive) return;
       setDraft(s);
+      setEntriesCount(e.length);
+      const todayKey = toDateKey(new Date());
+      setTodayKcal(e.filter((x) => x.dateKey === todayKey).reduce((acc, x) => acc + x.calories, 0));
+      setStreak(computeStreak(e));
     })();
+    return () => {
+      alive = false;
+    };
   }, []);
 
   async function onSave() {
@@ -92,8 +106,47 @@ export function ProfileScreen({ navigation }: Props) {
     }
   }
 
+  const displayName = draft.name || 'You';
+  const username = `@${String(draft.name || 'user').toLowerCase().replace(/\s+/g, '') || 'user'}`;
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ padding: 14, gap: 14 }}>
+      <View style={styles.igHeader}>
+        <View style={styles.igTopRow}>
+          <View style={styles.igAvatar}>
+            <Text style={styles.igAvatarTxt}>{String(displayName).slice(0, 1).toUpperCase()}</Text>
+          </View>
+
+          <View style={styles.igStats}>
+            <View style={styles.igStat}>
+              <Text style={styles.igStatNum}>{streak.current}</Text>
+              <Text style={styles.igStatLbl}>Streak</Text>
+            </View>
+            <View style={styles.igStat}>
+              <Text style={styles.igStatNum}>{todayKcal}</Text>
+              <Text style={styles.igStatLbl}>Today kcal</Text>
+            </View>
+            <View style={styles.igStat}>
+              <Text style={styles.igStatNum}>{entriesCount}</Text>
+              <Text style={styles.igStatLbl}>Entries</Text>
+            </View>
+          </View>
+        </View>
+
+        <Text style={styles.igName}>{displayName}</Text>
+        <Text style={styles.igHandle}>{username}</Text>
+        <Text style={styles.igBio}>Local-first nutrition tracking • calories + protein + key micros</Text>
+
+        <View style={styles.igPills}>
+          <View style={styles.pill}>
+            <Text style={styles.pillTxt}>{streak.daysThisWeek}/7 days this week</Text>
+          </View>
+          <View style={styles.pill}>
+            <Text style={styles.pillTxt}>Best streak: {streak.best}</Text>
+          </View>
+        </View>
+      </View>
+
       <View style={styles.card}>
         <Text style={styles.title}>Goals</Text>
 
@@ -216,17 +269,6 @@ export function ProfileScreen({ navigation }: Props) {
         ) : null}
       </View>
 
-      <View style={styles.profileCard}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarTxt}>{String(draft.name || 'U').slice(0, 1).toUpperCase()}</Text>
-        </View>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.profileName}>{draft.name || 'Your name'}</Text>
-          <Text style={styles.profileMeta}>
-            {draft.gender ? String(draft.gender).replace(/_/g, ' ') : 'gender'} · {draft.age ? `${draft.age}` : 'age'}
-          </Text>
-        </View>
-      </View>
 
       <View style={styles.card}>
         <Text style={styles.title}>Personal</Text>
@@ -342,29 +384,42 @@ export function ProfileScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f6f6f6' },
-  profileCard: {
-    backgroundColor: '#0B0F1A',
+  igHeader: {
+    backgroundColor: '#fff',
     borderRadius: 18,
     padding: 14,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(255,255,255,0.12)',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
+    borderColor: 'rgba(0,0,0,0.10)',
   },
-  avatar: {
-    width: 52,
-    height: 52,
-    borderRadius: 18,
-    backgroundColor: 'rgba(236, 72, 153, 0.18)',
-    borderWidth: 1,
-    borderColor: 'rgba(236, 72, 153, 0.30)',
+  igTopRow: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  igAvatar: {
+    width: 78,
+    height: 78,
+    borderRadius: 39,
+    backgroundColor: 'rgba(236, 72, 153, 0.12)',
+    borderWidth: 2,
+    borderColor: 'rgba(236, 72, 153, 0.55)',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarTxt: { color: '#fff', fontWeight: '900', fontSize: 20 },
-  profileName: { color: '#fff', fontWeight: '900', fontSize: 18 },
-  profileMeta: { color: 'rgba(255,255,255,0.65)', marginTop: 4, fontWeight: '700' },
+  igAvatarTxt: { color: '#9D174D', fontWeight: '900', fontSize: 30 },
+  igStats: { flex: 1, flexDirection: 'row', justifyContent: 'space-between' },
+  igStat: { alignItems: 'center', flex: 1 },
+  igStatNum: { fontWeight: '900', color: '#111', fontSize: 18 },
+  igStatLbl: { marginTop: 2, color: 'rgba(17,17,17,0.55)', fontWeight: '700', fontSize: 12 },
+  igName: { marginTop: 12, fontWeight: '900', fontSize: 18, color: '#111' },
+  igHandle: { marginTop: 2, color: 'rgba(17,17,17,0.55)', fontWeight: '700' },
+  igBio: { marginTop: 10, color: 'rgba(17,17,17,0.72)', lineHeight: 18 },
+  igPills: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 12 },
+  pill: {
+    backgroundColor: 'rgba(0,0,0,0.05)',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(0,0,0,0.08)',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+  },
+  pillTxt: { color: 'rgba(17,17,17,0.75)', fontWeight: '800' },
 
   card: {
     backgroundColor: '#fff',
