@@ -2,12 +2,16 @@ export type ReminderMode = 'off' | 'daily' | 'smart';
 
 export type Gender = 'female' | 'male' | 'other' | 'prefer_not_to_say';
 
+export type ThemeMode = 'auto' | 'light' | 'dark';
+
 export type Settings = {
   // Profile (local-only)
   name?: string;
   gender?: Gender;
   age?: number;
   onboardingDone?: boolean;
+
+  themeMode?: ThemeMode;
 
   caloriesGoal: number;
   proteinGoal: number;
@@ -50,6 +54,7 @@ export type Entry = {
 };
 
 export const DEFAULT_SETTINGS: Settings = {
+  themeMode: 'auto',
   caloriesGoal: 2000,
   proteinGoal: 120,
 

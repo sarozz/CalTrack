@@ -1,5 +1,6 @@
 import React from 'react';
 import { Alert, Animated, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { MultiRing } from '../components/MultiRing';
 import { AnimatedRing } from '../components/AnimatedRing';
 import { COLORS } from '../styles/theme';
@@ -53,8 +54,11 @@ export function HomeScreen({ navigation }: Props) {
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Pressable onPress={() => navigation.getParent()?.navigate('HistoryTab' as never)} style={styles.headerBtn}>
-          <Text style={styles.headerBtnText}>History</Text>
+        <Pressable
+          onPress={() => (navigation.getParent()?.getParent() as any)?.navigate('HistoryTab', { screen: 'History' })}
+          style={styles.headerBtn}
+        >
+          <Ionicons name="time-outline" size={22} color={'rgba(17,17,17,0.65)'} />
         </Pressable>
       ),
     });

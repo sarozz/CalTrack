@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  igAvatarTxt: { color: '#9D174D', fontWeight: '900', fontSize: 30 },
+  igAvatarTxt: { color: '#9D174D', fontWeight: '700', fontSize: 30 },
   igStats: { flex: 1, flexDirection: 'row', justifyContent: 'space-between' },
   igStat: { alignItems: 'center', flex: 1 },
   igStatNum: { fontWeight: '700', color: '#111', fontSize: 18 },

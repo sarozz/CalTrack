@@ -1,5 +1,6 @@
 import React from 'react';
-import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import { Appearance } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
@@ -17,6 +18,7 @@ import { InsightsScreen } from './src/screens/InsightsScreen';
 import { LoadingScreen } from './src/screens/LoadingScreen';
 import { OnboardingScreen } from './src/screens/OnboardingScreen';
 import { loadSettings } from './src/storage/store';
+import { makeNavTheme } from './src/styles/navTheme';
 
 const Tab = createBottomTabNavigator();
 const RootStack = createNativeStackNavigator();
@@ -83,6 +85,7 @@ function MainTabs() {
 
 export default function App() {
   const [boot, setBoot] = React.useState<'loading' | 'onboarding' | 'ready'>('loading');
+  const [scheme, setScheme] = React.useState<'light' | 'dark'>('light');
 
   React.useEffect(() => {
     let alive = true;
@@ -99,6 +102,20 @@ export default function App() {
 
       if (!alive) return;
       const needs = !s.onboardingDone || !s.name || !s.gender || !s.age;
+
+      const mode = s.themeMode || 'auto';
+      if (mode === 'light' || mode === 'dark') {
+        setScheme(mode);
+      } else {
+        const sys = Appearance.getColorScheme();
+        if (sys === 'dark' || sys === 'light') {
+          setScheme(sys);
+        } else {
+          const h = new Date().getHours();
+          setScheme(h >= 19 || h < 7 ? 'dark' : 'light');
+        }
+      }
+
       setBoot(needs ? 'onboarding' : 'ready');
     })();
     return () => {
@@ -107,12 +124,7 @@ export default function App() {
   }, []);
 
   return (
-    <NavigationContainer
-      theme={{
-        ...DefaultTheme,
-        colors: { ...DefaultTheme.colors, background: '#f6f6f6' },
-      }}
-    >
+    <NavigationContainer theme={makeNavTheme(scheme)}>
       <RootStack.Navigator screenOptions={{ headerShown: false }}>
         {boot === 'loading' ? <RootStack.Screen name="Loading" component={LoadingScreen} /> : null}
         {boot === 'onboarding' ? (
