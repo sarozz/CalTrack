@@ -46,6 +46,7 @@ export function LogScreen() {
   const [manualServings, setManualServings] = React.useState<string>('1');
   const [caption, setCaption] = React.useState<string>('');
   const [barcodeLoading, setBarcodeLoading] = React.useState(false);
+  const [showMicros, setShowMicros] = React.useState(false);
 
   // Animations
   const previewAnim = React.useRef(new Animated.Value(0)).current;
@@ -724,6 +725,76 @@ export function LogScreen() {
             ))}
           </View>
         </View>
+
+        <Pressable style={styles.advRow} onPress={() => setShowMicros((v) => !v)}>
+          <Text style={styles.advTxt}>{showMicros ? 'Hide micros' : 'Add micros (sugar, carbs, fat…)'} </Text>
+          <Text style={styles.advChevron}>{showMicros ? '˄' : '˅'}</Text>
+        </Pressable>
+
+        {showMicros ? (
+          <View style={styles.microGrid}>
+            <View style={styles.microField}>
+              <Text style={styles.label}>Sugar (g)</Text>
+              <TextInput
+                style={styles.input}
+                keyboardType="numeric"
+                value={sugar == null ? '' : String(sugar)}
+                onChangeText={(t) => setSugar(t.trim() ? Number(t.replace(/[^0-9.]/g, '')) : undefined)}
+                placeholder="e.g. 8"
+              />
+            </View>
+            <View style={styles.microField}>
+              <Text style={styles.label}>Carbs (g)</Text>
+              <TextInput
+                style={styles.input}
+                keyboardType="numeric"
+                value={carbs == null ? '' : String(carbs)}
+                onChangeText={(t) => setCarbs(t.trim() ? Number(t.replace(/[^0-9.]/g, '')) : undefined)}
+                placeholder="e.g. 30"
+              />
+            </View>
+            <View style={styles.microField}>
+              <Text style={styles.label}>Fat (g)</Text>
+              <TextInput
+                style={styles.input}
+                keyboardType="numeric"
+                value={fat == null ? '' : String(fat)}
+                onChangeText={(t) => setFat(t.trim() ? Number(t.replace(/[^0-9.]/g, '')) : undefined)}
+                placeholder="e.g. 10"
+              />
+            </View>
+            <View style={styles.microField}>
+              <Text style={styles.label}>Fiber (g)</Text>
+              <TextInput
+                style={styles.input}
+                keyboardType="numeric"
+                value={fiber == null ? '' : String(fiber)}
+                onChangeText={(t) => setFiber(t.trim() ? Number(t.replace(/[^0-9.]/g, '')) : undefined)}
+                placeholder="e.g. 4"
+              />
+            </View>
+            <View style={styles.microField}>
+              <Text style={styles.label}>Sodium (mg)</Text>
+              <TextInput
+                style={styles.input}
+                keyboardType="numeric"
+                value={sodium == null ? '' : String(sodium)}
+                onChangeText={(t) => setSodium(t.trim() ? Number(t.replace(/[^0-9.]/g, '')) : undefined)}
+                placeholder="e.g. 400"
+              />
+            </View>
+            <View style={styles.microField}>
+              <Text style={styles.label}>Chol (mg)</Text>
+              <TextInput
+                style={styles.input}
+                keyboardType="numeric"
+                value={cholesterol == null ? '' : String(cholesterol)}
+                onChangeText={(t) => setCholesterol(t.trim() ? Number(t.replace(/[^0-9.]/g, '')) : undefined)}
+                placeholder="e.g. 50"
+              />
+            </View>
+          </View>
+        ) : null}
       </View>
 
 
@@ -831,6 +902,21 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(0,0,0,0.06)',
   },
   presetTxt: { color: 'rgba(17,17,17,0.65)', fontWeight: '600' },
+
+  advRow: {
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(0,0,0,0.08)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  advTxt: { color: '#111', fontWeight: '700' },
+  advChevron: { color: 'rgba(17,17,17,0.55)', fontSize: 18, fontWeight: '700' },
+  microGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 12 },
+  microField: { flexGrow: 1, flexBasis: 160 },
+
   suggestRow: {
     paddingVertical: 10,
     paddingHorizontal: 12,
