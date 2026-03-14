@@ -40,6 +40,7 @@ export function ProfileScreen({ navigation }: Props) {
   const [openPersonal, setOpenPersonal] = React.useState(false);
   const [openNotifications, setOpenNotifications] = React.useState(false);
   const [openLegal, setOpenLegal] = React.useState(false);
+  const [openAppearance, setOpenAppearance] = React.useState(false);
 
   const [showAdvancedGoals, setShowAdvancedGoals] = React.useState(false);
 
@@ -65,6 +66,7 @@ export function ProfileScreen({ navigation }: Props) {
       gender: draft.gender,
       age: draft.age,
       onboardingDone: draft.onboardingDone,
+      themeMode: draft.themeMode || 'dark',
       caloriesGoal: Math.max(0, Math.round(draft.caloriesGoal || 0)),
       proteinGoal: Math.max(0, Math.round(draft.proteinGoal || 0)),
       fatGoal: Math.max(0, Math.round(draft.fatGoal || 0)),
@@ -363,6 +365,43 @@ export function ProfileScreen({ navigation }: Props) {
               <Text style={styles.linkTxt}>Send test notification</Text>
               <Text style={styles.linkChevron}>›</Text>
             </Pressable>
+          </View>
+        ) : null}
+      </View>
+
+      <View style={styles.card}>
+        <Pressable style={styles.sectionHeader} onPress={() => setOpenAppearance((v) => !v)}>
+          <Text style={styles.sectionTitle}>Appearance</Text>
+          <Text style={styles.sectionMeta}>{openAppearance ? 'Hide' : 'Show'}</Text>
+        </Pressable>
+
+        {openAppearance ? (
+          <View style={{ marginTop: 12, gap: 8 }}>
+            {([
+              { label: 'Dark', value: 'dark' },
+              { label: 'Light', value: 'light' },
+              { label: 'Auto', value: 'auto' },
+            ] as const).map((m) => {
+              const selected = (draft.themeMode || 'dark') === m.value;
+              return (
+                <Pressable
+                  key={m.value}
+                  onPress={() => setDraft((s) => ({ ...s, themeMode: m.value }))}
+                  style={[styles.modeRow, selected && styles.modeRowSelected]}
+                >
+                  <View style={{ flex: 1 }}>
+                    <Text style={[styles.modeTitle, selected && styles.modeTitleSelected]}>{m.label}</Text>
+                    <Text style={[styles.modeDesc, selected && styles.modeDescSelected]}>
+                      {m.value === 'auto' ? 'Follow system / time' : `Always ${m.label.toLowerCase()}`}
+                    </Text>
+                  </View>
+                  <Text style={[styles.modeCheck, selected && styles.modeCheckSelected]}>{selected ? '✓' : ''}</Text>
+                </Pressable>
+              );
+            })}
+            <Text style={{ color: 'rgba(17,17,17,0.55)', fontSize: 12 }}>
+              Save to apply.
+            </Text>
           </View>
         ) : null}
       </View>

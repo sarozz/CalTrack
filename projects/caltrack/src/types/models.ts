@@ -54,7 +54,7 @@ export type Entry = {
 };
 
 export const DEFAULT_SETTINGS: Settings = {
-  themeMode: 'auto',
+  themeMode: 'dark',
   caloriesGoal: 2000,
   proteinGoal: 120,
 
