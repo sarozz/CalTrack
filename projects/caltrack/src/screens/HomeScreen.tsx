@@ -148,19 +148,13 @@ export function HomeScreen({ navigation }: Props) {
         </View>
       ) : null}
 
-      <View style={styles.streakCard}>
-        <Text style={[styles.title, { color: '#fff' }]}>Consistency</Text>
-        <View style={styles.streakRow}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.streakBig}>{streak.current} day streak</Text>
-            <Text style={styles.streakSubtle}>{streak.daysThisWeek}/7 days logged this week · best {streak.best}</Text>
-          </View>
-          <Text style={styles.streakBadge}>🔥</Text>
-        </View>
-      </View>
-
       <View style={styles.card}>
-        <Text style={styles.title}>Today</Text>
+        <View style={styles.todayHeader}>
+          <Text style={styles.title}>Today</Text>
+          <Text style={styles.streakMini}>
+            {streak.current}🔥 · {streak.daysThisWeek}/7
+          </Text>
+        </View>
 
         <Pressable
           style={{ alignItems: 'center', marginTop: 8, marginBottom: 8 }}
@@ -300,19 +294,10 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#ddd',
   },
-  streakCard: {
-    backgroundColor: '#0B0F1A',
-    borderRadius: 18,
-    padding: 14,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(255,255,255,0.12)',
-  },
-  streakRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  streakBig: { color: '#fff', fontWeight: '900', fontSize: 18 },
-  streakSubtle: { color: 'rgba(255,255,255,0.6)', marginTop: 4, fontWeight: '600' },
-  streakBadge: { fontSize: 24 },
+  todayHeader: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 6 },
+  streakMini: { color: 'rgba(17,17,17,0.55)', fontWeight: '800' },
 
-  title: { fontSize: 16, fontWeight: '600', marginBottom: 6, color: '#111' },
+  title: { fontSize: 16, fontWeight: '600', marginBottom: 0, color: '#111' },
   big: { fontSize: 18, fontWeight: '600', marginTop: 4 },
   subtle: { marginTop: 10, color: '#666' },
   bigLegendRow: { flexDirection: 'row', justifyContent: 'center', gap: 14, marginBottom: 8 },

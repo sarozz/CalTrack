@@ -62,6 +62,7 @@ export function LogScreen() {
   const [caption, setCaption] = React.useState<string>('');
   const [barcodeLoading, setBarcodeLoading] = React.useState(false);
   const [showMicros, setShowMicros] = React.useState(false);
+  const [toast, setToast] = React.useState<string | null>(null);
 
   // Animations
   const previewAnim = React.useRef(new Animated.Value(0)).current;
@@ -99,6 +100,12 @@ export function LogScreen() {
     // only auto-fill once (keep user overrides)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawText]);
+
+  React.useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 900);
+    return () => clearTimeout(t);
+  }, [toast]);
 
   // Autocomplete from history (local, free, works offline)
   React.useEffect(() => {
@@ -434,6 +441,11 @@ export function LogScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ padding: 14, gap: 12 }}>
+      {toast ? (
+        <View style={styles.toast}>
+          <Text style={styles.toastTxt}>{toast}</Text>
+        </View>
+      ) : null}
       <Pressable
         onPress={() =>
           navigation.navigate('BarcodeScan', {
@@ -501,17 +513,18 @@ export function LogScreen() {
           {QUICK_TEMPLATES.map((t) => (
             <Pressable
               key={t.name}
-              style={styles.recentChip}
+              style={({ pressed }) => [styles.recentChip, pressed && { opacity: 0.75, transform: [{ scale: 0.98 }] }]}
               onPress={() => {
                 setCaption(t.name);
-                setRawText('');
+                setRawText(t.name);
                 setCalories(String(t.calories));
                 setProtein(String(t.protein));
                 setManualServings('1');
                 setSugar(t.sugar);
                 setCarbs(t.carbs);
                 setFat(t.fat);
-                setShowMicros(Boolean(t.sugar || t.carbs || t.fat));
+                setShowMicros(true);
+                setToast('Template added');
               }}
             >
               <Text style={styles.recentEmoji}>⚡</Text>
@@ -887,6 +900,15 @@ export function LogScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f6f6f6' },
+  toast: {
+    backgroundColor: '#0B0F1A',
+    borderRadius: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(255,255,255,0.12)',
+  },
+  toastTxt: { color: '#fff', fontWeight: '700' },
   card: {
     backgroundColor: '#fff',
     borderRadius: 16,
