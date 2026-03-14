@@ -1,6 +1,7 @@
 import React from 'react';
 import { Alert, Animated, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useAppTheme } from '../styles/appTheme';
 import { MultiRing } from '../components/MultiRing';
 import { AnimatedRing } from '../components/AnimatedRing';
 import { COLORS } from '../styles/theme';
@@ -23,6 +24,8 @@ type Props = NativeStackScreenProps<HomeStackParamList, 'Home'>;
 export function HomeScreen({ navigation }: Props) {
   const [entries, setEntries] = React.useState<Entry[]>([]);
   const [settings, setSettings] = React.useState<Settings | null>(null);
+  const { scheme } = useAppTheme();
+
   const feedAnim = React.useRef(new Animated.Value(0)).current;
   const [breakdown, setBreakdown] = React.useState<null | {
     key: 'calories' | 'protein' | 'fat' | 'carbs' | 'fiber' | 'sugar' | 'cholesterol' | 'sodium';
@@ -58,11 +61,15 @@ export function HomeScreen({ navigation }: Props) {
           onPress={() => (navigation.getParent()?.getParent() as any)?.navigate('HistoryTab', { screen: 'History' })}
           style={styles.headerBtn}
         >
-          <Ionicons name="time-outline" size={22} color={'rgba(17,17,17,0.65)'} />
+          <Ionicons
+            name="time-outline"
+            size={22}
+            color={scheme === 'dark' ? 'rgba(255,255,255,0.72)' : 'rgba(17,17,17,0.65)'}
+          />
         </Pressable>
       ),
     });
-  }, [navigation]);
+  }, [navigation, scheme]);
 
   const todayKey = toDateKey(new Date());
   const todays = entries.filter((e) => e.dateKey === todayKey);

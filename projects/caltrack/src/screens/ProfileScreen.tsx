@@ -2,6 +2,7 @@ import React from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../styles/theme';
+import { useAppTheme } from '../styles/appTheme';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { loadEntries, loadSettings, saveSettings } from '../storage/store';
 import { computeStreak } from '../utils/streak';
@@ -20,16 +21,18 @@ const REMINDER_MODES: { label: string; value: ReminderMode; desc: string }[] = [
 ];
 
 export function ProfileScreen({ navigation }: Props) {
+  const { scheme, setScheme, colors } = useAppTheme();
+
   React.useLayoutEffect(() => {
     navigation.setOptions({
       title: 'Profile',
       headerRight: () => (
         <Pressable onPress={() => navigation.navigate('History')} style={{ paddingHorizontal: 10, paddingVertical: 6 }}>
-          <Ionicons name="time-outline" size={22} color="rgba(17,17,17,0.65)" />
+          <Ionicons name="time-outline" size={22} color={scheme === 'dark' ? 'rgba(255,255,255,0.72)' : 'rgba(17,17,17,0.65)'} />
         </Pressable>
       ),
     });
-  }, [navigation]);
+  }, [navigation, scheme]);
 
   const [draft, setDraft] = React.useState<Settings>(DEFAULT_SETTINGS);
   const [entriesCount, setEntriesCount] = React.useState(0);
@@ -126,8 +129,8 @@ export function ProfileScreen({ navigation }: Props) {
   const username = `@${String(draft.name || 'user').toLowerCase().replace(/\s+/g, '') || 'user'}`;
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ padding: 14, gap: 14 }}>
-      <View style={styles.igHeader}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.bg }]} contentContainerStyle={{ padding: 14, gap: 14 }}>
+      <View style={[styles.igHeader, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <View style={styles.igTopRow}>
           <View style={styles.igAvatar}>
             <Text style={styles.igAvatarTxt}>{String(displayName).slice(0, 1).toUpperCase()}</Text>
@@ -163,7 +166,7 @@ export function ProfileScreen({ navigation }: Props) {
         </View>
       </View>
 
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <Pressable style={styles.sectionHeader} onPress={() => setOpenGoals((v) => !v)}>
           <Text style={styles.sectionTitle}>Goals</Text>
           <Text style={styles.sectionMeta}>{openGoals ? 'Hide' : 'Show'}</Text>
@@ -274,7 +277,7 @@ export function ProfileScreen({ navigation }: Props) {
       </View>
 
 
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <Pressable style={styles.sectionHeader} onPress={() => setOpenPersonal((v) => !v)}>
           <Text style={styles.sectionTitle}>Personal</Text>
           <Text style={styles.sectionMeta}>{openPersonal ? 'Hide' : 'Show'}</Text>
@@ -320,7 +323,7 @@ export function ProfileScreen({ navigation }: Props) {
         ) : null}
       </View>
 
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <Pressable style={styles.sectionHeader} onPress={() => setOpenNotifications((v) => !v)}>
           <Text style={styles.sectionTitle}>Notifications</Text>
           <Text style={styles.sectionMeta}>{openNotifications ? 'Hide' : 'Show'}</Text>
@@ -369,7 +372,7 @@ export function ProfileScreen({ navigation }: Props) {
         ) : null}
       </View>
 
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <Pressable style={styles.sectionHeader} onPress={() => setOpenAppearance((v) => !v)}>
           <Text style={styles.sectionTitle}>Appearance</Text>
           <Text style={styles.sectionMeta}>{openAppearance ? 'Hide' : 'Show'}</Text>
@@ -386,7 +389,16 @@ export function ProfileScreen({ navigation }: Props) {
               return (
                 <Pressable
                   key={m.value}
-                  onPress={() => setDraft((s) => ({ ...s, themeMode: m.value }))}
+                  onPress={() => {
+                    setDraft((s) => ({ ...s, themeMode: m.value }));
+                    // Apply immediately (no restart)
+                    if (m.value === 'dark' || m.value === 'light') {
+                      setScheme(m.value);
+                    } else {
+                      const h = new Date().getHours();
+                      setScheme(h >= 19 || h < 7 ? 'dark' : 'light');
+                    }
+                  }}
                   style={[styles.modeRow, selected && styles.modeRowSelected]}
                 >
                   <View style={{ flex: 1 }}>
@@ -406,8 +418,8 @@ export function ProfileScreen({ navigation }: Props) {
         ) : null}
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.title}>Export</Text>
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <Text style={[styles.title, { color: colors.text }]}>Export</Text>
         <Pressable style={styles.linkRow} onPress={onExportCsv}>
           <Text style={styles.linkTxt}>Export CSV</Text>
           <Text style={styles.linkChevron}>›</Text>
@@ -418,7 +430,7 @@ export function ProfileScreen({ navigation }: Props) {
         </Pressable>
       </View>
 
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <Pressable style={styles.sectionHeader} onPress={() => setOpenLegal((v) => !v)}>
           <Text style={styles.sectionTitle}>Legal</Text>
           <Text style={styles.sectionMeta}>{openLegal ? 'Hide' : 'Show'}</Text>
@@ -442,7 +454,15 @@ export function ProfileScreen({ navigation }: Props) {
         ) : null}
       </View>
 
-      <Pressable onPress={onSave} style={styles.saveBtn}>
+      <Pressable
+        onPress={() => {
+          // Apply immediately too
+          const m = draft.themeMode || 'dark';
+          if (m === 'dark' || m === 'light') setScheme(m);
+          onSave();
+        }}
+        style={styles.saveBtn}
+      >
         <Text style={styles.saveTxt}>Save</Text>
       </Pressable>
     </ScrollView>
@@ -450,7 +470,7 @@ export function ProfileScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f6f6f6' },
+  container: { flex: 1 },
 
   igHeader: {
     backgroundColor: '#fff',

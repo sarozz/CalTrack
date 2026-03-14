@@ -19,6 +19,7 @@ import { LoadingScreen } from './src/screens/LoadingScreen';
 import { OnboardingScreen } from './src/screens/OnboardingScreen';
 import { loadSettings } from './src/storage/store';
 import { makeNavTheme } from './src/styles/navTheme';
+import { ThemeCtx, colorsForScheme, type Scheme } from './src/styles/appTheme';
 
 const Tab = createBottomTabNavigator();
 const RootStack = createNativeStackNavigator();
@@ -85,7 +86,7 @@ function MainTabs() {
 
 export default function App() {
   const [boot, setBoot] = React.useState<'loading' | 'onboarding' | 'ready'>('loading');
-  const [scheme, setScheme] = React.useState<'light' | 'dark'>('light');
+  const [scheme, setScheme] = React.useState<Scheme>('dark');
 
   React.useEffect(() => {
     let alive = true;
@@ -123,18 +124,22 @@ export default function App() {
     };
   }, []);
 
+  const colors = colorsForScheme(scheme);
+
   return (
-    <NavigationContainer theme={makeNavTheme(scheme)}>
-      <RootStack.Navigator screenOptions={{ headerShown: false }}>
-        {boot === 'loading' ? <RootStack.Screen name="Loading" component={LoadingScreen} /> : null}
-        {boot === 'onboarding' ? (
-          <RootStack.Screen name="Onboarding">
-            {() => <OnboardingScreen onFinished={() => setBoot('ready')} />}
-          </RootStack.Screen>
-        ) : null}
-        {boot === 'ready' ? <RootStack.Screen name="Main" component={MainTabs} /> : null}
-      </RootStack.Navigator>
-      <StatusBar style="auto" />
-    </NavigationContainer>
+    <ThemeCtx.Provider value={{ scheme, setScheme, colors }}>
+      <NavigationContainer theme={makeNavTheme(scheme)}>
+        <RootStack.Navigator screenOptions={{ headerShown: false }}>
+          {boot === 'loading' ? <RootStack.Screen name="Loading" component={LoadingScreen} /> : null}
+          {boot === 'onboarding' ? (
+            <RootStack.Screen name="Onboarding">
+              {() => <OnboardingScreen onFinished={() => setBoot('ready')} />}
+            </RootStack.Screen>
+          ) : null}
+          {boot === 'ready' ? <RootStack.Screen name="Main" component={MainTabs} /> : null}
+        </RootStack.Navigator>
+        <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
+      </NavigationContainer>
+    </ThemeCtx.Provider>
   );
 }

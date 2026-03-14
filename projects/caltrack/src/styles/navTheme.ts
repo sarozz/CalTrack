@@ -8,9 +8,9 @@ export function makeNavTheme(mode: 'light' | 'dark'): Theme {
       ...base,
       colors: {
         ...base.colors,
-        background: '#0B0F1A',
+        background: '#0B1220',
         card: '#111827',
-        text: '#FFFFFF',
+        text: 'rgba(255,255,255,0.92)',
         border: 'rgba(255,255,255,0.12)',
         primary: 'rgba(236, 72, 153, 0.95)',
         notification: 'rgba(236, 72, 153, 0.95)',
