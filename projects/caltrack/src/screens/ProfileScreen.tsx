@@ -12,7 +12,7 @@ type Props = NativeStackScreenProps<HomeStackParamList, 'Profile'>;
 
 const REMINDER_MODES: { label: string; value: ReminderMode; desc: string }[] = [
   { label: 'Off', value: 'off', desc: 'No reminders' },
-  { label: 'Daily', value: 'daily', desc: 'Local notification every day at your Wake time' },
+  { label: 'Daily', value: 'daily', desc: 'Daily local notification' },
   { label: 'Smart', value: 'smart', desc: 'Coming soon' },
 ];
 
@@ -33,6 +33,10 @@ export function ProfileScreen({ navigation }: Props) {
 
   async function onSave() {
     const cleaned: Settings = {
+      name: (draft.name || '').trim() || undefined,
+      gender: draft.gender,
+      age: draft.age,
+      onboardingDone: draft.onboardingDone,
       caloriesGoal: Math.max(0, Math.round(draft.caloriesGoal || 0)),
       proteinGoal: Math.max(0, Math.round(draft.proteinGoal || 0)),
       fatGoal: Math.max(0, Math.round(draft.fatGoal || 0)),
@@ -41,6 +45,7 @@ export function ProfileScreen({ navigation }: Props) {
       sugarGoal: Math.max(0, Math.round(draft.sugarGoal || 0)),
       cholesterolGoal: Math.max(0, Math.round(draft.cholesterolGoal || 0)),
       sodiumGoal: Math.max(0, Math.round(draft.sodiumGoal || 0)),
+      // Keep stored wake/sleep for reminders internally, but don't show in UI.
       wakeTime: (draft.wakeTime || '07:00').slice(0, 5),
       sleepTime: (draft.sleepTime || '23:00').slice(0, 5),
       reminderMode: draft.reminderMode,
@@ -211,34 +216,58 @@ export function ProfileScreen({ navigation }: Props) {
         ) : null}
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.title}>Day</Text>
-        <View style={styles.field}>
-          <Text style={styles.label}>Wake time (HH:MM)</Text>
-          <TextInput
-            style={styles.input}
-            value={draft.wakeTime}
-            onChangeText={(t) => setDraft((s) => ({ ...s, wakeTime: t }))}
-            placeholder="07:00"
-            autoCapitalize="none"
-          />
+      <View style={styles.profileCard}>
+        <View style={styles.avatar}>
+          <Text style={styles.avatarTxt}>{String(draft.name || 'U').slice(0, 1).toUpperCase()}</Text>
         </View>
-        <View style={styles.field}>
-          <Text style={styles.label}>Sleep time (HH:MM)</Text>
-          <TextInput
-            style={styles.input}
-            value={draft.sleepTime}
-            onChangeText={(t) => setDraft((s) => ({ ...s, sleepTime: t }))}
-            placeholder="23:00"
-            autoCapitalize="none"
-          />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.profileName}>{draft.name || 'Your name'}</Text>
+          <Text style={styles.profileMeta}>
+            {draft.gender ? String(draft.gender).replace(/_/g, ' ') : 'gender'} · {draft.age ? `${draft.age}` : 'age'}
+          </Text>
         </View>
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.title}>Reminders</Text>
+        <Text style={styles.title}>Personal</Text>
+        <View style={styles.field}>
+          <Text style={styles.label}>Name</Text>
+          <TextInput
+            style={styles.input}
+            value={draft.name || ''}
+            onChangeText={(t) => setDraft((s) => ({ ...s, name: t }))}
+            placeholder="Your name"
+            autoCapitalize="words"
+          />
+        </View>
+        <View style={styles.row}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.label}>Gender</Text>
+            <TextInput
+              style={styles.input}
+              value={draft.gender ? String(draft.gender) : ''}
+              onChangeText={(t) => setDraft((s) => ({ ...s, gender: (t || undefined) as any }))}
+              placeholder="female / male / other"
+              autoCapitalize="none"
+            />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.label}>Age</Text>
+            <TextInput
+              style={styles.input}
+              value={draft.age ? String(draft.age) : ''}
+              onChangeText={(t) => setDraft((s) => ({ ...s, age: t.trim() ? Number(t.replace(/[^0-9]/g, '')) : undefined }))}
+              placeholder="e.g. 28"
+              keyboardType="numeric"
+            />
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.title}>Notifications</Text>
         <View style={{ gap: 8, marginTop: 8 }}>
-          {REMINDER_MODES.map((m) => {
+          {REMINDER_MODES.filter((m) => m.value !== 'smart').map((m) => {
             const selected = m.value === draft.reminderMode;
             return (
               <Pressable
@@ -313,6 +342,30 @@ export function ProfileScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f6f6f6' },
+  profileCard: {
+    backgroundColor: '#0B0F1A',
+    borderRadius: 18,
+    padding: 14,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(255,255,255,0.12)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  avatar: {
+    width: 52,
+    height: 52,
+    borderRadius: 18,
+    backgroundColor: 'rgba(236, 72, 153, 0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(236, 72, 153, 0.30)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarTxt: { color: '#fff', fontWeight: '900', fontSize: 20 },
+  profileName: { color: '#fff', fontWeight: '900', fontSize: 18 },
+  profileMeta: { color: 'rgba(255,255,255,0.65)', marginTop: 4, fontWeight: '700' },
+
   card: {
     backgroundColor: '#fff',
     borderRadius: 16,
@@ -322,6 +375,7 @@ const styles = StyleSheet.create({
   },
   title: { fontSize: 16, fontWeight: '600', marginBottom: 10 },
   advancedLink: { color: '#111', fontWeight: '600' },
+  row: { flexDirection: 'row', gap: 12 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   field: { gap: 6, marginBottom: 0, flexGrow: 1, flexBasis: 160 },
   label: { fontWeight: '600', color: '#222' },

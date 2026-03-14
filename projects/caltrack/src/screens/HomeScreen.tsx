@@ -5,7 +5,7 @@ import { AnimatedRing } from '../components/AnimatedRing';
 import { COLORS } from '../styles/theme';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { addEntry, deleteEntry, loadEntries, loadSettings } from '../storage/store';
+import { deleteEntry, loadEntries, loadSettings } from '../storage/store';
 import type { Entry, Settings } from '../types/models';
 import { formatTime, toDateKey } from '../utils/date';
 import { computeStreak } from '../utils/streak';
@@ -53,30 +53,9 @@ export function HomeScreen({ navigation }: Props) {
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-          <Pressable
-            onPress={async () => {
-              if (!entries.length) {
-                navigation.getParent()?.navigate('LogTab' as never);
-                return;
-              }
-              const last = entries[0];
-              const createdAt = Date.now();
-              await addEntry({
-                ...last,
-                id: `${createdAt}_${Math.random().toString(16).slice(2)}`,
-                createdAt,
-                dateKey: toDateKey(new Date(createdAt)),
-              });
-            }}
-            style={styles.headerBtn}
-          >
-            <Text style={styles.headerBtnText}>Repeat</Text>
-          </Pressable>
-          <Pressable onPress={() => navigation.navigate('Profile')} style={styles.headerBtn}>
-            <Text style={styles.headerBtnText}>Profile</Text>
-          </Pressable>
-        </View>
+        <Pressable onPress={() => navigation.navigate('Profile')} style={styles.headerBtn}>
+          <Text style={styles.headerBtnText}>Profile</Text>
+        </Pressable>
       ),
     });
   }, [navigation, entries]);

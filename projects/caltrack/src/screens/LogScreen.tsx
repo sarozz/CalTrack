@@ -547,7 +547,32 @@ export function LogScreen() {
 
       {favorites.length ? (
         <View style={styles.card}>
-          <Text style={styles.title}>Favorites</Text>
+          <View style={styles.cardHeaderRow}>
+            <Text style={styles.title}>Favorites</Text>
+            <Pressable
+              style={styles.smallBtn}
+              onPress={async () => {
+                const all = await loadEntries();
+                if (!all.length) {
+                  Alert.alert('Nothing to repeat', 'Log something first.');
+                  return;
+                }
+                const last = all[0];
+                const createdAt = Date.now();
+                const next = await addEntry({
+                  ...last,
+                  id: makeId(),
+                  createdAt,
+                  dateKey: toDateKey(new Date(createdAt)),
+                });
+                Alert.alert('Logged', `Repeated last entry · ${formatTime(new Date(createdAt))}`);
+                // keep local lists reasonably fresh
+                setRecent(next.slice(0, 12));
+              }}
+            >
+              <Text style={styles.smallBtnTxt}>Repeat last</Text>
+            </Pressable>
+          </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10 }}>
             {favorites.map((f) => (
               <Pressable
@@ -926,7 +951,17 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#ddd',
   },
+  cardHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   title: { fontSize: 16, fontWeight: '600', marginBottom: 10 },
+  smallBtn: {
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+    backgroundColor: 'rgba(236, 72, 153, 0.12)',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(236, 72, 153, 0.35)',
+  },
+  smallBtnTxt: { color: '#9D174D', fontWeight: '800' },
   subtle: { color: '#666', marginTop: -6, marginBottom: 10 },
   label: { fontWeight: '600', color: '#222', marginBottom: 6 },
   input: {
